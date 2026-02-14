@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 
 const CAMPSITE_CAPACITY = 6;
 
-export function Campsites({ api, onOpenPackList, onMemberUpdated }) {
+export function Campsites({ api, onMemberUpdated }) {
   const [members, setMembers] = useState([]);
   const [campsites, setCampsites] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -96,7 +96,6 @@ export function Campsites({ api, onOpenPackList, onMemberUpdated }) {
           packingItems={allPackingItems}
           isCollapsed={collapsed.has('unassigned')}
           onToggle={() => toggleSection('unassigned')}
-          onOpenPackList={onOpenPackList}
           updateMember={updateMember}
           remove={remove}
           setMembers={setMembers}
@@ -114,7 +113,6 @@ export function Campsites({ api, onOpenPackList, onMemberUpdated }) {
             packingItems={allPackingItems}
             isCollapsed={collapsed.has(c.id)}
             onToggle={() => toggleSection(c.id)}
-            onOpenPackList={onOpenPackList}
             updateMember={updateMember}
             remove={remove}
             setMembers={setMembers}
@@ -129,7 +127,7 @@ export function Campsites({ api, onOpenPackList, onMemberUpdated }) {
   );
 }
 
-function CampsiteSection({ sectionKey, title, campsiteId, members, capacity, campsites, vehicles, packingItems, isCollapsed, onToggle, onOpenPackList, updateMember, remove, setMembers }) {
+function CampsiteSection({ sectionKey, title, campsiteId, members, capacity, campsites, vehicles, packingItems, isCollapsed, onToggle, updateMember, remove, setMembers }) {
   const count = members.length;
   const spotsLeft = capacity != null ? capacity - count : null;
   const emptySlots = capacity != null ? Math.max(0, capacity - count) : 0;
@@ -161,16 +159,6 @@ function CampsiteSection({ sectionKey, title, campsiteId, members, capacity, cam
               </span>
             )}
           </span>
-        </button>
-        <button
-          type="button"
-          className="btn btn-pack-list"
-          onClick={(e) => {
-            e.stopPropagation();
-            onOpenPackList?.(campsiteId);
-          }}
-        >
-          Pack list
         </button>
       </div>
       <div id={`campsite-content-${sectionKey}`} className="campsite-section-content" role="region" aria-labelledby={`campsite-header-${sectionKey}`}>

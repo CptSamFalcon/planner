@@ -19,9 +19,11 @@ function typeLabel(t) {
 
 export function PackingTab({ api }) {
   const [lists, setLists] = useState([]);
+  const [vehicles, setVehicles] = useState([]);
   const [selectedListId, setSelectedListId] = useState('general');
   const [items, setItems] = useState([]);
   const [newListName, setNewListName] = useState('');
+  const [newListVehicleId, setNewListVehicleId] = useState('');
   const [label, setLabel] = useState('');
   const [itemType, setItemType] = useState('');
   const [occupants, setOccupants] = useState('');
@@ -34,6 +36,13 @@ export function PackingTab({ api }) {
   };
 
   useEffect(loadLists, [api]);
+
+  useEffect(() => {
+    fetch(`${api}/vehicles`)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setVehicles(Array.isArray(data) ? data : []))
+      .catch(() => setVehicles([]));
+  }, [api]);
 
   const loadItems = () => {
     if (selectedListId === '' || selectedListId == null) return;
@@ -53,17 +62,35 @@ export function PackingTab({ api }) {
     e.preventDefault();
     const name = newListName.trim();
     if (!name) return;
+    const body = { name };
+    if (newListVehicleId !== '' && newListVehicleId != null) {
+      const vid = parseInt(newListVehicleId, 10);
+      if (!Number.isNaN(vid)) body.vehicle_id = vid;
+    }
     fetch(`${api}/packing/lists`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ name }),
+      body: JSON.stringify(body),
     })
       .then((r) => r.json())
       .then((list) => {
         setNewListName('');
+        setNewListVehicleId('');
         loadLists();
         setSelectedListId(list.id);
       })
+      .catch(console.error);
+  };
+
+  const updateListVehicle = (listId, vehicleId) => {
+    const vid = vehicleId === '' || vehicleId == null ? null : parseInt(vehicleId, 10);
+    fetch(`${api}/packing/lists/${listId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ vehicle_id: vid == null || Number.isNaN(vid) ? null : vid }),
+    })
+      .then((r) => r.json())
+      .then(() => loadLists())
       .catch(console.error);
   };
 
@@ -170,7 +197,7 @@ export function PackingTab({ api }) {
   return (
     <div className="card block packing-tab-card">
       <h3 className="card-title">Packing Lists</h3>
-      <p className="card-description">Each vehicle has a list. Add custom lists below. Green = all checked off; red = items left.</p>
+      <p className="card-description">Create lists and optionally assign a vehicle so you know where those items are going. Green = all checked off; red = items left.</p>
 
       {/* Overview: all lists as red/green pills */}
       <div className="packing-tab-overview">
@@ -207,20 +234,36 @@ export function PackingTab({ api }) {
         >
           {lists.map((list) => (
             <option key={list.id} value={list.id}>
-              {list.name}
+              {list.name}{list.vehicle_name ? ` · ${list.vehicle_name}` : ''}
               {list.total != null && list.total > 0 ? ` (${list.done}/${list.total})` : ''}
             </option>
           ))}
         </select>
         {isCustomList && (
-          <button
-            type="button"
-            className="btn btn-ghost btn-sm packing-tab-delete-list"
-            onClick={() => deleteCustomList(selectedList.id)}
-            aria-label="Delete this list"
-          >
-            Delete list
-          </button>
+          <>
+            <div className="packing-tab-list-vehicle">
+              <label className="packing-picker-label" htmlFor="packing-list-vehicle">Vehicle (where items are going)</label>
+              <select
+                id="packing-list-vehicle"
+                value={selectedList.vehicle_id ?? ''}
+                onChange={(e) => updateListVehicle(selectedList.id, e.target.value)}
+                className="select packing-tab-vehicle-select"
+              >
+                <option value="">—</option>
+                {vehicles.map((v) => (
+                  <option key={v.id} value={v.id}>{v.name}</option>
+                ))}
+              </select>
+            </div>
+            <button
+              type="button"
+              className="btn btn-ghost btn-sm packing-tab-delete-list"
+              onClick={() => deleteCustomList(selectedList.id)}
+              aria-label="Delete this list"
+            >
+              Delete list
+            </button>
+          </>
         )}
       </div>
 
@@ -235,6 +278,17 @@ export function PackingTab({ api }) {
             onChange={(e) => setNewListName(e.target.value)}
             className="input"
           />
+          <select
+            value={newListVehicleId}
+            onChange={(e) => setNewListVehicleId(e.target.value)}
+            className="select packing-tab-new-vehicle"
+            title="Optional: vehicle these items are for"
+          >
+            <option value="">Vehicle (optional)</option>
+            {vehicles.map((v) => (
+              <option key={v.id} value={v.id}>{v.name}</option>
+            ))}
+          </select>
           <button type="submit" className="btn btn-secondary">Add list</button>
         </form>
         <p className="packing-tab-orphans-hint">
