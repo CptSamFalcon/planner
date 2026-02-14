@@ -41,6 +41,13 @@ export function Header({ view, onViewChange }) {
             >
               People
             </button>
+            <button
+              type="button"
+              className={`header-nav-btn ${view === 'official-info' ? 'active' : ''}`}
+              onClick={() => onViewChange('official-info')}
+            >
+              Official Info
+            </button>
           </nav>
         )}
       </div>
