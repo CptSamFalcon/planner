@@ -30,6 +30,77 @@ body {
   min-height: 100vh;
 }
 
+/* Password gate */
+.password-gate {
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.5rem;
+  background: var(--bg-deep);
+}
+.password-gate-loading .password-gate-card {
+  padding: 2rem;
+}
+.password-gate-card {
+  width: 100%;
+  max-width: 360px;
+  padding: 2.5rem;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
+}
+.password-gate-title {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  margin: 0 0 0.25rem;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  text-align: center;
+}
+.password-gate-subtitle {
+  color: var(--text-muted);
+  font-size: 0.95rem;
+  margin: 0 0 1.5rem;
+  text-align: center;
+}
+.password-gate-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.password-gate-label {
+  font-size: 0.9rem;
+  color: var(--text-muted);
+}
+.password-gate-input {
+  padding: 0.6rem 0.75rem;
+  font-size: 1rem;
+  border-radius: 6px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text);
+}
+.password-gate-input:focus {
+  outline: none;
+  border-color: var(--accent-cyan);
+  box-shadow: 0 0 0 2px var(--accent-glow);
+}
+.password-gate-error {
+  margin: 0;
+  font-size: 0.9rem;
+  color: var(--accent-magenta);
+}
+.password-gate-btn {
+  margin-top: 0.25rem;
+  padding: 0.6rem 1rem;
+}
+
 h1, h2, h3 {
   font-family: var(--font-display);
   font-weight: 700;

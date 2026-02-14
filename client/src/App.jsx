@@ -10,10 +10,13 @@ import { PackingTab } from './components/PackingTab';
 import { Schedule } from './components/Schedule';
 import { OfficialInfo } from './components/OfficialInfo';
 import { Notes } from './components/Notes';
+import { PasswordGate } from './components/PasswordGate';
 
 const API = '/api';
 
 export default function App() {
+  const [authChecked, setAuthChecked] = useState(false);
+  const [authenticated, setAuthenticated] = useState(false);
   const [view, setView] = useState('group');
   const [festival, setFestival] = useState(null);
   const [selectedPackingCampsiteId, setSelectedPackingCampsiteId] = useState(null);
@@ -21,11 +24,18 @@ export default function App() {
   const packingSectionRef = useRef(null);
 
   useEffect(() => {
-    fetch(`${API}/festival`)
+    fetch(`${API}/auth`, { credentials: 'include' })
+      .then((r) => { setAuthChecked(true); setAuthenticated(r.ok); })
+      .catch(() => { setAuthChecked(true); setAuthenticated(false); });
+  }, []);
+
+  useEffect(() => {
+    if (!authenticated) return;
+    fetch(`${API}/festival`, { credentials: 'include' })
       .then((r) => r.json())
       .then(setFestival)
       .catch(() => setFestival({ name: 'Bass Canyon 2026', venue: 'The Gorge', dates: {} }));
-  }, []);
+  }, [authenticated]);
 
   const didOpenPackList = useRef(false);
   useEffect(() => {
@@ -38,6 +48,17 @@ export default function App() {
     didOpenPackList.current = true;
     setSelectedPackingCampsiteId(campsiteId);
   };
+
+  if (!authChecked) {
+    return (
+      <div className="password-gate password-gate-loading">
+        <div className="password-gate-card"><p className="password-gate-subtitle">Loading…</p></div>
+      </div>
+    );
+  }
+  if (!authenticated) {
+    return <PasswordGate api={API} onAuthenticated={() => setAuthenticated(true)} />;
+  }
 
   return (
     <>

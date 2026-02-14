@@ -1,8 +1,10 @@
 import express from 'express';
 import cors from 'cors';
+import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { initDb, getDb } from './db.js';
+import { authRouter, requireAuth } from './routes/auth.js';
 import { membersRouter } from './routes/members.js';
 import { campsitesRouter } from './routes/campsites.js';
 import { vehiclesRouter } from './routes/vehicles.js';
@@ -18,8 +20,13 @@ const PORT = process.env.PORT || 3080;
 const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data');
 initDb(dataDir);
 
-app.use(cors());
+app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
+app.use(cookieParser());
+
+// Auth: require session for all /api except /api/auth
+app.use('/api', requireAuth);
+app.use('/api/auth', authRouter);
 
 // API routes
 app.use('/api/members', membersRouter);
