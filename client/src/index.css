@@ -1097,6 +1097,20 @@ main {
 .packing-tab-create-form .input {
   min-width: 160px;
 }
+.packing-tab-new-vehicle {
+  min-width: 140px;
+}
+.packing-tab-list-vehicle {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+.packing-tab-list-vehicle .packing-picker-label {
+  margin: 0;
+}
+.packing-tab-vehicle-select {
+  min-width: 120px;
+}
 .packing-tab-orphans-hint {
   margin: 0.75rem 0 0;
   font-size: 0.85rem;

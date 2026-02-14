@@ -99,9 +99,13 @@ export function initDb(dataDir) {
     CREATE TABLE IF NOT EXISTS packing_lists (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
+      vehicle_id INTEGER,
       created_at TEXT DEFAULT (datetime('now'))
     );
   `);
+  try {
+    db.exec('ALTER TABLE packing_lists ADD COLUMN vehicle_id INTEGER');
+  } catch (_) {}
   try {
     db.exec('ALTER TABLE packing ADD COLUMN packing_list_id INTEGER');
   } catch (_) {}
