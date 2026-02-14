@@ -11,7 +11,7 @@ export function Header({ view, onViewChange }) {
               className={`header-nav-btn ${view === 'group' ? 'active' : ''}`}
               onClick={() => onViewChange('group')}
             >
-              Group
+              Home
             </button>
             <button
               type="button"
