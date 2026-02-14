@@ -19,9 +19,18 @@ export function Campsites({ api, onOpenPackList, onMemberUpdated }) {
   };
 
   const load = () => {
-    fetch(`${api}/members`).then((r) => r.json()).then(setMembers).catch(() => setMembers([]));
-    fetch(`${api}/campsites`).then((r) => r.json()).then(setCampsites).catch(() => setCampsites([]));
-    fetch(`${api}/vehicles`).then((r) => r.json()).then(setVehicles).catch(() => setVehicles([]));
+    fetch(`${api}/members`)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setMembers(Array.isArray(data) ? data : []))
+      .catch(() => setMembers([]));
+    fetch(`${api}/campsites`)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setCampsites(Array.isArray(data) ? data : []))
+      .catch(() => setCampsites([]));
+    fetch(`${api}/vehicles`)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setVehicles(Array.isArray(data) ? data : []))
+      .catch(() => setVehicles([]));
   };
 
   useEffect(load, [api]);
@@ -32,13 +41,15 @@ export function Campsites({ api, onOpenPackList, onMemberUpdated }) {
     const run = async () => {
       const out = {};
       try {
-        const general = await fetch(`${api}/packing`).then((r) => r.json()).catch(() => []);
+        const generalRes = await fetch(`${api}/packing`);
+        const general = generalRes.ok ? await generalRes.json() : [];
         if (cancelled) return;
-        out.null = general;
+        out.null = Array.isArray(general) ? general : [];
         await Promise.all(
           (campsites || []).map(async (c) => {
-            const list = await fetch(`${api}/packing?campsite_id=${c.id}&include_general=1`).then((r) => r.json()).catch(() => []);
-            if (!cancelled) out[c.id] = list;
+            const listRes = await fetch(`${api}/packing?campsite_id=${c.id}&include_general=1`);
+            const list = listRes.ok ? await listRes.json() : [];
+            if (!cancelled) out[c.id] = Array.isArray(list) ? list : [];
           })
         );
         if (!cancelled) setPackingByCampsite(out);

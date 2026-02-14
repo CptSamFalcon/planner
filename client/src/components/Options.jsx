@@ -9,8 +9,14 @@ export function Options({ api }) {
   const [newVehicleCapacity, setNewVehicleCapacity] = useState(1);
 
   const load = () => {
-    fetch(`${api}/campsites`).then((r) => r.json()).then(setCampsites).catch(() => setCampsites([]));
-    fetch(`${api}/vehicles`).then((r) => r.json()).then(setVehicles).catch(() => setVehicles([]));
+    fetch(`${api}/campsites`)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setCampsites(Array.isArray(data) ? data : []))
+      .catch(() => setCampsites([]));
+    fetch(`${api}/vehicles`)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setVehicles(Array.isArray(data) ? data : []))
+      .catch(() => setVehicles([]));
   };
 
   useEffect(load, [api]);

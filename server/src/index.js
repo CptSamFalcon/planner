@@ -46,12 +46,13 @@ app.get('/api/festival', (req, res) => {
 
 // Serve built frontend (in Docker: PUBLIC_DIR=/app/client/dist)
 const clientDist = process.env.PUBLIC_DIR || path.join(__dirname, '..', '..', 'client', 'dist');
-app.use(express.static(clientDist));
+app.use(express.static(clientDist, { maxAge: 0, etag: true }));
 app.get('*', (req, res) => {
   if (req.path.startsWith('/api')) {
     res.status(404).json({ error: 'Not found' });
     return;
   }
+  res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
   res.sendFile(path.join(clientDist, 'index.html'));
 });
 
