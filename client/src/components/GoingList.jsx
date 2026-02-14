@@ -4,12 +4,9 @@ function isFullyAssigned(m, campsites) {
   const camp = campsites?.find((c) => c.id === m.campsite_id);
   const hasVehicle = camp?.vehicle_id != null && camp?.vehicle_id !== '';
   return !!(
-    (m.contact_number && m.contact_number.trim() !== '') &&
     m.campsite_id != null && m.campsite_id !== '' &&
     m.shelter_packing_id != null && m.shelter_packing_id !== '' &&
     m.bed_packing_id != null && m.bed_packing_id !== '' &&
-    m.bedding_packing_id != null && m.bedding_packing_id !== '' &&
-    (m.wristband === 'GA' || m.wristband === 'VIP') &&
     hasVehicle
   );
 }
