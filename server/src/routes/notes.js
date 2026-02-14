@@ -1,17 +1,48 @@
-const express = require('express');
-const db = require('../db');
-const router = express.Router();
+import { Router } from 'express';
+import { getDb } from '../db.js';
 
-router.get('/', (req, res) => {
-  const row = db.prepare('SELECT * FROM notes WHERE id = 1').get();
-  res.json(row || { id: 1, content: '', updated_at: null });
+export const notesRouter = Router();
+const db = () => getDb();
+
+notesRouter.get('/', (req, res) => {
+  try {
+    const rows = db().prepare('SELECT * FROM notes ORDER BY created_at DESC').all();
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
-router.put('/', (req, res) => {
-  const { content } = req.body;
-  db.prepare('INSERT OR REPLACE INTO notes (id, content, updated_at) VALUES (1, ?, datetime("now"))').run(content ?? '');
-  const row = db.prepare('SELECT * FROM notes WHERE id = 1').get();
-  res.json(row || { id: 1, content: '', updated_at: null });
+notesRouter.post('/', (req, res) => {
+  try {
+    const { content } = req.body;
+    const stmt = db().prepare('INSERT INTO notes (content) VALUES (?)');
+    const result = stmt.run(content || '');
+    const row = db().prepare('SELECT * FROM notes WHERE id = ?').get(result.lastInsertRowid);
+    res.status(201).json(row);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
-module.exports = router;
+notesRouter.patch('/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { content } = req.body;
+    if (content === undefined) return res.status(400).json({ error: 'content required' });
+    db().prepare('UPDATE notes SET content = ? WHERE id = ?').run(content, id);
+    const row = db().prepare('SELECT * FROM notes WHERE id = ?').get(id);
+    res.json(row || {});
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+notesRouter.delete('/:id', (req, res) => {
+  try {
+    db().prepare('DELETE FROM notes WHERE id = ?').run(req.params.id);
+    res.status(204).send();
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});

@@ -1,72 +1,60 @@
-const express = require('express');
-const cors = require('cors');
-const path = require('path');
-const fs = require('fs');
+import express from 'express';
+import cors from 'cors';
+import path from 'path';
+import { fileURLToPath } from 'url';
+import { initDb, getDb } from './db.js';
+import { membersRouter } from './routes/members.js';
+import { campsitesRouter } from './routes/campsites.js';
+import { vehiclesRouter } from './routes/vehicles.js';
+import { packingRouter } from './routes/packing.js';
+import { scheduleRouter } from './routes/schedule.js';
+import { notesRouter } from './routes/notes.js';
 
-try {
-  require('./db'); // init DB
-} catch (err) {
-  console.error('Database init failed:', err.message);
-  process.exit(1);
-}
-
-const members = require('./routes/members');
-const campsites = require('./routes/campsites');
-const vehicles = require('./routes/vehicles');
-const packing = require('./routes/packing');
-const schedule = require('./routes/schedule');
-const notes = require('./routes/notes');
-const festival = require('./routes/festival');
-
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 const PORT = process.env.PORT || 3080;
 
-const publicDir = process.env.PUBLIC_DIR || path.join(process.cwd(), 'client', 'dist');
-if (!fs.existsSync(publicDir)) {
-  console.warn('Public dir not found:', publicDir, '- API only mode');
-}
+// Persist data in /app/data when in Docker, else ./data
+const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data');
+initDb(dataDir);
 
 app.use(cors());
 app.use(express.json());
 
-app.use('/api/members', members);
-app.use('/api/campsites', campsites);
-app.use('/api/vehicles', vehicles);
-app.use('/api/packing', packing);
-app.use('/api/schedule', schedule);
-app.use('/api/notes', notes);
-app.use('/api/festival', festival);
+// API routes
+app.use('/api/members', membersRouter);
+app.use('/api/campsites', campsitesRouter);
+app.use('/api/vehicles', vehiclesRouter);
+app.use('/api/packing', packingRouter);
+app.use('/api/schedule', scheduleRouter);
+app.use('/api/notes', notesRouter);
 
-// 404 for unknown API routes so client gets JSON, not HTML
-app.use('/api', (req, res) => {
-  res.status(404).json({ error: 'Not found' });
-});
-
-if (fs.existsSync(publicDir)) {
-  app.use(express.static(publicDir));
-  // SPA fallback: only for browser navigation (Accept: text/html), not for API or assets
-  app.get('*', (req, res, next) => {
-    if (req.path.startsWith('/api')) return next();
-    const accept = req.get('Accept') || '';
-    if (!accept.includes('text/html')) return next();
-    res.sendFile(path.join(publicDir, 'index.html'), (err) => {
-      if (err) next(err);
-    });
+// Festival info (static)
+app.get('/api/festival', (req, res) => {
+  res.json({
+    name: 'Bass Canyon 2026',
+    venue: 'The Gorge Amphitheatre',
+    location: 'George, Washington',
+    dates: {
+      preParty: '2026-08-13',
+      start: '2026-08-14',
+      end: '2026-08-16',
+    },
+    days: ['Wednesday', 'Thursday Pre-Party', 'Friday', 'Saturday', 'Sunday'],
   });
-}
-
-// Prevent process from exiting on unhandled errors so the app doesn't "flash and close"
-process.on('uncaughtException', (err) => {
-  console.error('Uncaught exception:', err);
-});
-process.on('unhandledRejection', (reason, p) => {
-  console.error('Unhandled rejection at:', p, 'reason:', reason);
 });
 
-const server = app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Bass Canyon planner running at http://localhost:${PORT}`);
+// Serve built frontend (in Docker: PUBLIC_DIR=/app/client/dist)
+const clientDist = process.env.PUBLIC_DIR || path.join(__dirname, '..', '..', 'client', 'dist');
+app.use(express.static(clientDist));
+app.get('*', (req, res) => {
+  if (req.path.startsWith('/api')) {
+    res.status(404).json({ error: 'Not found' });
+    return;
+  }
+  res.sendFile(path.join(clientDist, 'index.html'));
 });
 
-server.on('error', (err) => {
-  console.error('Server error:', err);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Bass Canyon Planner running at http://0.0.0.0:${PORT}`);
 });

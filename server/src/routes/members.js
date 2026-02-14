@@ -1,42 +1,80 @@
-const express = require('express');
-const db = require('../db');
-const router = express.Router();
+import { Router } from 'express';
+import { getDb } from '../db.js';
 
-router.get('/', (req, res) => {
-  const rows = db.prepare('SELECT * FROM members ORDER BY name').all();
-  res.json(rows);
-});
+export const membersRouter = Router();
+const db = () => getDb();
 
-router.post('/', (req, res) => {
-  const { name, status = 'going', note } = req.body;
-  const run = db.prepare('INSERT INTO members (name, status, note) VALUES (?, ?, ?)');
-  const info = run.run(name || 'New member', status, note || null);
-  const row = db.prepare('SELECT * FROM members WHERE id = ?').get(info.lastInsertRowid);
-  res.status(201).json(row);
-});
-
-router.patch('/:id', (req, res) => {
-  const id = Number(req.params.id);
-  const allowed = ['name', 'status', 'note', 'contact_number', 'campsite_id', 'shelter_packing_id', 'bed_packing_id', 'bedding_packing_id', 'wristband', 'vehicle_id', 'pre_party'];
-  const updates = [];
-  const values = [];
-  for (const key of allowed) {
-    if (req.body[key] !== undefined) {
-      updates.push(`${key} = ?`);
-      values.push(req.body[key]);
-    }
+membersRouter.get('/', (req, res) => {
+  try {
+    const rows = db().prepare('SELECT * FROM members ORDER BY name').all();
+    res.json(rows);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
   }
-  if (updates.length === 0) return res.status(400).json({ error: 'No fields to update' });
-  values.push(id);
-  db.prepare(`UPDATE members SET ${updates.join(', ')} WHERE id = ?`).run(...values);
-  const row = db.prepare('SELECT * FROM members WHERE id = ?').get(id);
-  res.json(row);
 });
 
-router.delete('/:id', (req, res) => {
-  const id = Number(req.params.id);
-  db.prepare('DELETE FROM members WHERE id = ?').run(id);
-  res.status(204).send();
+membersRouter.post('/', (req, res) => {
+  try {
+    const { name, status = 'going', note, contact_number, campsite_id, wristband, vehicle_id, shelter_packing_id, bed_packing_id, bedding_packing_id, pre_party } = req.body;
+    const prePartyVal = pre_party === true || pre_party === 1 || pre_party === 'Y' || pre_party === 'y' ? 1 : (pre_party === false || pre_party === 0 || pre_party === 'N' || pre_party === 'n' ? 0 : null);
+    const stmt = db().prepare(
+      'INSERT INTO members (name, status, note, contact_number, campsite_id, wristband, vehicle_id, shelter_packing_id, bed_packing_id, bedding_packing_id, pre_party) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+    );
+    const result = stmt.run(
+      name || 'Anonymous',
+      status,
+      note || null,
+      contact_number || null,
+      campsite_id || null,
+      wristband || null,
+      vehicle_id || null,
+      shelter_packing_id || null,
+      bed_packing_id || null,
+      bedding_packing_id || null,
+      prePartyVal
+    );
+    const row = db().prepare('SELECT * FROM members WHERE id = ?').get(result.lastInsertRowid);
+    res.status(201).json(row);
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
 });
 
-module.exports = router;
+membersRouter.patch('/:id', (req, res) => {
+  try {
+    const { id } = req.params;
+    const { name, status, note, contact_number, campsite_id, wristband, vehicle_id, shelter_packing_id, bed_packing_id, bedding_packing_id, pre_party } = req.body;
+    const updates = [];
+    const values = [];
+    if (name !== undefined) { updates.push('name = ?'); values.push(name); }
+    if (status !== undefined) { updates.push('status = ?'); values.push(status); }
+    if (note !== undefined) { updates.push('note = ?'); values.push(note); }
+    if (contact_number !== undefined) { updates.push('contact_number = ?'); values.push(contact_number); }
+    if (campsite_id !== undefined) { updates.push('campsite_id = ?'); values.push(campsite_id); }
+    if (wristband !== undefined) { updates.push('wristband = ?'); values.push(wristband); }
+    if (vehicle_id !== undefined) { updates.push('vehicle_id = ?'); values.push(vehicle_id); }
+    if (shelter_packing_id !== undefined) { updates.push('shelter_packing_id = ?'); values.push(shelter_packing_id); }
+    if (bed_packing_id !== undefined) { updates.push('bed_packing_id = ?'); values.push(bed_packing_id); }
+    if (bedding_packing_id !== undefined) { updates.push('bedding_packing_id = ?'); values.push(bedding_packing_id); }
+    if (pre_party !== undefined) {
+      const v = pre_party === true || pre_party === 1 || pre_party === 'Y' || pre_party === 'y' ? 1 : (pre_party === false || pre_party === 0 || pre_party === 'N' || pre_party === 'n' ? 0 : null);
+      updates.push('pre_party = ?'); values.push(v);
+    }
+    if (updates.length === 0) return res.status(400).json({ error: 'No fields to update' });
+    values.push(id);
+    db().prepare(`UPDATE members SET ${updates.join(', ')} WHERE id = ?`).run(...values);
+    const row = db().prepare('SELECT * FROM members WHERE id = ?').get(id);
+    res.json(row || {});
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+membersRouter.delete('/:id', (req, res) => {
+  try {
+    db().prepare('DELETE FROM members WHERE id = ?').run(req.params.id);
+    res.status(204).send();
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});

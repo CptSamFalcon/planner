@@ -2,12 +2,15 @@
   "name": "bass-canyon-planner",
   "version": "1.0.0",
   "private": true,
+  "description": "Group planning app for Bass Canyon 2026",
   "scripts": {
-    "start": "node server/src/index.js",
-    "dev": "concurrently \"npm run server\" \"npm run client\"",
-    "server": "node server/src/index.js",
-    "client": "cd client && npm run dev",
-    "build": "cd client && npm run build"
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:server": "cd server && npm run dev",
+    "dev:client": "cd client && npm run dev",
+    "build": "cd client && npm run build && cd ../server && npm run build",
+    "start": "cd server && npm start",
+    "docker:build": "docker build -t bass-canyon-planner .",
+    "docker:run": "docker run -p 3080:3080 -v bass-canyon-data:/app/data bass-canyon-planner"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
