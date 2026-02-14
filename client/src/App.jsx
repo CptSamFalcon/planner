@@ -8,6 +8,7 @@ import { Members } from './components/Members';
 import { Packing } from './components/Packing';
 import { PackingTab } from './components/PackingTab';
 import { Schedule } from './components/Schedule';
+import { OfficialInfo } from './components/OfficialInfo';
 import { Notes } from './components/Notes';
 
 const API = '/api';
@@ -57,6 +58,10 @@ export default function App() {
         ) : view === 'packing' ? (
           <section className="section">
             <PackingTab api={API} />
+          </section>
+        ) : view === 'official-info' ? (
+          <section className="section">
+            <OfficialInfo />
           </section>
         ) : (
           <>
