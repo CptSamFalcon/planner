@@ -1,54 +1,51 @@
+import { useState } from 'react';
+
+const TABS = [
+  { id: 'group', label: 'Home' },
+  { id: 'schedule', label: 'Schedule' },
+  { id: 'packing', label: 'Packing' },
+  { id: 'vehicles-sites', label: 'Vehicles/Sites' },
+  { id: 'people', label: 'People' },
+  { id: 'official-info', label: 'Official Info' },
+];
+
 export function Header({ view, onViewChange }) {
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const handleNav = (id) => {
+    onViewChange?.(id);
+    setMenuOpen(false);
+  };
+
   return (
-    <header className="header">
+    <header className={`header ${menuOpen ? 'header-menu-open' : ''}`}>
       <div className="header-inner">
         <h1 className="logo">BASS CANYON 2026</h1>
         <span className="tagline">Group Planner</span>
         {onViewChange && (
-          <nav className="header-nav" aria-label="Main">
+          <>
             <button
               type="button"
-              className={`header-nav-btn ${view === 'group' ? 'active' : ''}`}
-              onClick={() => onViewChange('group')}
+              className="header-menu-btn"
+              onClick={() => setMenuOpen((o) => !o)}
+              aria-expanded={menuOpen}
+              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
             >
-              Home
+              <span className="header-menu-icon" aria-hidden />
             </button>
-            <button
-              type="button"
-              className={`header-nav-btn ${view === 'schedule' ? 'active' : ''}`}
-              onClick={() => onViewChange('schedule')}
-            >
-              Schedule
-            </button>
-            <button
-              type="button"
-              className={`header-nav-btn ${view === 'packing' ? 'active' : ''}`}
-              onClick={() => onViewChange('packing')}
-            >
-              Packing
-            </button>
-            <button
-              type="button"
-              className={`header-nav-btn ${view === 'vehicles-sites' ? 'active' : ''}`}
-              onClick={() => onViewChange('vehicles-sites')}
-            >
-              Vehicles/Sites
-            </button>
-            <button
-              type="button"
-              className={`header-nav-btn ${view === 'people' ? 'active' : ''}`}
-              onClick={() => onViewChange('people')}
-            >
-              People
-            </button>
-            <button
-              type="button"
-              className={`header-nav-btn ${view === 'official-info' ? 'active' : ''}`}
-              onClick={() => onViewChange('official-info')}
-            >
-              Official Info
-            </button>
-          </nav>
+            <nav className="header-nav" aria-label="Main">
+              {TABS.map((tab) => (
+                <button
+                  key={tab.id}
+                  type="button"
+                  className={`header-nav-btn ${view === tab.id ? 'active' : ''}`}
+                  onClick={() => handleNav(tab.id)}
+                >
+                  {tab.label}
+                </button>
+              ))}
+            </nav>
+          </>
         )}
       </div>
     </header>
