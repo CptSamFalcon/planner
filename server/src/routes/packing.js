@@ -98,12 +98,24 @@ packingRouter.get('/', (req, res) => {
     const campsiteId = req.query.campsite_id;
     const includeGeneral = req.query.include_general === '1' || req.query.include_general === 'true';
 
-    // All items with list_name (for cross-list shelter/bed/bedding assignment)
+    // All items with list_name (for cross-list shelter/bed/bedding assignment). Exclude orphans (list/site deleted).
     if (all) {
       const d = db();
       const vehicles = d.prepare('SELECT id, name FROM vehicles ORDER BY name').all();
       const customLists = d.prepare('SELECT id, name FROM packing_lists ORDER BY name').all();
+      const campsiteIds = new Set(d.prepare('SELECT id FROM campsites').all().map((r) => r.id));
+      const listIds = new Set(customLists.map((c) => c.id));
       const rows = d.prepare('SELECT * FROM packing ORDER BY item_type, label').all();
+      const isOrphan = (row) => {
+        if (row.packing_list_id != null && row.packing_list_id !== '' && row.packing_list_id !== 0) {
+          if (!listIds.has(row.packing_list_id)) return true;
+        }
+        if (row.campsite_id != null && row.campsite_id !== '') {
+          if (!campsiteIds.has(row.campsite_id)) return true;
+        }
+        return false;
+      };
+      const validRows = rows.filter((r) => !isOrphan(r));
       const listName = (row) => {
         if (row.packing_list_id != null && row.packing_list_id !== '') {
           const cl = customLists.find((c) => c.id === row.packing_list_id);
@@ -117,7 +129,7 @@ packingRouter.get('/', (req, res) => {
         }
         return `Campsite ${row.campsite_id}`;
       };
-      const items = rows.map((r) => ({ ...r, list_name: listName(r) }));
+      const items = validRows.map((r) => ({ ...r, list_name: listName(r) }));
       return res.json(items);
     }
 
@@ -245,6 +257,27 @@ packingRouter.patch('/:id', (req, res) => {
     db().prepare(`UPDATE packing SET ${updates.join(', ')} WHERE id = ?`).run(...values);
     const row = db().prepare('SELECT * FROM packing WHERE id = ?').get(id);
     res.json(row || {});
+  } catch (e) {
+    res.status(500).json({ error: e.message });
+  }
+});
+
+// DELETE /packing/orphans — remove items whose list or campsite was deleted (fixes orphaned dropdown entries)
+packingRouter.delete('/orphans', (req, res) => {
+  try {
+    const d = db();
+    const deletedCampsite = d.prepare(
+      'DELETE FROM packing WHERE campsite_id IS NOT NULL AND campsite_id NOT IN (SELECT id FROM campsites)'
+    ).run();
+    const deletedList = d.prepare(
+      'DELETE FROM packing WHERE packing_list_id IS NOT NULL AND packing_list_id != 0 AND packing_list_id NOT IN (SELECT id FROM packing_lists)'
+    ).run();
+    const total = deletedCampsite.changes + deletedList.changes;
+    // Clear member references to any packing item that no longer exists
+    d.prepare('UPDATE members SET shelter_packing_id = NULL WHERE shelter_packing_id IS NOT NULL AND shelter_packing_id NOT IN (SELECT id FROM packing)').run();
+    d.prepare('UPDATE members SET bed_packing_id = NULL WHERE bed_packing_id IS NOT NULL AND bed_packing_id NOT IN (SELECT id FROM packing)').run();
+    d.prepare('UPDATE members SET bedding_packing_id = NULL WHERE bedding_packing_id IS NOT NULL AND bedding_packing_id NOT IN (SELECT id FROM packing)').run();
+    res.json({ deleted: total });
   } catch (e) {
     res.status(500).json({ error: e.message });
   }

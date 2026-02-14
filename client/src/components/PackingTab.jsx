@@ -78,6 +78,18 @@ export function PackingTab({ api }) {
       .catch(console.error);
   };
 
+  const cleanupOrphans = () => {
+    fetch(`${api}/packing/orphans`, { method: 'DELETE' })
+      .then((r) => r.ok ? r.json() : Promise.reject(new Error()))
+      .then((data) => {
+        if (data.deleted > 0) {
+          loadLists();
+          loadItems();
+        }
+      })
+      .catch(console.error);
+  };
+
   const addItem = (e) => {
     e.preventDefault();
     if (!label.trim()) return;
@@ -225,6 +237,12 @@ export function PackingTab({ api }) {
           />
           <button type="submit" className="btn btn-secondary">Add list</button>
         </form>
+        <p className="packing-tab-orphans-hint">
+          Deleted a campsite or list but still see its items in shelter/bed dropdowns?{' '}
+          <button type="button" className="btn btn-ghost btn-sm packing-tab-orphans-btn" onClick={cleanupOrphans}>
+            Remove orphaned items
+          </button>
+        </p>
       </div>
 
       {/* Selected list items */}
