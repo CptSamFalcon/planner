@@ -94,8 +94,32 @@ packingRouter.delete('/lists/:id', (req, res) => {
 packingRouter.get('/', (req, res) => {
   try {
     const list = req.query.list;
+    const all = req.query.all === '1' || req.query.all === 'true';
     const campsiteId = req.query.campsite_id;
     const includeGeneral = req.query.include_general === '1' || req.query.include_general === 'true';
+
+    // All items with list_name (for cross-list shelter/bed/bedding assignment)
+    if (all) {
+      const d = db();
+      const vehicles = d.prepare('SELECT id, name FROM vehicles ORDER BY name').all();
+      const customLists = d.prepare('SELECT id, name FROM packing_lists ORDER BY name').all();
+      const rows = d.prepare('SELECT * FROM packing ORDER BY item_type, label').all();
+      const listName = (row) => {
+        if (row.packing_list_id != null && row.packing_list_id !== '') {
+          const cl = customLists.find((c) => c.id === row.packing_list_id);
+          return cl ? cl.name : `List ${row.packing_list_id}`;
+        }
+        if (row.campsite_id == null || row.campsite_id === '') return 'General';
+        const camp = d.prepare('SELECT vehicle_id FROM campsites WHERE id = ?').get(row.campsite_id);
+        if (camp && camp.vehicle_id != null) {
+          const v = vehicles.find((ve) => ve.id === camp.vehicle_id);
+          return v ? v.name : `Campsite ${row.campsite_id}`;
+        }
+        return `Campsite ${row.campsite_id}`;
+      };
+      const items = rows.map((r) => ({ ...r, list_name: listName(r) }));
+      return res.json(items);
+    }
 
     // New list-based API: ?list=general | list=v-3 | list=5 (custom id)
     if (list !== undefined && list !== '') {

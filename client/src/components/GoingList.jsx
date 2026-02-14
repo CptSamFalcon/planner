@@ -1,17 +1,17 @@
 import { useState, useEffect } from 'react';
 
-function isFullyAssigned(m, campsites) {
-  const camp = campsites?.find((c) => c.id === m.campsite_id);
-  const hasVehicle = camp?.vehicle_id != null && camp?.vehicle_id !== '';
+function isFullyAssigned(m) {
+  // Campsite = where they camp. Vehicle = which car they ride in (can differ from campsite's pass vehicle).
+  const hasTransportVehicle = m.vehicle_id != null && m.vehicle_id !== '';
   return !!(
     m.campsite_id != null && m.campsite_id !== '' &&
     m.shelter_packing_id != null && m.shelter_packing_id !== '' &&
     m.bed_packing_id != null && m.bed_packing_id !== '' &&
-    hasVehicle
+    hasTransportVehicle
   );
 }
 
-function getMissing(m, campsites) {
+function getMissing(m) {
   const missing = [];
   if (!m.contact_number || m.contact_number.trim() === '') missing.push('Contact');
   if (m.campsite_id == null || m.campsite_id === '') missing.push('Campsite');
@@ -19,8 +19,7 @@ function getMissing(m, campsites) {
   if (m.bed_packing_id == null || m.bed_packing_id === '') missing.push('Bed');
   if (m.bedding_packing_id == null || m.bedding_packing_id === '') missing.push('Bedding');
   if (m.wristband !== 'GA' && m.wristband !== 'VIP') missing.push('GA/VIP');
-  const camp = campsites?.find((c) => c.id === m.campsite_id);
-  if (!m.campsite_id || camp?.vehicle_id == null || camp?.vehicle_id === '') missing.push('Vehicle');
+  if (m.vehicle_id == null || m.vehicle_id === '') missing.push('Vehicle (ride)');
   return missing;
 }
 
@@ -52,7 +51,7 @@ export function GoingList({ api, refreshKey = 0, onRefresh }) {
         <p className="card-description">Green = all set. Red = missing something. Click any name to review or fix.</p>
         <ul className="going-list">
           {going.map((m) => {
-            const complete = isFullyAssigned(m, campsites);
+            const complete = isFullyAssigned(m);
             return (
               <li
                 key={m.id}
@@ -111,13 +110,11 @@ function EditMemberModal({ member: initialMember, api, onClose, onSaved }) {
   }, [api]);
 
   useEffect(() => {
-    const cid = member?.campsite_id;
-    const url = cid == null || cid === '' ? `${api}/packing` : `${api}/packing?campsite_id=${cid}&include_general=1`;
-    fetch(url)
+    fetch(`${api}/packing?all=1`)
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((data) => setPackingItems(Array.isArray(data) ? data : []))
       .catch(() => setPackingItems([]));
-  }, [api, member?.campsite_id]);
+  }, [api]);
 
   const updateMember = (updates) => {
     fetch(`${api}/members/${member.id}`, {
@@ -133,12 +130,11 @@ function EditMemberModal({ member: initialMember, api, onClose, onSaved }) {
       .catch(console.error);
   };
 
-  const camp = (campsites || []).find((c) => c.id === member?.campsite_id);
-  const vehicleName = camp ? (vehicles || []).find((v) => v.id === camp.vehicle_id)?.name : null;
-  const missing = getMissing(member, campsites);
+  const missing = getMissing(member);
   const shelters = (packingItems || []).filter((i) => (i.item_type || '') === 'shelter');
   const beds = (packingItems || []).filter((i) => (i.item_type || '') === 'bed');
   const beddings = (packingItems || []).filter((i) => (i.item_type || '') === 'bedding');
+  const itemLabel = (i) => (i.list_name ? `${i.label} (${i.list_name})` : i.label);
 
   return (
     <div className="modal-backdrop" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="edit-member-title">
@@ -185,10 +181,11 @@ function EditMemberModal({ member: initialMember, api, onClose, onSaved }) {
               value={member.shelter_packing_id ?? ''}
               onChange={(e) => updateMember({ shelter_packing_id: e.target.value ? Number(e.target.value) : null })}
               className="select select-inline select-sm"
+              title="From any pack list"
             >
               <option value="">—</option>
               {shelters.map((i) => (
-                <option key={i.id} value={i.id}>{i.label}{i.occupants != null ? ` (${i.occupants})` : ''}</option>
+                <option key={i.id} value={i.id}>{itemLabel(i)}{i.occupants != null ? ` · ${i.occupants} people` : ''}</option>
               ))}
             </select>
           </div>
@@ -198,10 +195,11 @@ function EditMemberModal({ member: initialMember, api, onClose, onSaved }) {
               value={member.bed_packing_id ?? ''}
               onChange={(e) => updateMember({ bed_packing_id: e.target.value ? Number(e.target.value) : null })}
               className="select select-inline select-sm"
+              title="From any pack list"
             >
               <option value="">—</option>
               {beds.map((i) => (
-                <option key={i.id} value={i.id}>{i.label}</option>
+                <option key={i.id} value={i.id}>{itemLabel(i)}</option>
               ))}
             </select>
           </div>
@@ -211,10 +209,11 @@ function EditMemberModal({ member: initialMember, api, onClose, onSaved }) {
               value={member.bedding_packing_id ?? ''}
               onChange={(e) => updateMember({ bedding_packing_id: e.target.value ? Number(e.target.value) : null })}
               className="select select-inline select-sm"
+              title="From any pack list"
             >
               <option value="">—</option>
               {beddings.map((i) => (
-                <option key={i.id} value={i.id}>{i.label}</option>
+                <option key={i.id} value={i.id}>{itemLabel(i)}</option>
               ))}
             </select>
           </div>
@@ -230,9 +229,23 @@ function EditMemberModal({ member: initialMember, api, onClose, onSaved }) {
             </select>
           </div>
           <div className="member-detail">
-            <label className="member-detail-label">Vehicle</label>
-            <span className="member-detail-value">{vehicleName ?? '—'}</span>
-            <span className="member-detail-hint">Set in Options (one per campsite)</span>
+            <label className="member-detail-label">Vehicle (ride)</label>
+            <select
+              value={member.vehicle_id ?? ''}
+              onChange={(e) => {
+                const v = e.target.value ? Number(e.target.value) : null;
+                setMember((prev) => ({ ...prev, vehicle_id: v }));
+                updateMember({ vehicle_id: v });
+              }}
+              className="select select-inline select-sm"
+              title="Which car you're riding in (can differ from your campsite's pass vehicle)"
+            >
+              <option value="">—</option>
+              {(vehicles || []).map((v) => (
+                <option key={v.id} value={v.id}>{v.name}</option>
+              ))}
+            </select>
+            <span className="member-detail-hint">Campsite pass vehicle is set in Options</span>
           </div>
         </div>
         <div className="modal-footer">
