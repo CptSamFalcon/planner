@@ -22,12 +22,15 @@ function dayLabel(dayName) {
   return date != null ? `${dayName} (${ordinal(date)})` : dayName;
 }
 
+const DEFAULT_DAY_INDEX = 2; // Friday
+
 export function Schedule({ api, festival }) {
   const [events, setEvents] = useState([]);
   const [day, setDay] = useState('Friday');
   const [time, setTime] = useState('');
   const [title, setTitle] = useState('');
   const [description, setDescription] = useState('');
+  const [mobileDayIndex, setMobileDayIndex] = useState(DEFAULT_DAY_INDEX);
 
   const load = () => {
     fetch(`${api}/schedule`).then((r) => r.json()).then(setEvents).catch(() => setEvents([]));
@@ -100,7 +103,8 @@ export function Schedule({ api, festival }) {
           <button type="submit" className="btn btn-primary">Add</button>
         </div>
       </form>
-      <div className="schedule-calendar">
+      {/* Desktop: full week grid */}
+      <div className="schedule-calendar schedule-calendar-desktop">
         <div className="schedule-calendar-header">
           {DAYS.map((d) => (
             <div key={d} className="schedule-calendar-day-header">
@@ -122,6 +126,44 @@ export function Schedule({ api, festival }) {
                   </div>
                 ))}
               </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Mobile: one day at a time with arrows */}
+      <div className="schedule-calendar-mobile">
+        <div className="schedule-mobile-header">
+          <button
+            type="button"
+            className="schedule-mobile-arrow"
+            onClick={() => setMobileDayIndex((i) => Math.max(0, i - 1))}
+            disabled={mobileDayIndex === 0}
+            aria-label="Previous day"
+          >
+            ←
+          </button>
+          <div className="schedule-mobile-day">
+            <span className="schedule-calendar-day-name">{DAYS[mobileDayIndex].split(' ')[0]}</span>
+            <span className="schedule-calendar-day-date">{DAY_DATE[DAYS[mobileDayIndex]] != null ? ordinal(DAY_DATE[DAYS[mobileDayIndex]]) : ''}</span>
+          </div>
+          <button
+            type="button"
+            className="schedule-mobile-arrow"
+            onClick={() => setMobileDayIndex((i) => Math.min(DAYS.length - 1, i + 1))}
+            disabled={mobileDayIndex === DAYS.length - 1}
+            aria-label="Next day"
+          >
+            →
+          </button>
+        </div>
+        <div className="schedule-calendar-mobile-events">
+          {(byDay[DAYS[mobileDayIndex]] || []).map((ev) => (
+            <div key={ev.id} className="schedule-calendar-event">
+              <span className="schedule-calendar-event-time">{ev.time || '—'}</span>
+              <span className="schedule-calendar-event-title">{ev.title}</span>
+              {ev.description && <span className="schedule-calendar-event-desc">{ev.description}</span>}
+              <button type="button" className="btn btn-ghost btn-sm schedule-calendar-event-remove" onClick={() => remove(ev.id)} aria-label="Remove">×</button>
             </div>
           ))}
         </div>
