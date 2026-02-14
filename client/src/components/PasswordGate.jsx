@@ -30,12 +30,8 @@ export function PasswordGate({ api, onAuthenticated }) {
   return (
     <div className="password-gate">
       <div className="password-gate-card">
-        <h1 className="password-gate-title">BASS CANYON 2026</h1>
-        <p className="password-gate-subtitle">Group Planner</p>
+        <p className="password-gate-hint">hint: he&apos;s the coolest.</p>
         <form className="password-gate-form" onSubmit={handleSubmit}>
-          <label htmlFor="gate-password" className="password-gate-label">
-            Enter password
-          </label>
           <input
             id="gate-password"
             type="password"
