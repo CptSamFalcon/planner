@@ -6,7 +6,7 @@ export function Campsites({ api, onOpenPackList, onMemberUpdated }) {
   const [members, setMembers] = useState([]);
   const [campsites, setCampsites] = useState([]);
   const [vehicles, setVehicles] = useState([]);
-  const [packingByCampsite, setPackingByCampsite] = useState({});
+  const [allPackingItems, setAllPackingItems] = useState([]);
   const [collapsed, setCollapsed] = useState(new Set());
 
   const toggleSection = (key) => {
@@ -35,31 +35,13 @@ export function Campsites({ api, onOpenPackList, onMemberUpdated }) {
 
   useEffect(load, [api]);
 
-  // Load packing options for shelter/bed/bedding assignment: general + each campsite
+  // Load all packing items (any list) for shelter/bed/bedding assignment
   useEffect(() => {
-    let cancelled = false;
-    const run = async () => {
-      const out = {};
-      try {
-        const generalRes = await fetch(`${api}/packing`);
-        const general = generalRes.ok ? await generalRes.json() : [];
-        if (cancelled) return;
-        out.null = Array.isArray(general) ? general : [];
-        await Promise.all(
-          (campsites || []).map(async (c) => {
-            const listRes = await fetch(`${api}/packing?campsite_id=${c.id}&include_general=1`);
-            const list = listRes.ok ? await listRes.json() : [];
-            if (!cancelled) out[c.id] = Array.isArray(list) ? list : [];
-          })
-        );
-        if (!cancelled) setPackingByCampsite(out);
-      } catch (_) {
-        if (!cancelled) setPackingByCampsite({});
-      }
-    };
-    run();
-    return () => { cancelled = true; };
-  }, [api, campsites]);
+    fetch(`${api}/packing?all=1`)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setAllPackingItems(Array.isArray(data) ? data : []))
+      .catch(() => setAllPackingItems([]));
+  }, [api]);
 
   const goingMembers = members.filter((m) => m.status === 'going');
 
@@ -99,7 +81,7 @@ export function Campsites({ api, onOpenPackList, onMemberUpdated }) {
     <div className="card block">
       <h3 className="card-title">Campsites</h3>
       <p className="card-description">
-        People going, grouped by campsite. Each campsite holds {CAMPSITE_CAPACITY} people. Assign each person <strong>1 shelter</strong>, <strong>1 bed</strong>, and <strong>1 bedding</strong> from the camp&apos;s pack list (or General).
+        People going, grouped by campsite. Each campsite holds {CAMPSITE_CAPACITY} people. Assign each person <strong>1 shelter</strong>, <strong>1 bed</strong>, and <strong>1 bedding</strong> from any pack list. Vehicle = who they ride with (campsite pass vehicle is in Options).
       </p>
 
       <div className="campsite-sections">
@@ -111,7 +93,7 @@ export function Campsites({ api, onOpenPackList, onMemberUpdated }) {
           capacity={null}
           campsites={campsites}
           vehicles={vehicles}
-          packingItems={packingByCampsite.null || []}
+          packingItems={allPackingItems}
           isCollapsed={collapsed.has('unassigned')}
           onToggle={() => toggleSection('unassigned')}
           onOpenPackList={onOpenPackList}
@@ -129,7 +111,7 @@ export function Campsites({ api, onOpenPackList, onMemberUpdated }) {
             capacity={CAMPSITE_CAPACITY}
             campsites={campsites}
             vehicles={vehicles}
-            packingItems={packingByCampsite[c.id] || []}
+            packingItems={allPackingItems}
             isCollapsed={collapsed.has(c.id)}
             onToggle={() => toggleSection(c.id)}
             onOpenPackList={onOpenPackList}
@@ -217,9 +199,11 @@ function CampsiteSection({ sectionKey, title, campsiteId, members, capacity, cam
   );
 }
 
+function itemLabel(i) {
+  return i.list_name ? `${i.label} (${i.list_name})` : i.label;
+}
+
 function MemberRow({ member: m, campsites, vehicles, packingItems, updateMember, setMembers, remove }) {
-  const camp = (campsites || []).find((c) => c.id === m.campsite_id);
-  const vehicleName = camp ? (vehicles || []).find((v) => v.id === camp.vehicle_id)?.name : null;
   const shelters = (packingItems || []).filter((i) => (i.item_type || '') === 'shelter');
   const beds = (packingItems || []).filter((i) => (i.item_type || '') === 'bed');
   const beddings = (packingItems || []).filter((i) => (i.item_type || '') === 'bedding');
@@ -262,11 +246,11 @@ function MemberRow({ member: m, campsites, vehicles, packingItems, updateMember,
             value={m.shelter_packing_id ?? ''}
             onChange={(e) => updateMember(m.id, { shelter_packing_id: e.target.value ? Number(e.target.value) : null })}
             className="select select-inline select-sm"
-            title="1 shelter per person"
+            title="From any pack list"
           >
             <option value="">—</option>
             {shelters.map((i) => (
-              <option key={i.id} value={i.id}>{i.label}{i.occupants != null ? ` (${i.occupants})` : ''}</option>
+              <option key={i.id} value={i.id}>{itemLabel(i)}{i.occupants != null ? ` · ${i.occupants} people` : ''}</option>
             ))}
           </select>
         </div>
@@ -279,7 +263,7 @@ function MemberRow({ member: m, campsites, vehicles, packingItems, updateMember,
           >
             <option value="">—</option>
             {beds.map((i) => (
-              <option key={i.id} value={i.id}>{i.label}</option>
+              <option key={i.id} value={i.id}>{itemLabel(i)}</option>
             ))}
           </select>
         </div>
@@ -292,7 +276,7 @@ function MemberRow({ member: m, campsites, vehicles, packingItems, updateMember,
           >
             <option value="">—</option>
             {beddings.map((i) => (
-              <option key={i.id} value={i.id}>{i.label}</option>
+              <option key={i.id} value={i.id}>{itemLabel(i)}</option>
             ))}
           </select>
         </div>
@@ -318,8 +302,18 @@ function MemberRow({ member: m, campsites, vehicles, packingItems, updateMember,
           </select>
         </div>
         <div className="member-detail">
-          <label className="member-detail-label">Vehicle</label>
-          <span className="member-detail-value">{vehicleName ?? '—'}</span>
+          <label className="member-detail-label">Vehicle (ride)</label>
+          <select
+            value={m.vehicle_id ?? ''}
+            onChange={(e) => updateMember(m.id, { vehicle_id: e.target.value ? Number(e.target.value) : null })}
+            className="select select-inline select-sm"
+            title="Which car they ride in"
+          >
+            <option value="">—</option>
+            {(vehicles || []).map((v) => (
+              <option key={v.id} value={v.id}>{v.name}</option>
+            ))}
+          </select>
         </div>
       </div>
     </div>
