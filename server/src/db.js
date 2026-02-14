@@ -111,6 +111,12 @@ export function initDb(dataDir) {
   } catch (_) {}
 
   db.exec(`
+    CREATE TABLE IF NOT EXISTS schedule_stages (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      sort_order INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
 
     CREATE TABLE IF NOT EXISTS schedule (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -142,6 +148,36 @@ export function initDb(dataDir) {
   try {
     db.exec("UPDATE notes SET created_at = datetime('now') WHERE created_at IS NULL");
   } catch (_) {}
+
+  // Schedule: add columns for multi-stage set times and meetups
+  for (const col of ['end_time', 'stage_id', 'event_type']) {
+    try {
+      if (col === 'end_time') db.exec('ALTER TABLE schedule ADD COLUMN end_time TEXT');
+      if (col === 'stage_id') db.exec('ALTER TABLE schedule ADD COLUMN stage_id INTEGER');
+      if (col === 'event_type') db.exec("ALTER TABLE schedule ADD COLUMN event_type TEXT DEFAULT 'meetup'");
+    } catch (_) { /* already exists */ }
+  }
+  try {
+    db.exec("UPDATE schedule SET event_type = 'meetup' WHERE event_type IS NULL OR event_type = ''");
+  } catch (_) {}
+
+  // Seed default stages if none exist
+  const stageCount = db.prepare('SELECT COUNT(*) AS n FROM schedule_stages').get();
+  if (stageCount && stageCount.n === 0) {
+    db.prepare(
+      "INSERT INTO schedule_stages (name, sort_order) VALUES ('Main Stage', 0), ('Second Stage', 1), ('Hill Stage', 2)"
+    ).run();
+  }
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS schedule_attendees (
+      event_id INTEGER NOT NULL,
+      member_id INTEGER NOT NULL,
+      PRIMARY KEY (event_id, member_id),
+      FOREIGN KEY (event_id) REFERENCES schedule(id) ON DELETE CASCADE,
+      FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
+    );
+  `);
 
   return db;
 }
