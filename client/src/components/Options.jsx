@@ -42,12 +42,31 @@ export function Options({ api }) {
       .catch(console.error);
   };
 
+  const CAMPSITE_AREAS = [
+    { value: '', label: 'Area' },
+    { value: 'front_yard', label: 'Front Yard' },
+    { value: 'premier', label: 'Premier' },
+    { value: 'general', label: 'General' },
+  ];
+
   const updateCampsiteVehicle = (campsiteId, vehicleId) => {
     const value = vehicleId === '' || vehicleId == null ? null : Number(vehicleId);
     fetch(`${api}/campsites/${campsiteId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({ vehicle_id: value }),
+    })
+      .then((r) => r.json())
+      .then((updated) => setCampsites((prev) => prev.map((c) => (c.id === campsiteId ? updated : c))))
+      .catch(console.error);
+  };
+
+  const updateCampsiteArea = (campsiteId, area) => {
+    const value = area === '' || area == null ? null : area;
+    fetch(`${api}/campsites/${campsiteId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ area: value }),
     })
       .then((r) => r.json())
       .then((updated) => setCampsites((prev) => prev.map((c) => (c.id === campsiteId ? updated : c))))
@@ -114,6 +133,16 @@ export function Options({ api }) {
             {campsites.map((c) => (
               <li key={c.id} className="options-item options-item-campsite">
                 <span>{c.name}</span>
+                <select
+                  value={c.area ?? ''}
+                  onChange={(e) => updateCampsiteArea(c.id, e.target.value)}
+                  className="select select-inline"
+                  title="Campsite area"
+                >
+                  {CAMPSITE_AREAS.map((opt) => (
+                    <option key={opt.value || 'none'} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
                 <select
                   value={c.vehicle_id ?? ''}
                   onChange={(e) => updateCampsiteVehicle(c.id, e.target.value)}

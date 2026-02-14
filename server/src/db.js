@@ -68,6 +68,9 @@ export function initDb(dataDir) {
   try {
     db.exec('ALTER TABLE campsites ADD COLUMN vehicle_id INTEGER');
   } catch (_) {}
+  try {
+    db.exec('ALTER TABLE campsites ADD COLUMN area TEXT');
+  } catch (_) {}
 
   db.exec(`
 
