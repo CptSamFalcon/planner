@@ -44,13 +44,14 @@ export default function App() {
           <section className="section">
             <Options api={API} />
           </section>
+        ) : view === 'schedule' ? (
+          <section className="section">
+            <Schedule api={API} festival={festival} />
+          </section>
         ) : (
           <>
             <FestivalHero festival={festival} />
             <GoingList api={API} refreshKey={goingListKey} onRefresh={() => setGoingListKey((k) => k + 1)} />
-            <section className="section section-schedule">
-              <Schedule api={API} festival={festival} />
-            </section>
             <section className="section section-campsites">
               <Campsites api={API} onOpenPackList={openPackList} onMemberUpdated={() => setGoingListKey((k) => k + 1)} />
             </section>
