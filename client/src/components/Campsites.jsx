@@ -81,7 +81,7 @@ export function Campsites({ api, onOpenPackList, onMemberUpdated }) {
     <div className="card block">
       <h3 className="card-title">Campsites</h3>
       <p className="card-description">
-        People going, grouped by campsite. Each campsite holds {CAMPSITE_CAPACITY} people. Assign each person <strong>1 shelter</strong>, <strong>1 bed</strong>, and <strong>1 bedding</strong> from any pack list. Vehicle = who they ride with (campsite pass vehicle is in Options).
+        People going, grouped by campsite. Each campsite holds {CAMPSITE_CAPACITY} people. Assign each person <strong>1 shelter</strong>, <strong>1 bed</strong>, and <strong>1 bedding</strong> from any pack list. Vehicle = who they ride with (campsite pass vehicle is in Vehicles/Sites).
       </p>
 
       <div className="campsite-sections">
@@ -123,7 +123,7 @@ export function Campsites({ api, onOpenPackList, onMemberUpdated }) {
       </div>
 
       {campsites.length === 0 && goingMembers.length === 0 && (
-        <p className="campsites-empty">Add people in Who&apos;s Going and campsites in Options to see them here.</p>
+        <p className="campsites-empty">Add people in People and campsites in Vehicles/Sites to see them here.</p>
       )}
     </div>
   );

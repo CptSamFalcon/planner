@@ -3,7 +3,8 @@ import { Header } from './components/Header';
 import { FestivalHero } from './components/FestivalHero';
 import { GoingList } from './components/GoingList';
 import { Campsites } from './components/Campsites';
-import { Options } from './components/Options';
+import { VehiclesSites } from './components/VehiclesSites';
+import { Members } from './components/Members';
 import { Packing } from './components/Packing';
 import { PackingTab } from './components/PackingTab';
 import { Schedule } from './components/Schedule';
@@ -41,9 +42,13 @@ export default function App() {
     <>
       <Header view={view} onViewChange={setView} />
       <main>
-        {view === 'options' ? (
+        {view === 'vehicles-sites' ? (
           <section className="section">
-            <Options api={API} />
+            <VehiclesSites api={API} />
+          </section>
+        ) : view === 'people' ? (
+          <section className="section">
+            <Members api={API} />
           </section>
         ) : view === 'schedule' ? (
           <section className="section">

@@ -29,10 +29,17 @@ export function Header({ view, onViewChange }) {
             </button>
             <button
               type="button"
-              className={`header-nav-btn ${view === 'options' ? 'active' : ''}`}
-              onClick={() => onViewChange('options')}
+              className={`header-nav-btn ${view === 'vehicles-sites' ? 'active' : ''}`}
+              onClick={() => onViewChange('vehicles-sites')}
             >
-              Options
+              Vehicles/Sites
+            </button>
+            <button
+              type="button"
+              className={`header-nav-btn ${view === 'people' ? 'active' : ''}`}
+              onClick={() => onViewChange('people')}
+            >
+              People
             </button>
           </nav>
         )}

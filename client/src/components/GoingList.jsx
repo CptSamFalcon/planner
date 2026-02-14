@@ -245,7 +245,7 @@ function EditMemberModal({ member: initialMember, api, onClose, onSaved }) {
                 <option key={v.id} value={v.id}>{v.name}</option>
               ))}
             </select>
-            <span className="member-detail-hint">Campsite pass vehicle is set in Options</span>
+            <span className="member-detail-hint">Campsite pass vehicle is set in Vehicles/Sites</span>
           </div>
         </div>
         <div className="modal-footer">
