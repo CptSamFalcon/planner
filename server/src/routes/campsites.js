@@ -51,6 +51,7 @@ campsitesRouter.delete('/:id', (req, res) => {
   try {
     const id = req.params.id;
     db().prepare('UPDATE members SET campsite_id = NULL WHERE campsite_id = ?').run(id);
+    db().prepare('DELETE FROM packing WHERE campsite_id = ?').run(id);
     db().prepare('DELETE FROM campsites WHERE id = ?').run(id);
     res.status(204).send();
   } catch (e) {

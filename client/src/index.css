@@ -1097,6 +1097,14 @@ main {
 .packing-tab-create-form .input {
   min-width: 160px;
 }
+.packing-tab-orphans-hint {
+  margin: 0.75rem 0 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.packing-tab-orphans-btn {
+  padding: 0.2rem 0.4rem;
+}
 .packing-tab-current-title {
   font-size: 0.95rem;
   font-weight: 600;
