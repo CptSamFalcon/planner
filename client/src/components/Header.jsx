@@ -22,6 +22,13 @@ export function Header({ view, onViewChange }) {
             </button>
             <button
               type="button"
+              className={`header-nav-btn ${view === 'packing' ? 'active' : ''}`}
+              onClick={() => onViewChange('packing')}
+            >
+              Packing
+            </button>
+            <button
+              type="button"
               className={`header-nav-btn ${view === 'options' ? 'active' : ''}`}
               onClick={() => onViewChange('options')}
             >

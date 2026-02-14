@@ -5,6 +5,7 @@ import { GoingList } from './components/GoingList';
 import { Campsites } from './components/Campsites';
 import { Options } from './components/Options';
 import { Packing } from './components/Packing';
+import { PackingTab } from './components/PackingTab';
 import { Schedule } from './components/Schedule';
 import { Notes } from './components/Notes';
 
@@ -47,6 +48,10 @@ export default function App() {
         ) : view === 'schedule' ? (
           <section className="section">
             <Schedule api={API} />
+          </section>
+        ) : view === 'packing' ? (
+          <section className="section">
+            <PackingTab api={API} />
           </section>
         ) : (
           <>

@@ -93,6 +93,17 @@ export function initDb(dataDir) {
   } catch (_) {}
 
   db.exec(`
+    CREATE TABLE IF NOT EXISTS packing_lists (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
+  try {
+    db.exec('ALTER TABLE packing ADD COLUMN packing_list_id INTEGER');
+  } catch (_) {}
+
+  db.exec(`
 
     CREATE TABLE IF NOT EXISTS schedule (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
