@@ -1,8 +1,8 @@
-# Build client
+# Build client (need devDependencies for Vite build)
 FROM node:20-alpine AS client
 WORKDIR /app/client
 COPY client/package.json client/package-lock.json* ./
-RUN npm ci --omit=dev 2>/dev/null || npm install --omit=dev
+RUN npm ci 2>/dev/null || npm install
 COPY client/ ./
 RUN npm run build
 
