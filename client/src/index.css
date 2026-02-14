@@ -309,6 +309,25 @@ main {
   letter-spacing: 0.1em;
   margin: 0 0 0.5rem;
   color: var(--text);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+.hero-countdown {
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.05em;
+  background: linear-gradient(135deg, var(--accent-cyan), var(--accent-magenta));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+.hero-countdown-until {
+  font-size: 0.5em;
+  letter-spacing: 0.1em;
+  color: var(--text-muted);
+  font-weight: 400;
+  text-transform: lowercase;
+  -webkit-text-fill-color: unset;
 }
 .hero-venue {
   font-size: 1.25rem;
