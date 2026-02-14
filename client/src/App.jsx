@@ -5,7 +5,6 @@ import { GoingList } from './components/GoingList';
 import { Campsites } from './components/Campsites';
 import { Options } from './components/Options';
 import { Packing } from './components/Packing';
-import { Schedule } from './components/Schedule';
 import { Notes } from './components/Notes';
 
 const API = '/api';
@@ -43,10 +42,6 @@ export default function App() {
         {view === 'options' ? (
           <section className="section">
             <Options api={API} />
-          </section>
-        ) : view === 'schedule' ? (
-          <section className="section">
-            <Schedule api={API} festival={festival} />
           </section>
         ) : (
           <>

@@ -54,18 +54,30 @@ packingRouter.patch('/:id', (req, res) => {
   try {
     const { id } = req.params;
     const { label, done, item_type, occupants } = req.body;
+    const existing = db().prepare('SELECT * FROM packing WHERE id = ?').get(id);
+    if (!existing) return res.status(404).json({ error: 'Not found' });
     const updates = [];
     const values = [];
     if (label !== undefined) { updates.push('label = ?'); values.push(label); }
     if (done !== undefined) { updates.push('done = ?'); values.push(done ? 1 : 0); }
+    const newType = item_type !== undefined && item_type && VALID_ITEM_TYPES.includes(item_type) ? item_type : undefined;
     if (item_type !== undefined) {
       updates.push('item_type = ?');
-      values.push(item_type && VALID_ITEM_TYPES.includes(item_type) ? item_type : null);
+      values.push(newType ?? null);
     }
+    const effectiveType = item_type !== undefined ? (newType ?? null) : (existing.item_type || null);
     if (occupants !== undefined) {
-      const n = occupants == null || occupants === '' ? null : parseInt(occupants, 10);
+      if (effectiveType === 'shelter') {
+        const n = occupants == null || occupants === '' ? null : parseInt(occupants, 10);
+        updates.push('occupants = ?');
+        values.push(Number.isNaN(n) ? null : n);
+      } else {
+        updates.push('occupants = ?');
+        values.push(null);
+      }
+    } else if (item_type !== undefined && effectiveType !== 'shelter') {
       updates.push('occupants = ?');
-      values.push(Number.isNaN(n) ? null : n);
+      values.push(null);
     }
     if (updates.length === 0) return res.status(400).json({ error: 'No fields to update' });
     values.push(id);

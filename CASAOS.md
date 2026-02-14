@@ -29,6 +29,54 @@ Yes — you can use **GitHub** as the source for the code and deploy from there.
 
 ---
 
+## Updating the app on CasaOS
+
+After you’ve deployed once, use these steps to pull the latest code and rebuild.
+
+**If you have write access to the repo folder** (e.g. you fixed ownership with `sudo chown -R sam:sam /DATA/AppData/planner/planner`):
+
+```bash
+cd /DATA/AppData/planner/planner
+git pull
+docker compose build --no-cache
+docker compose up -d
+```
+
+**If you need sudo** (folder owned by root):
+
+```bash
+cd /DATA/AppData/planner/planner
+sudo git pull
+sudo docker compose build --no-cache
+sudo docker compose up -d
+```
+
+- `git pull` — get latest code from GitHub (e.g. https://github.com/CptSamFalcon/planner).
+- `build --no-cache` — force a full rebuild so code and Dockerfile changes apply.
+- `up -d` — restart the container with the new image. Your data in the `bass-canyon-planner-data` volume is kept.
+
+Then open **http://\<server-ip\>:3080** to use the updated app.
+
+### If it doesn’t appear to update
+
+1. **Force a full rebuild and new container** (run from the project folder):
+   ```bash
+   cd /DATA/AppData/planner/planner
+   sudo docker compose down
+   sudo docker compose build --no-cache --pull
+   sudo docker compose up -d
+   ```
+   `down` stops and removes the container so the next `up` uses the newly built image.
+
+2. **Hard-refresh the browser** so it doesn’t use cached JS/CSS:
+   - **Phone:** Close the tab, reopen the app URL, or clear the site’s data for that URL.
+   - **Desktop:** `Ctrl+Shift+R` (Windows/Linux) or `Cmd+Shift+R` (Mac), or open the app in a private/incognito window.
+
+3. **Confirm the container is new:**  
+   `sudo docker compose ps` — check the “Created” time. After `up -d` it should be just now.
+
+---
+
 ## Option A: Deploy with Docker Compose (recommended)
 
 CasaOS can run Compose apps. Get the project on the server (e.g. clone from GitHub as above, or copy the folder).

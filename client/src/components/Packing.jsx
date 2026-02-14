@@ -13,7 +13,9 @@ const ITEM_TYPES = [
 
 const TYPE_ORDER = ['bed', 'bedding', 'shelter', 'site_furniture', 'food', 'cooking', 'other', ''];
 
-export function Packing({ api, campsites = [], selectedCampsiteId, onSelectedCampsiteIdChange }) {
+const EMPTY_CAMPSITES = [];
+
+export function Packing({ api, campsites = EMPTY_CAMPSITES, selectedCampsiteId, onSelectedCampsiteIdChange }) {
   const [items, setItems] = useState([]);
   const [label, setLabel] = useState('');
   const [itemType, setItemType] = useState('');
@@ -22,14 +24,22 @@ export function Packing({ api, campsites = [], selectedCampsiteId, onSelectedCam
 
   useEffect(() => {
     if (campsites?.length) setCampsitesList(campsites);
-    else fetch(`${api}/campsites`).then((r) => r.json()).then(setCampsitesList).catch(() => setCampsitesList([]));
+    else {
+      fetch(`${api}/campsites`)
+        .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+        .then((data) => setCampsitesList(Array.isArray(data) ? data : []))
+        .catch(() => setCampsitesList([]));
+    }
   }, [api, campsites]);
 
   const load = () => {
     const url = selectedCampsiteId == null || selectedCampsiteId === ''
       ? `${api}/packing`
       : `${api}/packing?campsite_id=${selectedCampsiteId}`;
-    fetch(url).then((r) => r.json()).then(setItems).catch(() => setItems([]));
+    fetch(url)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setItems(Array.isArray(data) ? data : []))
+      .catch(() => setItems([]));
   };
 
   useEffect(load, [api, selectedCampsiteId]);
@@ -88,6 +98,8 @@ export function Packing({ api, campsites = [], selectedCampsiteId, onSelectedCam
   };
 
   const updateOccupants = (id, value) => {
+    const item = items.find((i) => i.id === id);
+    if (!item || (item.item_type || '') !== 'shelter') return;
     const n = value === '' ? null : parseInt(value, 10);
     fetch(`${api}/packing/${id}`, {
       method: 'PATCH',

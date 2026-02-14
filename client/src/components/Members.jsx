@@ -9,7 +9,10 @@ export function Members({ api }) {
   const [preParty, setPreParty] = useState(false);
 
   const load = () => {
-    fetch(`${api}/members`).then((r) => r.json()).then(setMembers).catch(() => setMembers([]));
+    fetch(`${api}/members`)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setMembers(Array.isArray(data) ? data : []))
+      .catch(() => setMembers([]));
   };
 
   useEffect(load, [api]);

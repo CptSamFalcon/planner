@@ -34,12 +34,15 @@ export function GoingList({ api, refreshKey = 0, onRefresh }) {
 
   useEffect(() => {
     fetch(`${api}/members`)
-      .then((r) => r.json())
-      .then(setMembers)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setMembers(Array.isArray(data) ? data : []))
       .catch(() => setMembers([]));
   }, [api, refreshKey]);
   useEffect(() => {
-    fetch(`${api}/campsites`).then((r) => r.json()).then(setCampsites).catch(() => setCampsites([]));
+    fetch(`${api}/campsites`)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setCampsites(Array.isArray(data) ? data : []))
+      .catch(() => setCampsites([]));
   }, [api, refreshKey]);
 
   const going = members.filter((m) => m.status === 'going');
@@ -100,17 +103,23 @@ function EditMemberModal({ member: initialMember, api, onClose, onSaved }) {
   }, [initialMember?.id]);
 
   useEffect(() => {
-    fetch(`${api}/campsites`).then((r) => r.json()).then(setCampsites).catch(() => setCampsites([]));
-    fetch(`${api}/vehicles`).then((r) => r.json()).then(setVehicles).catch(() => setVehicles([]));
+    fetch(`${api}/campsites`)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setCampsites(Array.isArray(data) ? data : []))
+      .catch(() => setCampsites([]));
+    fetch(`${api}/vehicles`)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setVehicles(Array.isArray(data) ? data : []))
+      .catch(() => setVehicles([]));
   }, [api]);
 
   useEffect(() => {
     const cid = member?.campsite_id;
-    if (cid == null || cid === '') {
-      fetch(`${api}/packing`).then((r) => r.json()).then(setPackingItems).catch(() => setPackingItems([]));
-    } else {
-      fetch(`${api}/packing?campsite_id=${cid}&include_general=1`).then((r) => r.json()).then(setPackingItems).catch(() => setPackingItems([]));
-    }
+    const url = cid == null || cid === '' ? `${api}/packing` : `${api}/packing?campsite_id=${cid}&include_general=1`;
+    fetch(url)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setPackingItems(Array.isArray(data) ? data : []))
+      .catch(() => setPackingItems([]));
   }, [api, member?.campsite_id]);
 
   const updateMember = (updates) => {

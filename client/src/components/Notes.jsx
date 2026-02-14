@@ -5,7 +5,10 @@ export function Notes({ api }) {
   const [content, setContent] = useState('');
 
   const load = () => {
-    fetch(`${api}/notes`).then((r) => r.json()).then(setNotes).catch(() => setNotes([]));
+    fetch(`${api}/notes`)
+      .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
+      .then((data) => setNotes(Array.isArray(data) ? data : []))
+      .catch(() => setNotes([]));
   };
 
   useEffect(load, [api]);
