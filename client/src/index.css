@@ -871,6 +871,23 @@ main {
 .schedule-card .schedule-form {
   margin-bottom: 1.25rem;
 }
+.schedule-loading {
+  color: var(--muted);
+  margin: 1rem 0;
+}
+.schedule-error {
+  color: var(--danger, #c00);
+  margin: 1rem 0;
+  padding: 0.75rem;
+  background: rgba(204, 0, 0, 0.08);
+  border-radius: 6px;
+}
+.schedule-error code {
+  font-size: 0.9em;
+  background: rgba(0, 0, 0, 0.06);
+  padding: 0.2em 0.4em;
+  border-radius: 4px;
+}
 .schedule-calendar,
 .schedule-calendar-desktop {
   margin-top: 0.5rem;

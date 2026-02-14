@@ -52,19 +52,19 @@ export function GoingList({ api, refreshKey = 0, onRefresh }) {
     <section className="section section-going-list">
       <div className="card block going-list-card">
         <h3 className="card-title">Who&apos;s Going</h3>
-        <p className="card-description">Green = all set. Red = missing something — click to fix.</p>
+        <p className="card-description">Green = all set. Red = missing something. Click any name to review or fix.</p>
         <ul className="going-list">
           {going.map((m) => {
             const complete = isFullyAssigned(m, campsites);
             return (
               <li
                 key={m.id}
-                className={`going-list-item ${complete ? 'going-list-item-complete' : 'going-list-item-incomplete going-list-item-clickable'}`}
-                role={complete ? undefined : 'button'}
-                tabIndex={complete ? undefined : 0}
-                onClick={() => !complete && setEditingMember(m)}
+                className={`going-list-item going-list-item-clickable ${complete ? 'going-list-item-complete' : 'going-list-item-incomplete'}`}
+                role="button"
+                tabIndex={0}
+                onClick={() => setEditingMember(m)}
                 onKeyDown={(e) => {
-                  if (!complete && (e.key === 'Enter' || e.key === ' ')) {
+                  if (e.key === 'Enter' || e.key === ' ') {
                     e.preventDefault();
                     setEditingMember(m);
                   }

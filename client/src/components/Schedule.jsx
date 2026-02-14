@@ -25,6 +25,8 @@ function dayLabel(dayName) {
 
 export function Schedule({ api }) {
   const [events, setEvents] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [loadError, setLoadError] = useState(false);
   const [day, setDay] = useState('Friday');
   const [time, setTime] = useState('');
   const [title, setTitle] = useState('');
@@ -33,10 +35,19 @@ export function Schedule({ api }) {
   const [touchStartX, setTouchStartX] = useState(null);
 
   const load = () => {
+    setLoading(true);
+    setLoadError(false);
     fetch(`${api}/schedule`)
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
-      .then((data) => setEvents(Array.isArray(data) ? data : []))
-      .catch(() => setEvents([]));
+      .then((data) => {
+        setEvents(Array.isArray(data) ? data : []);
+        setLoadError(false);
+      })
+      .catch(() => {
+        setEvents([]);
+        setLoadError(true);
+      })
+      .finally(() => setLoading(false));
   };
 
   useEffect(load, [api]);
@@ -119,6 +130,15 @@ export function Schedule({ api }) {
         </div>
       </form>
 
+      {loading && <p className="schedule-loading">Loading schedule…</p>}
+      {loadError && (
+        <p className="schedule-error" role="alert">
+          Couldn't load schedule. Is the server running? Run <code>npm run dev</code> from the project root.
+        </p>
+      )}
+
+      {!loading && (
+      <>
       {/* Desktop: full week grid */}
       <div className="schedule-calendar schedule-calendar-desktop">
         <div className="schedule-calendar-header">
@@ -198,6 +218,8 @@ export function Schedule({ api }) {
           )}
         </div>
       </div>
+      </>
+      )}
     </div>
   );
 }
