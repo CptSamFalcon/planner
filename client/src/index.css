@@ -1679,6 +1679,63 @@ main {
   border-top: 1px solid var(--border);
 }
 
+/* Weather widget (main page) */
+.section-weather {
+  margin-top: 0;
+}
+.weather-widget {
+  max-width: 560px;
+}
+.weather-widget-loading,
+.weather-widget-error {
+  color: var(--text-muted);
+  margin: 0;
+  padding: 0.5rem 0;
+}
+.weather-widget-error {
+  color: var(--accent-magenta);
+}
+.weather-widget-placeholder {
+  color: var(--text-muted);
+  margin: 0.25rem 0 0;
+  font-size: 0.95rem;
+}
+.weather-days {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: 0.75rem 1.25rem;
+  margin: 0.5rem 0 0;
+  padding: 0;
+  list-style: none;
+}
+.weather-day {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.75rem;
+  background: var(--bg-elevated);
+  border-radius: 8px;
+  border: 1px solid var(--border);
+}
+.weather-day-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+  color: var(--accent-cyan);
+}
+.weather-day-desc {
+  font-size: 0.85rem;
+  color: var(--text);
+}
+.weather-day-temps {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-muted);
+}
+.weather-day-precip {
+  font-size: 0.8rem;
+  color: var(--accent-magenta);
+}
+
 .schedule-calendar,
 .schedule-calendar-desktop {
   margin-top: 0.5rem;

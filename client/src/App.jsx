@@ -8,6 +8,7 @@ import { Members } from './components/Members';
 import { PackingTab } from './components/PackingTab';
 import { Schedule } from './components/Schedule';
 import { OfficialInfo } from './components/OfficialInfo';
+import { WeatherWidget } from './components/WeatherWidget';
 import { Notes } from './components/Notes';
 import { PasswordGate } from './components/PasswordGate';
 
@@ -72,6 +73,7 @@ export default function App() {
         ) : (
           <>
             <FestivalHero festival={festival} />
+            <WeatherWidget />
             <GoingList api={API} refreshKey={goingListKey} onRefresh={() => setGoingListKey((k) => k + 1)} />
             <section className="section section-campsites">
               <Campsites api={API} onMemberUpdated={() => setGoingListKey((k) => k + 1)} />
