@@ -1,4 +1,5 @@
 import { useState, useEffect, useMemo } from 'react';
+import { googleCalendarUrl, downloadIcs } from '../utils/calendarExport';
 
 const DAYS = ['Wednesday', 'Thursday Pre-Party', 'Friday', 'Saturday', 'Sunday'];
 
@@ -74,6 +75,122 @@ function dayLabel(dayName) {
   return date != null ? `${dayName} (${ordinal(date)})` : dayName;
 }
 
+function EventCalendarMenu({ event: ev, isOpen, onToggle, onClose }) {
+  const handleGoogle = (e) => {
+    e.stopPropagation();
+    window.open(googleCalendarUrl(ev), '_blank', 'noopener');
+    onClose();
+  };
+  const handleIcs = (e) => {
+    e.stopPropagation();
+    const safeName = (ev.title || 'event').replace(/[^\w\s-]/g, '').replace(/\s+/g, '-').slice(0, 40) || 'event';
+    downloadIcs([ev], `${safeName}.ics`);
+    onClose();
+  };
+  return (
+    <div className="schedule-event-calendar-wrap" onClick={(e) => e.stopPropagation()}>
+      <button
+        type="button"
+        className="schedule-event-calendar-btn"
+        onClick={onToggle}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+        aria-label="Add to calendar"
+        title="Add to calendar"
+      >
+        📅
+      </button>
+      {isOpen && (
+        <div className="schedule-event-calendar-dropdown" role="menu">
+          <button type="button" role="menuitem" className="schedule-event-calendar-item" onClick={handleGoogle}>
+            Open in Google Calendar
+          </button>
+          <button type="button" role="menuitem" className="schedule-event-calendar-item" onClick={handleIcs}>
+            Download .ics (iCal / Apple)
+          </button>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function CalendarExportModal({ events, goingMembers, exportMemberIds, setExportMemberIds, onClose }) {
+  const toggleMember = (id) => {
+    setExportMemberIds((prev) => {
+      const next = new Set(prev);
+      if (next.has(id)) next.delete(id);
+      else next.add(id);
+      return next;
+    });
+  };
+  const selectAll = () => setExportMemberIds(new Set(goingMembers.map((m) => m.id)));
+  const clearAll = () => setExportMemberIds(new Set());
+
+  const filteredEvents = useMemo(() => {
+    if (exportMemberIds.size === 0) return events;
+    return events.filter((ev) => (ev.attendee_ids || []).some((id) => exportMemberIds.has(Number(id))));
+  }, [events, exportMemberIds]);
+
+  const handleDownloadIcs = () => {
+    const name =
+      exportMemberIds.size === 0
+        ? 'bass-canyon-schedule.ics'
+        : `bass-canyon-${[...exportMemberIds]
+            .map((id) => goingMembers.find((m) => m.id === id)?.name || id)
+            .filter(Boolean)
+            .join('-')
+            .replace(/[^\w\s-]/g, '')
+            .replace(/\s+/g, '-')
+            .slice(0, 50)}.ics`;
+    downloadIcs(filteredEvents, name);
+  };
+
+  return (
+    <div className="modal-backdrop" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="calendar-export-title">
+      <div className="modal calendar-export-modal" onClick={(e) => e.stopPropagation()}>
+        <h3 id="calendar-export-title" className="modal-title">Export to calendar</h3>
+        <p className="calendar-export-hint">Select whose events to include. Leave all unchecked to export every event.</p>
+        {goingMembers.length > 0 ? (
+          <>
+            <div className="calendar-export-actions">
+              <button type="button" className="btn btn-ghost btn-sm" onClick={selectAll}>Select all</button>
+              <button type="button" className="btn btn-ghost btn-sm" onClick={clearAll}>Clear</button>
+            </div>
+            <ul className="calendar-export-members" role="group" aria-label="Members to include">
+              {goingMembers.map((m) => (
+                <li key={m.id}>
+                  <label className="calendar-export-member-label">
+                    <input
+                      type="checkbox"
+                      checked={exportMemberIds.has(m.id)}
+                      onChange={() => toggleMember(m.id)}
+                    />
+                    <span>{m.name}</span>
+                  </label>
+                </li>
+              ))}
+            </ul>
+          </>
+        ) : (
+          <p className="calendar-export-empty">Add people in People to export by person.</p>
+        )}
+        <div className="modal-footer">
+          <button
+            type="button"
+            className="btn btn-primary"
+            onClick={handleDownloadIcs}
+            disabled={filteredEvents.length === 0}
+          >
+            Download .ics file ({filteredEvents.length} event{filteredEvents.length !== 1 ? 's' : ''})
+          </button>
+          <button type="button" className="btn btn-ghost" onClick={onClose}>Cancel</button>
+        </div>
+        <p className="calendar-export-import-hint">Import the .ics file into Google Calendar or Apple Calendar.</p>
+      </div>
+    </div>
+  );
+}
+
 export function Schedule({ api }) {
   const [stages, setStages] = useState([]);
   const [events, setEvents] = useState([]);
@@ -84,6 +201,19 @@ export function Schedule({ api }) {
 
   // Filter: which people to show (who's going to what). Empty = show all.
   const [filterMemberIds, setFilterMemberIds] = useState(new Set());
+  // Per-event "Add to calendar" dropdown: event id when open, null when closed.
+  const [openCalendarMenuId, setOpenCalendarMenuId] = useState(null);
+  // Calendar Export modal: which members' events to include (empty = all events).
+  const [showCalendarExportModal, setShowCalendarExportModal] = useState(false);
+  const [exportMemberIds, setExportMemberIds] = useState(new Set());
+  useEffect(() => {
+    if (openCalendarMenuId == null) return;
+    const close = (e) => {
+      if (!e.target.closest('.schedule-event-calendar-wrap')) setOpenCalendarMenuId(null);
+    };
+    document.addEventListener('click', close, true);
+    return () => document.removeEventListener('click', close, true);
+  }, [openCalendarMenuId]);
 
   // Add event form
   const [showAddForm, setShowAddForm] = useState(false);
@@ -282,6 +412,13 @@ export function Schedule({ api }) {
         <div className="schedule-header-row">
           <h3 className="card-title">Festival Schedule</h3>
           <p className="schedule-subtitle">Set times by stage + your meetups. Pick a day to see the grid.</p>
+          <button
+            type="button"
+            className="btn btn-secondary schedule-calendar-export-btn"
+            onClick={() => setShowCalendarExportModal(true)}
+          >
+            Calendar Export
+          </button>
         </div>
 
         {/* Day tabs (desktop only; mobile uses day bar above event list) */}
@@ -398,6 +535,12 @@ export function Schedule({ api }) {
                               {attendeeNames.length > 0 && (
                                 <span className="schedule-grid-event-attendees">Who&apos;s at this set: {attendeeNames.join(', ')}</span>
                               )}
+                              <EventCalendarMenu
+                                event={ev}
+                                isOpen={openCalendarMenuId === ev.id}
+                                onToggle={(e) => { e.stopPropagation(); setOpenCalendarMenuId((id) => (id === ev.id ? null : ev.id)); }}
+                                onClose={() => setOpenCalendarMenuId(null)}
+                              />
                             </div>
                           );
                         })}
@@ -436,6 +579,12 @@ export function Schedule({ api }) {
                             {attendeeNames.length > 0 && (
                               <span className="schedule-grid-event-attendees">Who&apos;s at this set: {attendeeNames.join(', ')}</span>
                             )}
+                            <EventCalendarMenu
+                              event={ev}
+                              isOpen={openCalendarMenuId === ev.id}
+                              onToggle={(e) => { e.stopPropagation(); setOpenCalendarMenuId((id) => (id === ev.id ? null : ev.id)); }}
+                              onClose={() => setOpenCalendarMenuId(null)}
+                            />
                           </div>
                         );
                       })}
@@ -498,6 +647,12 @@ export function Schedule({ api }) {
                         <span className="schedule-mobile-event-stage">{ev.stage_name || (ev.event_type === 'meetup' ? 'Meetup' : '')}</span>
                         {attendeeNames.length > 0 && <span className="schedule-mobile-event-attendees">Who&apos;s at this set: {attendeeNames.join(', ')}</span>}
                         {ev.description && <span className="schedule-mobile-event-desc">{ev.description}</span>}
+                        <EventCalendarMenu
+                          event={ev}
+                          isOpen={openCalendarMenuId === ev.id}
+                          onToggle={(e) => { e.stopPropagation(); setOpenCalendarMenuId((id) => (id === ev.id ? null : ev.id)); }}
+                          onClose={() => setOpenCalendarMenuId(null)}
+                        />
                       </div>
                     );
                   })
@@ -651,6 +806,17 @@ export function Schedule({ api }) {
           </>
         )}
       </div>
+
+      {/* Calendar Export modal */}
+      {showCalendarExportModal && (
+        <CalendarExportModal
+          events={events}
+          goingMembers={goingMembers}
+          exportMemberIds={exportMemberIds}
+          setExportMemberIds={setExportMemberIds}
+          onClose={() => { setShowCalendarExportModal(false); setExportMemberIds(new Set()); }}
+        />
+      )}
 
       {/* Edit event modal */}
       {editingEvent && (
