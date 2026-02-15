@@ -9,7 +9,7 @@ export function Members({ api }) {
   const [preParty, setPreParty] = useState(false);
 
   const load = () => {
-    fetch(`${api}/members`)
+    fetch(`${api}/members`, { credentials: 'include' })
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((data) => setMembers(Array.isArray(data) ? data : []))
       .catch(() => setMembers([]));
@@ -27,6 +27,7 @@ export function Members({ api }) {
     fetch(`${api}/members`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(body),
     })
       .then((r) => r.json())
@@ -39,6 +40,7 @@ export function Members({ api }) {
     fetch(`${api}/members/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify(updates),
     })
       .then((r) => r.json())
@@ -51,7 +53,7 @@ export function Members({ api }) {
   };
 
   const remove = (id) => {
-    fetch(`${api}/members/${id}`, { method: 'DELETE' })
+    fetch(`${api}/members/${id}`, { method: 'DELETE', credentials: 'include' })
       .then(() => setMembers((prev) => prev.filter((m) => m.id !== id)))
       .catch(console.error);
   };
