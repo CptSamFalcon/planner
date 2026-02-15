@@ -279,8 +279,8 @@ export function Schedule({ api }) {
           <p className="schedule-subtitle">Set times by stage + your meetups. Pick a day to see the grid.</p>
         </div>
 
-        {/* Day tabs */}
-        <div className="schedule-day-tabs" role="tablist" aria-label="Select day">
+        {/* Day tabs (desktop only; mobile uses day bar above event list) */}
+        <div className="schedule-day-tabs schedule-day-tabs-desktop" role="tablist" aria-label="Select day">
           {DAYS.map((d) => (
             <button
               key={d}
@@ -435,8 +435,31 @@ export function Schedule({ api }) {
               </div>
             </div>
 
-            {/* Mobile: same day tabs as desktop; list of events in same-style container */}
+            {/* Mobile: day bar (arrows + label) above event list; arrows change selected day */}
             <div className="schedule-mobile schedule-grid-wrap">
+              <div className="schedule-mobile-day-bar">
+                <button
+                  type="button"
+                  className="schedule-mobile-day-arrow"
+                  onClick={() => setSelectedDay(DAYS[Math.max(0, DAYS.indexOf(selectedDay) - 1)])}
+                  disabled={DAYS.indexOf(selectedDay) <= 0}
+                  aria-label="Previous day"
+                >
+                  ←
+                </button>
+                <span className="schedule-mobile-day-label" aria-live="polite">
+                  {dayLabel(selectedDay)}
+                </span>
+                <button
+                  type="button"
+                  className="schedule-mobile-day-arrow"
+                  onClick={() => setSelectedDay(DAYS[Math.min(DAYS.length - 1, DAYS.indexOf(selectedDay) + 1)])}
+                  disabled={DAYS.indexOf(selectedDay) >= DAYS.length - 1}
+                  aria-label="Next day"
+                >
+                  →
+                </button>
+              </div>
               <div className="schedule-mobile-events">
                 {eventsForDay.length === 0 ? (
                   <p className="schedule-mobile-empty">No events this day. Add a set or meetup below.</p>
