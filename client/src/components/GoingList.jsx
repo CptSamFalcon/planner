@@ -76,6 +76,7 @@ export function GoingList({ api, refreshKey = 0, onRefresh }) {
       {editingMember && (
         <EditMemberModal
           member={editingMember}
+          allMembers={members}
           api={api}
           onClose={() => {
             setEditingMember(null);
@@ -88,7 +89,39 @@ export function GoingList({ api, refreshKey = 0, onRefresh }) {
   );
 }
 
-export function EditMemberModal({ member: initialMember, api, onClose, onSaved }) {
+// Filter packing items so assigned items are hidden from others. Uses otherMembers (everyone except
+// the one being edited) and currentMember (the one being edited, from modal state) so the current
+// selection is reflected.
+// - Bed/bedding: show only if no one else has it, or current member has it (1:1).
+// - Shelter: show if (others assigned) < occupants, or current member has it.
+function filterAssignablePacking(packingItems, otherMembers, currentMember) {
+  const others = otherMembers || [];
+  const currentId = currentMember?.id;
+  const countShelterOthers = (id) => others.filter((m) => m.shelter_packing_id != null && m.shelter_packing_id === id).length;
+  const countBedOthers = (id) => others.filter((m) => m.bed_packing_id != null && m.bed_packing_id === id).length;
+  const countBeddingOthers = (id) => others.filter((m) => m.bedding_packing_id != null && m.bedding_packing_id === id).length;
+
+  const shelters = (packingItems || []).filter((i) => (i.item_type || '') === 'shelter').filter((i) => {
+    const assignedOthers = countShelterOthers(i.id);
+    const max = i.occupants != null && i.occupants > 0 ? i.occupants : 1;
+    const currentHas = currentMember?.shelter_packing_id === i.id ? 1 : 0;
+    const totalSlots = assignedOthers + currentHas;
+    return totalSlots < max || currentHas > 0;
+  });
+  const beds = (packingItems || []).filter((i) => (i.item_type || '') === 'bed').filter((i) => {
+    const othersHave = countBedOthers(i.id) > 0;
+    const currentHas = currentMember?.bed_packing_id === i.id;
+    return !othersHave || currentHas;
+  });
+  const beddings = (packingItems || []).filter((i) => (i.item_type || '') === 'bedding').filter((i) => {
+    const othersHave = countBeddingOthers(i.id) > 0;
+    const currentHas = currentMember?.bedding_packing_id === i.id;
+    return !othersHave || currentHas;
+  });
+  return { shelters, beds, beddings };
+}
+
+export function EditMemberModal({ member: initialMember, allMembers, api, onClose, onSaved }) {
   const [member, setMember] = useState(initialMember);
   const [campsites, setCampsites] = useState([]);
   const [vehicles, setVehicles] = useState([]);
@@ -99,18 +132,18 @@ export function EditMemberModal({ member: initialMember, api, onClose, onSaved }
   }, [initialMember?.id]);
 
   useEffect(() => {
-    fetch(`${api}/campsites`)
+    fetch(`${api}/campsites`, { credentials: 'include' })
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((data) => setCampsites(Array.isArray(data) ? data : []))
       .catch(() => setCampsites([]));
-    fetch(`${api}/vehicles`)
+    fetch(`${api}/vehicles`, { credentials: 'include' })
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((data) => setVehicles(Array.isArray(data) ? data : []))
       .catch(() => setVehicles([]));
   }, [api]);
 
   useEffect(() => {
-    fetch(`${api}/packing?all=1`)
+    fetch(`${api}/packing?all=1`, { credentials: 'include' })
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((data) => setPackingItems(Array.isArray(data) ? data : []))
       .catch(() => setPackingItems([]));
@@ -131,9 +164,8 @@ export function EditMemberModal({ member: initialMember, api, onClose, onSaved }
   };
 
   const missing = getMissing(member);
-  const shelters = (packingItems || []).filter((i) => (i.item_type || '') === 'shelter');
-  const beds = (packingItems || []).filter((i) => (i.item_type || '') === 'bed');
-  const beddings = (packingItems || []).filter((i) => (i.item_type || '') === 'bedding');
+  const otherMembers = (allMembers || []).filter((m) => m.id !== member.id);
+  const { shelters, beds, beddings } = filterAssignablePacking(packingItems, otherMembers, member);
   const itemLabel = (i) => (i.list_name ? `${i.label} (${i.list_name})` : i.label);
 
   return (
