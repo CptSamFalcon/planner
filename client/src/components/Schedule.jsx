@@ -81,8 +81,6 @@ export function Schedule({ api }) {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [selectedDay, setSelectedDay] = useState('Friday');
-  const [mobileDayIndex, setMobileDayIndex] = useState(2);
-  const [touchStartX, setTouchStartX] = useState(null);
 
   // Filter: which people to show (who's going to what). Empty = show all.
   const [filterMemberIds, setFilterMemberIds] = useState(new Set());
@@ -124,11 +122,6 @@ export function Schedule({ api }) {
   };
 
   useEffect(load, [api]);
-
-  useEffect(() => {
-    const i = DAYS.indexOf(selectedDay);
-    if (i >= 0) setMobileDayIndex(i);
-  }, [selectedDay]);
 
   const eventsForDay = useMemo(() => {
     return events
@@ -276,17 +269,6 @@ export function Schedule({ api }) {
         setEvents((prev) => prev.map((e) => (e.stage_id === id ? { ...e, stage_id: null, stage_name: null, event_type: 'meetup' } : e)));
       })
       .catch(console.error);
-  };
-
-  const goPrevDay = () => setMobileDayIndex((i) => Math.max(0, i - 1));
-  const goNextDay = () => setMobileDayIndex((i) => Math.min(DAYS.length - 1, i + 1));
-  const handleTouchStart = (e) => setTouchStartX(e.touches[0].clientX);
-  const handleTouchEnd = (e) => {
-    if (touchStartX == null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (dx > 50) goPrevDay();
-    else if (dx < -50) goNextDay();
-    setTouchStartX(null);
   };
 
   return (
@@ -453,26 +435,8 @@ export function Schedule({ api }) {
               </div>
             </div>
 
-            {/* Mobile: single day list */}
-            <div
-              className="schedule-mobile"
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-            >
-              <div className="schedule-mobile-header">
-                <button type="button" className="schedule-mobile-arrow" onClick={goPrevDay} disabled={mobileDayIndex === 0} aria-label="Previous day">←</button>
-                <select
-                  className="schedule-mobile-day-select"
-                  value={mobileDayIndex}
-                  onChange={(e) => { setMobileDayIndex(Number(e.target.value)); setSelectedDay(DAYS[Number(e.target.value)]); }}
-                  aria-label="Select day"
-                >
-                  {DAYS.map((d, i) => (
-                    <option key={d} value={i}>{dayLabel(d)}</option>
-                  ))}
-                </select>
-                <button type="button" className="schedule-mobile-arrow" onClick={goNextDay} disabled={mobileDayIndex === DAYS.length - 1} aria-label="Next day">→</button>
-              </div>
+            {/* Mobile: same day tabs as desktop; list of events in same-style container */}
+            <div className="schedule-mobile schedule-grid-wrap">
               <div className="schedule-mobile-events">
                 {eventsForDay.length === 0 ? (
                   <p className="schedule-mobile-empty">No events this day. Add a set or meetup below.</p>
