@@ -1485,6 +1485,28 @@ main {
   opacity: 0.75;
 }
 
+/* Event where everyone in "Who to show" is attending */
+.schedule-grid-event-all-selected {
+  box-shadow: 0 0 0 2px var(--accent-cyan);
+}
+.schedule-grid-event-all-badge {
+  display: inline-block;
+  font-size: 0.65rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  color: var(--accent-cyan);
+  background: rgba(0, 245, 255, 0.2);
+  padding: 0.15rem 0.4rem;
+  border-radius: 4px;
+  margin-bottom: 0.2rem;
+  white-space: nowrap;
+}
+.schedule-mobile-event .schedule-grid-event-all-badge {
+  margin-bottom: 0.25rem;
+  font-size: 0.7rem;
+}
+
 /* Who to show filter */
 .schedule-filter-people {
   display: flex;

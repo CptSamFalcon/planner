@@ -170,6 +170,11 @@ export function Schedule({ api }) {
 
   const hasFilter = filterMemberIds.size > 0;
   const eventMatchesFilter = (ev) => !hasFilter || (ev.attendee_ids || []).some((id) => filterMemberIds.has(Number(id)));
+  // Event has everyone from the "Who to show" filter in its attendee list (only when 2+ selected)
+  const eventHasAllSelected = (ev) =>
+    hasFilter &&
+    filterMemberIds.size > 1 &&
+    [...filterMemberIds].every((id) => (ev.attendee_ids || []).map(Number).includes(id));
   const toggleFilterMember = (id) => {
     setFilterMemberIds((prev) => {
       const next = new Set(prev);
@@ -373,12 +378,13 @@ export function Schedule({ api }) {
                         .filter((ev) => ev.event_type === 'set' && ev.stage_id === stage.id)
                         .map((ev) => {
                         const match = eventMatchesFilter(ev);
+                        const allSelected = eventHasAllSelected(ev);
                         const showIds = hasFilter ? (ev.attendee_ids || []).filter((id) => filterMemberIds.has(Number(id))) : (ev.attendee_ids || []);
                         const attendeeNames = showIds.map((id) => members.find((m) => m.id === Number(id))?.name).filter(Boolean);
                         return (
                             <div
                               key={ev.id}
-                              className={`schedule-grid-event schedule-grid-event-set ${!match ? 'schedule-grid-event-dim' : ''}`}
+                              className={`schedule-grid-event schedule-grid-event-set ${!match ? 'schedule-grid-event-dim' : ''} ${allSelected ? 'schedule-grid-event-all-selected' : ''}`}
                               style={{
                                 top: `${ev.startSlot * ROW_HEIGHT_PX}px`,
                                 height: `${(ev.endSlot - ev.startSlot) * ROW_HEIGHT_PX}px`,
@@ -386,6 +392,7 @@ export function Schedule({ api }) {
                               }}
                               onClick={() => setEditingEvent(ev)}
                             >
+                              {allSelected && <span className="schedule-grid-event-all-badge" title="Everyone you selected is at this event">Everyone here</span>}
                               <span className="schedule-grid-event-title">{ev.title}</span>
                               {ev.description && <span className="schedule-grid-event-desc">{ev.description}</span>}
                               {attendeeNames.length > 0 && (
@@ -410,18 +417,20 @@ export function Schedule({ api }) {
                       .filter((ev) => ev.event_type === 'meetup' || !ev.stage_id)
                       .map((ev) => {
                         const match = eventMatchesFilter(ev);
+                        const allSelected = eventHasAllSelected(ev);
                         const showIds = hasFilter ? (ev.attendee_ids || []).filter((id) => filterMemberIds.has(Number(id))) : (ev.attendee_ids || []);
                         const attendeeNames = showIds.map((id) => members.find((m) => m.id === Number(id))?.name).filter(Boolean);
                         return (
                           <div
                             key={ev.id}
-                            className={`schedule-grid-event schedule-grid-event-meetup ${!match ? 'schedule-grid-event-dim' : ''}`}
+                            className={`schedule-grid-event schedule-grid-event-meetup ${!match ? 'schedule-grid-event-dim' : ''} ${allSelected ? 'schedule-grid-event-all-selected' : ''}`}
                             style={{
                               top: `${ev.startSlot * ROW_HEIGHT_PX}px`,
                               height: `${(ev.endSlot - ev.startSlot) * ROW_HEIGHT_PX}px`,
                             }}
                             onClick={() => setEditingEvent(ev)}
                           >
+                            {allSelected && <span className="schedule-grid-event-all-badge" title="Everyone you selected is at this event">Everyone here</span>}
                             <span className="schedule-grid-event-title">{ev.title}</span>
                             {ev.description && <span className="schedule-grid-event-desc">{ev.description}</span>}
                             {attendeeNames.length > 0 && (
@@ -466,6 +475,7 @@ export function Schedule({ api }) {
                 ) : (
                   [...eventsForDay].sort((a, b) => a.startSlot - b.startSlot).map((ev) => {
                     const match = eventMatchesFilter(ev);
+                    const allSelected = eventHasAllSelected(ev);
                     const showIds = hasFilter ? (ev.attendee_ids || []).filter((id) => filterMemberIds.has(Number(id))) : (ev.attendee_ids || []);
                     const attendeeNames = showIds.map((id) => members.find((m) => m.id === Number(id))?.name).filter(Boolean);
                     const isSet = ev.event_type === 'set' && ev.stage_id;
@@ -475,10 +485,11 @@ export function Schedule({ api }) {
                     return (
                       <div
                         key={ev.id}
-                        className={`schedule-mobile-event ${isSet ? 'schedule-mobile-event-set' : 'schedule-mobile-event-meetup'} ${!match ? 'schedule-grid-event-dim' : ''}`}
+                        className={`schedule-mobile-event ${isSet ? 'schedule-mobile-event-set' : 'schedule-mobile-event-meetup'} ${!match ? 'schedule-grid-event-dim' : ''} ${allSelected ? 'schedule-grid-event-all-selected' : ''}`}
                         style={isSet && stageColor ? { borderLeftColor: stageColor } : undefined}
                         onClick={() => setEditingEvent(ev)}
                       >
+                        {allSelected && <span className="schedule-grid-event-all-badge" title="Everyone you selected is at this event">Everyone here</span>}
                         <span className="schedule-mobile-event-time">
                           {TIME_SLOTS[ev.startSlot]?.label}
                           {ev.endSlot > ev.startSlot + 1 ? ` – ${TIME_SLOTS[ev.endSlot - 1]?.label}` : ''}
