@@ -16,9 +16,9 @@ scheduleRouter.get('/stages', (req, res) => {
 
 scheduleRouter.post('/stages', (req, res) => {
   try {
-    const { name, sort_order } = req.body;
-    const stmt = db().prepare('INSERT INTO schedule_stages (name, sort_order) VALUES (?, ?)');
-    const result = stmt.run(name || 'Stage', sort_order != null ? sort_order : 0);
+    const { name, sort_order, color } = req.body;
+    const stmt = db().prepare('INSERT INTO schedule_stages (name, sort_order, color) VALUES (?, ?, ?)');
+    const result = stmt.run(name || 'Stage', sort_order != null ? sort_order : 0, color || null);
     const row = db().prepare('SELECT * FROM schedule_stages WHERE id = ?').get(result.lastInsertRowid);
     res.status(201).json(row);
   } catch (e) {
@@ -29,11 +29,12 @@ scheduleRouter.post('/stages', (req, res) => {
 scheduleRouter.patch('/stages/:id', (req, res) => {
   try {
     const { id } = req.params;
-    const { name, sort_order } = req.body;
+    const { name, sort_order, color } = req.body;
     const updates = [];
     const values = [];
     if (name !== undefined) { updates.push('name = ?'); values.push(name); }
     if (sort_order !== undefined) { updates.push('sort_order = ?'); values.push(sort_order); }
+    if (color !== undefined) { updates.push('color = ?'); values.push(color || null); }
     if (updates.length === 0) return res.status(400).json({ error: 'No fields to update' });
     values.push(id);
     db().prepare(`UPDATE schedule_stages SET ${updates.join(', ')} WHERE id = ?`).run(...values);

@@ -31,6 +31,13 @@ function buildTimeSlots() {
 
 const TIME_SLOTS = buildTimeSlots();
 
+const STAGE_COLOR_PRESETS = ['#00f5ff', '#ff00aa', '#8b5cf6', '#22c55e', '#eab308', '#f97316'];
+
+function getStageColor(stage, index) {
+  if (stage.color && /^#[0-9A-Fa-f]{6}$/.test(stage.color)) return stage.color;
+  return STAGE_COLOR_PRESETS[index % STAGE_COLOR_PRESETS.length];
+}
+
 function timeToSlot(timeStr) {
   if (!timeStr || typeof timeStr !== 'string') return 0;
   const t = timeStr.trim();
@@ -249,6 +256,18 @@ export function Schedule({ api }) {
       .catch(console.error);
   };
 
+  const updateStageColor = (stageId, color) => {
+    fetch(`${api}/schedule/stages/${stageId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ color: color || null }),
+    })
+      .then((r) => r.json())
+      .then((updated) => setStages((prev) => prev.map((s) => (s.id === stageId ? { ...s, color: updated.color } : s))))
+      .catch(console.error);
+  };
+
   const removeStage = (id) => {
     if (!window.confirm('Remove this stage? Events on it will become meetups.')) return;
     fetch(`${api}/schedule/stages/${id}`, { method: 'DELETE', credentials: 'include' })
@@ -357,8 +376,10 @@ export function Schedule({ api }) {
                     </div>
                   ))}
                 </div>
-                {stages.map((stage) => (
-                  <div key={stage.id} className="schedule-grid-stage-col">
+                {stages.map((stage, stageIdx) => {
+                  const stageColor = getStageColor(stage, stageIdx);
+                  return (
+                  <div key={stage.id} className="schedule-grid-stage-col" style={{ '--stage-color': stageColor }}>
                     <div className="schedule-grid-stage-header">{stage.name}</div>
                     <div className="schedule-grid-stage-cells">
                       {TIME_SLOTS.map((s) => (
@@ -379,20 +400,22 @@ export function Schedule({ api }) {
                               style={{
                                 top: `${ev.startSlot * ROW_HEIGHT_PX}px`,
                                 height: `${(ev.endSlot - ev.startSlot) * ROW_HEIGHT_PX}px`,
+                                borderLeftColor: stageColor,
                               }}
                               onClick={() => setEditingEvent(ev)}
                             >
                               <span className="schedule-grid-event-title">{ev.title}</span>
                               {ev.description && <span className="schedule-grid-event-desc">{ev.description}</span>}
                               {attendeeNames.length > 0 && (
-                                <span className="schedule-grid-event-attendees">{attendeeNames.join(', ')}</span>
+                                <span className="schedule-grid-event-attendees">Who&apos;s at this set: {attendeeNames.join(', ')}</span>
                               )}
                             </div>
                           );
                         })}
                     </div>
                   </div>
-                ))}
+                  );
+                })}
                 <div className="schedule-grid-stage-col schedule-grid-meetups-col">
                   <div className="schedule-grid-stage-header">Meetups</div>
                   <div className="schedule-grid-stage-cells">
@@ -420,7 +443,7 @@ export function Schedule({ api }) {
                             <span className="schedule-grid-event-title">{ev.title}</span>
                             {ev.description && <span className="schedule-grid-event-desc">{ev.description}</span>}
                             {attendeeNames.length > 0 && (
-                              <span className="schedule-grid-event-attendees">{attendeeNames.join(', ')}</span>
+                              <span className="schedule-grid-event-attendees">Who&apos;s at this set: {attendeeNames.join(', ')}</span>
                             )}
                           </div>
                         );
@@ -470,7 +493,7 @@ export function Schedule({ api }) {
                         </span>
                         <span className="schedule-mobile-event-title">{ev.title}</span>
                         <span className="schedule-mobile-event-stage">{ev.stage_name || (ev.event_type === 'meetup' ? 'Meetup' : '')}</span>
-                        {attendeeNames.length > 0 && <span className="schedule-mobile-event-attendees">{attendeeNames.join(', ')}</span>}
+                        {attendeeNames.length > 0 && <span className="schedule-mobile-event-attendees">Who&apos;s at this set: {attendeeNames.join(', ')}</span>}
                         {ev.description && <span className="schedule-mobile-event-desc">{ev.description}</span>}
                       </div>
                     );
@@ -592,9 +615,31 @@ export function Schedule({ api }) {
                 <button type="submit" className="btn btn-primary">Add stage</button>
               </form>
               <ul className="schedule-stages-list">
-                {stages.map((s) => (
+                {stages.map((s, idx) => (
                   <li key={s.id} className="schedule-stages-item">
-                    <span>{s.name}</span>
+                    <span className="schedule-stages-item-name">{s.name}</span>
+                    <div className="schedule-stages-color-picker" role="group" aria-label={`Stage color for ${s.name}`}>
+                      {STAGE_COLOR_PRESETS.map((hex) => (
+                        <button
+                          key={hex}
+                          type="button"
+                          className={`schedule-stage-color-chip ${(s.color || STAGE_COLOR_PRESETS[idx % STAGE_COLOR_PRESETS.length]) === hex ? 'active' : ''}`}
+                          style={{ backgroundColor: hex }}
+                          onClick={() => updateStageColor(s.id, hex)}
+                          title={hex}
+                          aria-label={`Set color ${hex}`}
+                        />
+                      ))}
+                      <button
+                        type="button"
+                        className="schedule-stage-color-chip schedule-stage-color-clear"
+                        onClick={() => updateStageColor(s.id, null)}
+                        title="Use default color"
+                        aria-label="Use default color"
+                      >
+                        —
+                      </button>
+                    </div>
                     <button type="button" className="btn btn-ghost btn-sm" onClick={() => removeStage(s.id)} aria-label={`Remove ${s.name}`}>×</button>
                   </li>
                 ))}

@@ -1,7 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { FestivalHero } from './components/FestivalHero';
-import { GoingList } from './components/GoingList';
 import { Campsites } from './components/Campsites';
 import { VehiclesSites } from './components/VehiclesSites';
 import { Members } from './components/Members';
@@ -19,7 +18,6 @@ export default function App() {
   const [authenticated, setAuthenticated] = useState(false);
   const [view, setView] = useState('group');
   const [festival, setFestival] = useState(null);
-  const [goingListKey, setGoingListKey] = useState(0);
 
   useEffect(() => {
     fetch(`${API}/auth`, { credentials: 'include' })
@@ -74,10 +72,7 @@ export default function App() {
           <>
             <FestivalHero festival={festival} />
             <WeatherWidget />
-            <GoingList api={API} refreshKey={goingListKey} onRefresh={() => setGoingListKey((k) => k + 1)} />
-            <section className="section section-campsites">
-              <Campsites api={API} onMemberUpdated={() => setGoingListKey((k) => k + 1)} />
-            </section>
+            <Campsites api={API} onMemberUpdated={() => {}} />
             <section className="section section-notes">
               <Notes api={API} />
             </section>

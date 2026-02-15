@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 
-function isFullyAssigned(m) {
+export function isFullyAssigned(m) {
   // Campsite = where they camp. Vehicle = which car they ride in (can differ from campsite's pass vehicle).
   const hasTransportVehicle = m.vehicle_id != null && m.vehicle_id !== '';
   return !!(
@@ -88,7 +88,7 @@ export function GoingList({ api, refreshKey = 0, onRefresh }) {
   );
 }
 
-function EditMemberModal({ member: initialMember, api, onClose, onSaved }) {
+export function EditMemberModal({ member: initialMember, api, onClose, onSaved }) {
   const [member, setMember] = useState(initialMember);
   const [campsites, setCampsites] = useState([]);
   const [vehicles, setVehicles] = useState([]);
