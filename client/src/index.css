@@ -1560,11 +1560,6 @@ main {
   margin: 0;
 }
 
-.schedule-mobile-event-attendees {
-  font-size: 0.8rem;
-  color: var(--accent-cyan);
-}
-
 .schedule-actions {
   margin-top: 1rem;
   margin-bottom: 1rem;
@@ -1713,32 +1708,61 @@ main {
   color: var(--danger, #e11);
 }
 
-/* Schedule mobile list */
+/* Schedule mobile list — match desktop grid event styling */
 .schedule-mobile-event {
   padding: 0.75rem;
-  border-radius: 8px;
-  background: var(--bg-elevated);
+  border-radius: 6px;
   border-left: 3px solid var(--accent-cyan);
   margin-bottom: 0.5rem;
   cursor: pointer;
   display: flex;
   flex-direction: column;
   gap: 0.2rem;
+  color: var(--text);
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  overflow: hidden;
+}
+.schedule-mobile-event:hover {
+  filter: brightness(1.15);
+}
+.schedule-mobile-event-set {
+  background: linear-gradient(135deg, rgba(139, 92, 246, 0.35), rgba(255, 0, 170, 0.25));
+}
+.schedule-mobile-event-meetup {
+  background: rgba(0, 245, 255, 0.12);
+  border-left-color: var(--accent-magenta);
 }
 .schedule-mobile-event .schedule-mobile-event-time {
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: var(--text-muted);
 }
 .schedule-mobile-event .schedule-mobile-event-title {
   font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 .schedule-mobile-event .schedule-mobile-event-stage {
-  font-size: 0.8rem;
-  color: var(--accent-cyan);
+  font-size: 0.75rem;
+  color: var(--text-muted);
+}
+.schedule-mobile-event .schedule-mobile-event-attendees {
+  font-size: 0.7rem;
+  color: var(--text-muted);
+  margin-top: 0.15rem;
 }
 .schedule-mobile-event .schedule-mobile-event-desc {
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   color: var(--text-muted);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.schedule-mobile-event.schedule-grid-event-dim {
+  opacity: 0.45;
+}
+.schedule-mobile-event.schedule-grid-event-dim:hover {
+  opacity: 0.75;
 }
 
 /* Official Info tab */
