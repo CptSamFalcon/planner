@@ -161,11 +161,15 @@ export function initDb(dataDir) {
     db.exec("UPDATE schedule SET event_type = 'meetup' WHERE event_type IS NULL OR event_type = ''");
   } catch (_) {}
 
+  try {
+    db.exec('ALTER TABLE schedule_stages ADD COLUMN color TEXT');
+  } catch (_) { /* already exists */ }
+
   // Seed default stages if none exist
   const stageCount = db.prepare('SELECT COUNT(*) AS n FROM schedule_stages').get();
   if (stageCount && stageCount.n === 0) {
     db.prepare(
-      "INSERT INTO schedule_stages (name, sort_order) VALUES ('Main Stage', 0), ('Second Stage', 1), ('Hill Stage', 2)"
+      "INSERT INTO schedule_stages (name, sort_order, color) VALUES ('Main Stage', 0, '#00f5ff'), ('Second Stage', 1, '#ff00aa'), ('Hill Stage', 2, '#8b5cf6')"
     ).run();
   }
 

@@ -797,6 +797,103 @@ main {
   font-size: 0.9rem;
   margin: 1rem 0 0;
 }
+
+/* Streamlined campsite boxes (main page) */
+.campsites-card .card-description {
+  margin-bottom: 1rem;
+}
+.campsite-boxes {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-top: 0.5rem;
+}
+.campsite-box {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 0.75rem 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+.campsite-box-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-wrap: wrap;
+}
+.campsite-box-title {
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin: 0;
+  color: var(--accent-cyan);
+}
+.campsite-box-count {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  font-weight: 500;
+}
+.campsite-box-people {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  min-height: 2rem;
+}
+.person-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.65rem;
+  border-radius: 8px;
+  border: 1px solid transparent;
+  cursor: pointer;
+  font-size: 0.9rem;
+  font-family: inherit;
+  color: var(--text);
+  text-align: left;
+  transition: filter 0.15s, border-color 0.15s;
+}
+.person-chip:hover {
+  filter: brightness(1.1);
+}
+.person-chip:focus-visible {
+  outline: 2px solid var(--accent-cyan);
+  outline-offset: 2px;
+}
+.person-chip-emoji {
+  font-size: 1rem;
+  line-height: 1;
+  flex-shrink: 0;
+}
+.person-chip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.person-chip--complete {
+  background: rgba(34, 197, 94, 0.2);
+  border-color: rgba(34, 197, 94, 0.5);
+}
+.person-chip--complete .person-chip-dot {
+  background: #22c55e;
+}
+.person-chip--incomplete {
+  background: rgba(239, 68, 68, 0.15);
+  border-color: rgba(239, 68, 68, 0.45);
+}
+.person-chip--incomplete .person-chip-dot {
+  background: #ef4444;
+}
+.person-chip-name {
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 120px;
+}
+
 .campsite-sections {
   display: flex;
   flex-direction: column;
@@ -1295,12 +1392,16 @@ main {
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.04em;
-  color: var(--accent-cyan);
-  background: var(--bg-card);
+  background: var(--stage-color, var(--bg-card));
+  color: #fff;
   text-align: center;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.schedule-grid-meetups-col .schedule-grid-stage-header {
+  background: var(--bg-card);
+  color: var(--accent-magenta);
 }
 .schedule-grid-stage-cells {
   flex: 1;
@@ -1366,10 +1467,6 @@ main {
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-.schedule-grid-meetups-col .schedule-grid-stage-header {
-  color: var(--accent-magenta);
 }
 
 .schedule-grid-event-attendees {
@@ -1540,12 +1637,51 @@ main {
 .schedule-stages-item {
   display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: 0.35rem 0;
+  gap: 0.5rem;
+  padding: 0.5rem 0;
   border-bottom: 1px solid var(--border);
 }
 .schedule-stages-item:last-child {
   border-bottom: none;
+}
+.schedule-stages-item-name {
+  min-width: 6rem;
+  font-weight: 500;
+}
+.schedule-stages-color-picker {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+.schedule-stage-color-chip {
+  width: 1.5rem;
+  height: 1.5rem;
+  border-radius: 4px;
+  border: 2px solid transparent;
+  padding: 0;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: transform 0.15s, border-color 0.15s;
+}
+.schedule-stage-color-chip:hover {
+  transform: scale(1.1);
+}
+.schedule-stage-color-chip.active {
+  border-color: var(--text);
+  box-shadow: 0 0 0 1px var(--bg-deep);
+}
+.schedule-stage-color-clear {
+  background: var(--bg-elevated) !important;
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.schedule-stage-color-clear.active {
+  border-color: var(--accent-cyan);
 }
 
 /* Schedule edit modal */
