@@ -81,8 +81,6 @@ export function Schedule({ api }) {
   const [loading, setLoading] = useState(true);
   const [loadError, setLoadError] = useState(false);
   const [selectedDay, setSelectedDay] = useState('Friday');
-  const [mobileDayIndex, setMobileDayIndex] = useState(2);
-  const [touchStartX, setTouchStartX] = useState(null);
 
   // Filter: which people to show (who's going to what). Empty = show all.
   const [filterMemberIds, setFilterMemberIds] = useState(new Set());
@@ -124,11 +122,6 @@ export function Schedule({ api }) {
   };
 
   useEffect(load, [api]);
-
-  useEffect(() => {
-    const i = DAYS.indexOf(selectedDay);
-    if (i >= 0) setMobileDayIndex(i);
-  }, [selectedDay]);
 
   const eventsForDay = useMemo(() => {
     return events
@@ -278,17 +271,6 @@ export function Schedule({ api }) {
       .catch(console.error);
   };
 
-  const goPrevDay = () => setMobileDayIndex((i) => Math.max(0, i - 1));
-  const goNextDay = () => setMobileDayIndex((i) => Math.min(DAYS.length - 1, i + 1));
-  const handleTouchStart = (e) => setTouchStartX(e.touches[0].clientX);
-  const handleTouchEnd = (e) => {
-    if (touchStartX == null) return;
-    const dx = e.changedTouches[0].clientX - touchStartX;
-    if (dx > 50) goPrevDay();
-    else if (dx < -50) goNextDay();
-    setTouchStartX(null);
-  };
-
   return (
     <div className="schedule-page">
       <div className="schedule-card card block">
@@ -297,8 +279,8 @@ export function Schedule({ api }) {
           <p className="schedule-subtitle">Set times by stage + your meetups. Pick a day to see the grid.</p>
         </div>
 
-        {/* Day tabs */}
-        <div className="schedule-day-tabs" role="tablist" aria-label="Select day">
+        {/* Day tabs (desktop only; mobile uses day bar above event list) */}
+        <div className="schedule-day-tabs schedule-day-tabs-desktop" role="tablist" aria-label="Select day">
           {DAYS.map((d) => (
             <button
               key={d}
@@ -453,25 +435,30 @@ export function Schedule({ api }) {
               </div>
             </div>
 
-            {/* Mobile: single day list */}
-            <div
-              className="schedule-mobile"
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-            >
-              <div className="schedule-mobile-header">
-                <button type="button" className="schedule-mobile-arrow" onClick={goPrevDay} disabled={mobileDayIndex === 0} aria-label="Previous day">←</button>
-                <select
-                  className="schedule-mobile-day-select"
-                  value={mobileDayIndex}
-                  onChange={(e) => { setMobileDayIndex(Number(e.target.value)); setSelectedDay(DAYS[Number(e.target.value)]); }}
-                  aria-label="Select day"
+            {/* Mobile: day bar (arrows + label) above event list; arrows change selected day */}
+            <div className="schedule-mobile schedule-grid-wrap">
+              <div className="schedule-mobile-day-bar">
+                <button
+                  type="button"
+                  className="schedule-mobile-day-arrow"
+                  onClick={() => setSelectedDay(DAYS[Math.max(0, DAYS.indexOf(selectedDay) - 1)])}
+                  disabled={DAYS.indexOf(selectedDay) <= 0}
+                  aria-label="Previous day"
                 >
-                  {DAYS.map((d, i) => (
-                    <option key={d} value={i}>{dayLabel(d)}</option>
-                  ))}
-                </select>
-                <button type="button" className="schedule-mobile-arrow" onClick={goNextDay} disabled={mobileDayIndex === DAYS.length - 1} aria-label="Next day">→</button>
+                  ←
+                </button>
+                <span className="schedule-mobile-day-label" aria-live="polite">
+                  {dayLabel(selectedDay)}
+                </span>
+                <button
+                  type="button"
+                  className="schedule-mobile-day-arrow"
+                  onClick={() => setSelectedDay(DAYS[Math.min(DAYS.length - 1, DAYS.indexOf(selectedDay) + 1)])}
+                  disabled={DAYS.indexOf(selectedDay) >= DAYS.length - 1}
+                  aria-label="Next day"
+                >
+                  →
+                </button>
               </div>
               <div className="schedule-mobile-events">
                 {eventsForDay.length === 0 ? (
