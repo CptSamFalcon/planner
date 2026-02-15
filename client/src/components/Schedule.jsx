@@ -481,10 +481,15 @@ export function Schedule({ api }) {
                     const match = eventMatchesFilter(ev);
                     const showIds = hasFilter ? (ev.attendee_ids || []).filter((id) => filterMemberIds.has(Number(id))) : (ev.attendee_ids || []);
                     const attendeeNames = showIds.map((id) => members.find((m) => m.id === Number(id))?.name).filter(Boolean);
+                    const isSet = ev.event_type === 'set' && ev.stage_id;
+                    const stage = isSet ? stages.find((s) => s.id === ev.stage_id) : null;
+                    const stageIdx = stage != null ? stages.findIndex((s) => s.id === ev.stage_id) : -1;
+                    const stageColor = stage != null ? getStageColor(stage, stageIdx >= 0 ? stageIdx : 0) : null;
                     return (
                       <div
                         key={ev.id}
-                        className={`schedule-mobile-event ${!match ? 'schedule-grid-event-dim' : ''}`}
+                        className={`schedule-mobile-event ${isSet ? 'schedule-mobile-event-set' : 'schedule-mobile-event-meetup'} ${!match ? 'schedule-grid-event-dim' : ''}`}
+                        style={isSet && stageColor ? { borderLeftColor: stageColor } : undefined}
                         onClick={() => setEditingEvent(ev)}
                       >
                         <span className="schedule-mobile-event-time">
