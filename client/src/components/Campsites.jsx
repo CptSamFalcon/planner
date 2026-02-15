@@ -119,6 +119,7 @@ export function Campsites({ api, onMemberUpdated }) {
       {editingMember && (
         <EditMemberModal
           member={editingMember}
+          allMembers={members}
           api={api}
           onClose={() => setEditingMember(null)}
           onSaved={handleSaved}
