@@ -1,4 +1,5 @@
-import { useState, useEffect, useMemo } from 'react';
+import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
+import { createPortal } from 'react-dom';
 import { googleCalendarUrl, downloadIcs } from '../utils/calendarExport';
 
 const DAYS = ['Wednesday', 'Thursday Pre-Party', 'Friday', 'Saturday', 'Sunday'];
@@ -75,7 +76,71 @@ function dayLabel(dayName) {
   return date != null ? `${dayName} (${ordinal(date)})` : dayName;
 }
 
-function EventCalendarMenu({ event: ev, isOpen, onToggle, onClose }) {
+const DROPDOWN_MIN_WIDTH = 176; // 11rem
+const DROPDOWN_ITEM_HEIGHT = 40;
+const DROPDOWN_PADDING = 8;
+const DROPDOWN_APPROX_HEIGHT = DROPDOWN_PADDING * 2 + DROPDOWN_ITEM_HEIGHT * 2;
+
+function computeDropdownStyle(buttonEl) {
+  if (!buttonEl) return null;
+  const rect = buttonEl.getBoundingClientRect();
+  const viewW = window.innerWidth;
+  const viewH = window.innerHeight;
+  const isNarrow = viewW < 420;
+  let top, left, right, bottom;
+  if (isNarrow) {
+    bottom = 0; left = 0; right = 0; top = 'auto';
+  } else {
+    const preferLeft = rect.right - DROPDOWN_MIN_WIDTH;
+    left = Math.max(8, Math.min(preferLeft, viewW - DROPDOWN_MIN_WIDTH - 8));
+    right = 'auto';
+    if (rect.bottom + DROPDOWN_APPROX_HEIGHT + 8 <= viewH) {
+      top = rect.bottom + 4; bottom = 'auto';
+    } else if (rect.top - DROPDOWN_APPROX_HEIGHT - 8 >= 0) {
+      bottom = viewH - rect.top + 4; top = 'auto';
+    } else {
+      top = Math.max(8, rect.bottom + 4); bottom = 'auto';
+    }
+  }
+  return { top, left, right, bottom };
+}
+
+function EventCalendarMenu({ event: ev, isOpen, onCalendarClick, onClose }) {
+  useEffect(() => {
+    if (!isOpen) return;
+    const onScrollOrResize = () => onClose();
+    window.addEventListener('scroll', onScrollOrResize, true);
+    window.addEventListener('resize', onScrollOrResize);
+    return () => {
+      window.removeEventListener('scroll', onScrollOrResize, true);
+      window.removeEventListener('resize', onScrollOrResize);
+    };
+  }, [isOpen, onClose]);
+
+  const handleClick = (e) => {
+    e.stopPropagation();
+    const style = computeDropdownStyle(e.currentTarget);
+    if (style) onCalendarClick?.(ev, style);
+  };
+
+  return (
+    <div className="schedule-event-calendar-wrap" onClick={(e) => e.stopPropagation()}>
+      <button
+        type="button"
+        className="schedule-event-calendar-btn"
+        onClick={handleClick}
+        aria-expanded={isOpen}
+        aria-haspopup="true"
+        aria-label="Add to calendar"
+        title="Add to calendar"
+      >
+        <span className="schedule-event-calendar-btn-icon" aria-hidden>📅</span>
+      </button>
+    </div>
+  );
+}
+
+function CalendarDropdownPanel({ event: ev, style: dropdownStyle, onClose }) {
   const handleGoogle = (e) => {
     e.stopPropagation();
     window.open(googleCalendarUrl(ev), '_blank', 'noopener');
@@ -88,28 +153,22 @@ function EventCalendarMenu({ event: ev, isOpen, onToggle, onClose }) {
     onClose();
   };
   return (
-    <div className="schedule-event-calendar-wrap" onClick={(e) => e.stopPropagation()}>
-      <button
-        type="button"
-        className="schedule-event-calendar-btn"
-        onClick={onToggle}
-        aria-expanded={isOpen}
-        aria-haspopup="true"
-        aria-label="Add to calendar"
-        title="Add to calendar"
-      >
-        📅
+    <div
+      className="schedule-event-calendar-dropdown schedule-event-calendar-dropdown-portal"
+      role="menu"
+      style={{
+        position: 'fixed',
+        zIndex: 1000,
+        minWidth: DROPDOWN_MIN_WIDTH,
+        ...dropdownStyle,
+      }}
+    >
+      <button type="button" role="menuitem" className="schedule-event-calendar-item" onClick={handleGoogle}>
+        Open in Google Calendar
       </button>
-      {isOpen && (
-        <div className="schedule-event-calendar-dropdown" role="menu">
-          <button type="button" role="menuitem" className="schedule-event-calendar-item" onClick={handleGoogle}>
-            Open in Google Calendar
-          </button>
-          <button type="button" role="menuitem" className="schedule-event-calendar-item" onClick={handleIcs}>
-            Download .ics (iCal / Apple)
-          </button>
-        </div>
-      )}
+      <button type="button" role="menuitem" className="schedule-event-calendar-item" onClick={handleIcs}>
+        Download .ics (iCal / Apple)
+      </button>
     </div>
   );
 }
@@ -203,17 +262,37 @@ export function Schedule({ api }) {
   const [filterMemberIds, setFilterMemberIds] = useState(new Set());
   // Per-event "Add to calendar" dropdown: event id when open, null when closed.
   const [openCalendarMenuId, setOpenCalendarMenuId] = useState(null);
-  // Calendar Export modal: which members' events to include (empty = all events).
-  const [showCalendarExportModal, setShowCalendarExportModal] = useState(false);
-  const [exportMemberIds, setExportMemberIds] = useState(new Set());
+  // Single portal dropdown: only Schedule renders this, so no duplicate at (0,0).
+  const [calendarDropdownEvent, setCalendarDropdownEvent] = useState(null);
+  const [calendarDropdownStyle, setCalendarDropdownStyle] = useState(null);
+  const closeCalendarMenu = useCallback(() => {
+    setOpenCalendarMenuId(null);
+    setCalendarDropdownEvent(null);
+    setCalendarDropdownStyle(null);
+  }, []);
+  const handleCalendarClick = useCallback((ev, style) => {
+    if (openCalendarMenuId === ev.id) {
+      closeCalendarMenu();
+    } else {
+      setOpenCalendarMenuId(ev.id);
+      setCalendarDropdownEvent(ev);
+      setCalendarDropdownStyle(style);
+    }
+  }, [openCalendarMenuId, closeCalendarMenu]);
   useEffect(() => {
     if (openCalendarMenuId == null) return;
     const close = (e) => {
-      if (!e.target.closest('.schedule-event-calendar-wrap')) setOpenCalendarMenuId(null);
+      if (!e.target.closest('.schedule-event-calendar-wrap') && !e.target.closest('.schedule-event-calendar-dropdown')) closeCalendarMenu();
     };
-    document.addEventListener('click', close, true);
-    return () => document.removeEventListener('click', close, true);
-  }, [openCalendarMenuId]);
+    const t = setTimeout(() => document.addEventListener('click', close, true), 0);
+    return () => {
+      clearTimeout(t);
+      document.removeEventListener('click', close, true);
+    };
+  }, [openCalendarMenuId, closeCalendarMenu]);
+  // Calendar Export modal: which members' events to include (empty = all events).
+  const [showCalendarExportModal, setShowCalendarExportModal] = useState(false);
+  const [exportMemberIds, setExportMemberIds] = useState(new Set());
 
   // Add event form
   const [showAddForm, setShowAddForm] = useState(false);
@@ -538,8 +617,8 @@ export function Schedule({ api }) {
                               <EventCalendarMenu
                                 event={ev}
                                 isOpen={openCalendarMenuId === ev.id}
-                                onToggle={(e) => { e.stopPropagation(); setOpenCalendarMenuId((id) => (id === ev.id ? null : ev.id)); }}
-                                onClose={() => setOpenCalendarMenuId(null)}
+                                onCalendarClick={handleCalendarClick}
+                                onClose={closeCalendarMenu}
                               />
                             </div>
                           );
@@ -582,8 +661,8 @@ export function Schedule({ api }) {
                             <EventCalendarMenu
                               event={ev}
                               isOpen={openCalendarMenuId === ev.id}
-                              onToggle={(e) => { e.stopPropagation(); setOpenCalendarMenuId((id) => (id === ev.id ? null : ev.id)); }}
-                              onClose={() => setOpenCalendarMenuId(null)}
+                              onCalendarClick={handleCalendarClick}
+                              onClose={closeCalendarMenu}
                             />
                           </div>
                         );
@@ -650,8 +729,8 @@ export function Schedule({ api }) {
                         <EventCalendarMenu
                           event={ev}
                           isOpen={openCalendarMenuId === ev.id}
-                          onToggle={(e) => { e.stopPropagation(); setOpenCalendarMenuId((id) => (id === ev.id ? null : ev.id)); }}
-                          onClose={() => setOpenCalendarMenuId(null)}
+                          onCalendarClick={handleCalendarClick}
+                          onClose={closeCalendarMenu}
                         />
                       </div>
                     );
@@ -806,6 +885,18 @@ export function Schedule({ api }) {
           </>
         )}
       </div>
+
+      {/* Single calendar dropdown portal — only one createPortal so no duplicate at (0,0) */}
+      {createPortal(
+        calendarDropdownEvent && calendarDropdownStyle ? (
+          <CalendarDropdownPanel
+            event={calendarDropdownEvent}
+            style={calendarDropdownStyle}
+            onClose={closeCalendarMenu}
+          />
+        ) : null,
+        document.body
+      )}
 
       {/* Calendar Export modal */}
       {showCalendarExportModal && (
