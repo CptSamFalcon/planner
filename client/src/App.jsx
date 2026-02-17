@@ -8,6 +8,7 @@ import { PackingTab } from './components/PackingTab';
 import { Schedule } from './components/Schedule';
 import { OfficialInfo } from './components/OfficialInfo';
 import { WeatherWidget } from './components/WeatherWidget';
+import { Bingo } from './components/Bingo';
 import { Notes } from './components/Notes';
 import { PasswordGate } from './components/PasswordGate';
 
@@ -59,6 +60,10 @@ export default function App() {
         ) : view === 'schedule' ? (
           <section className="section">
             <Schedule api={API} />
+          </section>
+        ) : view === 'bingo' ? (
+          <section className="section">
+            <Bingo api={API} />
           </section>
         ) : view === 'packing' ? (
           <section className="section">
