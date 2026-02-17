@@ -1,25 +1,16 @@
 import { useState, useEffect } from 'react';
 
+// Green only if they have a ride and a camp pass (campsite). Everything else is optional.
 export function isFullyAssigned(m) {
-  // Campsite = where they camp. Vehicle = which car they ride in (can differ from campsite's pass vehicle).
-  const hasTransportVehicle = m.vehicle_id != null && m.vehicle_id !== '';
-  return !!(
-    m.campsite_id != null && m.campsite_id !== '' &&
-    m.shelter_packing_id != null && m.shelter_packing_id !== '' &&
-    m.bed_packing_id != null && m.bed_packing_id !== '' &&
-    hasTransportVehicle
-  );
+  const hasRide = m.vehicle_id != null && m.vehicle_id !== '';
+  const hasCampPass = m.campsite_id != null && m.campsite_id !== '';
+  return !!(hasRide && hasCampPass);
 }
 
-function getMissing(m) {
+export function getMissing(m) {
   const missing = [];
-  if (!m.contact_number || m.contact_number.trim() === '') missing.push('Contact');
-  if (m.campsite_id == null || m.campsite_id === '') missing.push('Campsite');
-  if (m.shelter_packing_id == null || m.shelter_packing_id === '') missing.push('Shelter');
-  if (m.bed_packing_id == null || m.bed_packing_id === '') missing.push('Bed');
-  if (m.bedding_packing_id == null || m.bedding_packing_id === '') missing.push('Bedding');
-  if (m.wristband !== 'GA' && m.wristband !== 'VIP') missing.push('GA/VIP');
-  if (m.vehicle_id == null || m.vehicle_id === '') missing.push('Vehicle (ride)');
+  if (m.campsite_id == null || m.campsite_id === '') missing.push('Camp pass');
+  if (m.vehicle_id == null || m.vehicle_id === '') missing.push('Ride');
   return missing;
 }
 
