@@ -11,6 +11,7 @@ import { vehiclesRouter } from './routes/vehicles.js';
 import { packingRouter } from './routes/packing.js';
 import { scheduleRouter } from './routes/schedule.js';
 import { notesRouter } from './routes/notes.js';
+import { bingoRouter } from './routes/bingo.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -35,6 +36,7 @@ app.use('/api/vehicles', vehiclesRouter);
 app.use('/api/packing', packingRouter);
 app.use('/api/schedule', scheduleRouter);
 app.use('/api/notes', notesRouter);
+app.use('/api/bingo', bingoRouter);
 
 // Festival info (static)
 app.get('/api/festival', (req, res) => {

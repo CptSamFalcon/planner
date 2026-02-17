@@ -3,6 +3,7 @@ import { useState } from 'react';
 const TABS = [
   { id: 'group', label: 'Home' },
   { id: 'schedule', label: 'Schedule' },
+  { id: 'bingo', label: 'Bingo' },
   { id: 'packing', label: 'Packing' },
   { id: 'vehicles-sites', label: 'Vehicles/Sites' },
   { id: 'people', label: 'People' },

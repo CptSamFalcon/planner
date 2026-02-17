@@ -45,6 +45,16 @@ export function initDb(dataDir) {
       /* column already exists */
     }
   }
+  try {
+    db.exec("ALTER TABLE members ADD COLUMN bingo_checked TEXT DEFAULT '{}'");
+  } catch (_) {
+    /* column already exists */
+  }
+  try {
+    db.exec('ALTER TABLE members ADD COLUMN bingo_completed_at TEXT');
+  } catch (_) {
+    /* column already exists */
+  }
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS campsites (
@@ -182,6 +192,28 @@ export function initDb(dataDir) {
       FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
     );
   `);
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS bingo_items (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      label TEXT NOT NULL,
+      sort_order INTEGER DEFAULT 0,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
+  const bingoCount = db.prepare('SELECT COUNT(*) AS n FROM bingo_items').get();
+  if (bingoCount && bingoCount.n === 0) {
+    const items = [
+      'See the sunset at the hill', 'Trade kandi with a stranger', 'Hear your favorite drop', 'Dance in the rain',
+      'Find a totem you love', 'Make a new friend', 'Take a group photo', 'Stay for the closing set',
+      'Hydrate between sets', 'Compliment someone\'s outfit', 'Discover a new artist', 'Sing along to a lyric',
+      'High-five a stranger', 'Find a spot with great sound', 'Dance in the pit', 'Chill at the campsite',
+      'Eat festival food', 'Watch the lasers', 'Spot the Gorge view', 'Get a light show',
+      'FREE SPACE', 'Rage at the rail', 'Meet up with the squad', 'Take a breather', 'Capture the moment',
+    ];
+    const ins = db.prepare('INSERT INTO bingo_items (label, sort_order) VALUES (?, ?)');
+    items.forEach((label, i) => ins.run(label, i));
+  }
 
   return db;
 }
