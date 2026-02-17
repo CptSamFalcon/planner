@@ -1,19 +1,7 @@
 import { useState, useEffect } from 'react';
-import { isFullyAssigned, EditMemberModal } from './GoingList';
+import { isFullyAssigned, getMissing, EditMemberModal } from './GoingList';
 
 const CAMPSITE_CAPACITY = 6;
-
-function getMissing(m) {
-  const missing = [];
-  if (!m.contact_number || m.contact_number.trim() === '') missing.push('Contact');
-  if (m.campsite_id == null || m.campsite_id === '') missing.push('Campsite');
-  if (m.shelter_packing_id == null || m.shelter_packing_id === '') missing.push('Shelter');
-  if (m.bed_packing_id == null || m.bed_packing_id === '') missing.push('Bed');
-  if (m.bedding_packing_id == null || m.bedding_packing_id === '') missing.push('Bedding');
-  if (m.wristband !== 'GA' && m.wristband !== 'VIP') missing.push('GA/VIP');
-  if (m.vehicle_id == null || m.vehicle_id === '') missing.push('Vehicle (ride)');
-  return missing;
-}
 
 export function Campsites({ api, onMemberUpdated }) {
   const [members, setMembers] = useState([]);
