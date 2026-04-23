@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { formatAllergiesInputValue } from '../utils/memberAllergies';
 
 export function Members({ api }) {
   const [members, setMembers] = useState([]);
@@ -6,6 +7,7 @@ export function Members({ api }) {
   const [status, setStatus] = useState('going');
   const [wristband, setWristband] = useState('GA');
   const [note, setNote] = useState('');
+  const [allergies, setAllergies] = useState('');
   const [preParty, setPreParty] = useState(false);
 
   const load = () => {
@@ -23,7 +25,14 @@ export function Members({ api }) {
   const add = (e) => {
     e.preventDefault();
     if (!name.trim()) return;
-    const body = { name: name.trim(), status, wristband, note: note.trim() || null, pre_party: preParty ? 1 : 0 };
+    const body = {
+      name: name.trim(),
+      status,
+      wristband,
+      note: note.trim() || null,
+      pre_party: preParty ? 1 : 0,
+      ...(allergies.trim() ? { allergies: allergies.trim() } : {}),
+    };
     fetch(`${api}/members`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -32,7 +41,14 @@ export function Members({ api }) {
     })
       .then((r) => r.json())
       .then((m) => setMembers((prev) => [...prev, m]))
-      .then(() => { setName(''); setNote(''); setStatus('going'); setWristband('GA'); setPreParty(false); })
+      .then(() => {
+        setName('');
+        setNote('');
+        setAllergies('');
+        setStatus('going');
+        setWristband('GA');
+        setPreParty(false);
+      })
       .catch(console.error);
   };
 
@@ -61,7 +77,7 @@ export function Members({ api }) {
   return (
     <div className="card block">
       <h3 className="card-title">Who&apos;s Going</h3>
-      <p className="card-description">Add people and set their status. Assign campsites, shelter, bed, bedding, and vehicle on the <strong>Group</strong> page.</p>
+      <p className="card-description">Add people and set their status. Food allergies (optional) are saved per person below; they appear on the <strong>Meals</strong> tab when set. Assign campsites, shelter, bed, bedding, and vehicle on the <strong>Group</strong> page.</p>
 
       <form className="form-row form-add-member" onSubmit={add}>
         <input
@@ -96,59 +112,97 @@ export function Members({ api }) {
           onChange={(e) => setNote(e.target.value)}
           className="input input-note"
         />
+        <input
+          type="text"
+          placeholder="Allergens (optional)"
+          value={allergies}
+          onChange={(e) => setAllergies(e.target.value)}
+          className="input input-note"
+          aria-label="Allergens (optional)"
+        />
         <button type="submit" className="btn btn-primary">Add</button>
       </form>
 
       <div className="members-list-section">
         <h4 className="members-list-title">People ({members.length})</h4>
-        <ul className="member-list options-list">
+        <ul className="member-list options-list options-list--people-rows">
           {goingMembers.map((m) => (
-            <li key={m.id} className="member-item member-item-compact options-item">
-              <span className="member-name">{m.name}</span>
-              {m.note && <span className="member-note">{m.note}</span>}
-              {m.pre_party ? <span className="member-badge">Pre-Party</span> : null}
-              <select
-                value={m.wristband === 'VIP' ? 'VIP' : 'GA'}
-                onChange={(e) => updateMember(m.id, { wristband: e.target.value })}
-                className="select select-inline"
-              >
-                <option value="GA">GA</option>
-                <option value="VIP">VIP</option>
-              </select>
-              <select
-                value={m.status}
-                onChange={(e) => updateStatus(m.id, e.target.value)}
-                className="select select-inline"
-              >
-                <option value="going">Going</option>
-                <option value="maybe">Maybe</option>
-                <option value="not-going">Not going</option>
-              </select>
-              <button type="button" className="btn btn-ghost btn-sm" onClick={() => remove(m.id)} aria-label="Delete">×</button>
+            <li key={m.id} className="member-item member-item-compact options-item member-person-card">
+              <div className="member-person-main">
+                <span className="member-name">{m.name}</span>
+                {m.note && <span className="member-note">{m.note}</span>}
+                {m.pre_party ? <span className="member-badge">Pre-Party</span> : null}
+                <select
+                  value={m.wristband === 'VIP' ? 'VIP' : 'GA'}
+                  onChange={(e) => updateMember(m.id, { wristband: e.target.value })}
+                  className="select select-inline"
+                >
+                  <option value="GA">GA</option>
+                  <option value="VIP">VIP</option>
+                </select>
+                <select
+                  value={m.status}
+                  onChange={(e) => updateStatus(m.id, e.target.value)}
+                  className="select select-inline"
+                >
+                  <option value="going">Going</option>
+                  <option value="maybe">Maybe</option>
+                  <option value="not-going">Not going</option>
+                </select>
+                <button type="button" className="btn btn-ghost btn-sm" onClick={() => remove(m.id)} aria-label="Delete">×</button>
+              </div>
+              <div className="member-person-allergies">
+                <label className="member-person-allergies-label" htmlFor={`member-allergies-${m.id}`}>Allergens</label>
+                <input
+                  id={`member-allergies-${m.id}`}
+                  type="text"
+                  className="input input-sm member-person-allergies-input"
+                  defaultValue={formatAllergiesInputValue(m)}
+                  key={`allergies-field-${m.id}-${m.allergies ?? ''}`}
+                  placeholder="e.g. peanuts, dairy (optional)"
+                  onBlur={(e) => updateMember(m.id, { allergies: e.target.value })}
+                  aria-label={`Food allergens for ${m.name}`}
+                />
+              </div>
             </li>
           ))}
           {otherMembers.map((m) => (
-            <li key={m.id} className="member-item member-item-compact options-item">
-              <span className="member-name">{m.name}</span>
-              {m.note && <span className="member-note">{m.note}</span>}
-              <select
-                value={m.wristband === 'VIP' ? 'VIP' : 'GA'}
-                onChange={(e) => updateMember(m.id, { wristband: e.target.value })}
-                className="select select-inline"
-              >
-                <option value="GA">GA</option>
-                <option value="VIP">VIP</option>
-              </select>
-              <select
-                value={m.status}
-                onChange={(e) => updateStatus(m.id, e.target.value)}
-                className="select select-inline"
-              >
-                <option value="going">Going</option>
-                <option value="maybe">Maybe</option>
-                <option value="not-going">Not going</option>
-              </select>
-              <button type="button" className="btn btn-ghost btn-sm" onClick={() => remove(m.id)} aria-label="Delete">×</button>
+            <li key={m.id} className="member-item member-item-compact options-item member-person-card">
+              <div className="member-person-main">
+                <span className="member-name">{m.name}</span>
+                {m.note && <span className="member-note">{m.note}</span>}
+                <select
+                  value={m.wristband === 'VIP' ? 'VIP' : 'GA'}
+                  onChange={(e) => updateMember(m.id, { wristband: e.target.value })}
+                  className="select select-inline"
+                >
+                  <option value="GA">GA</option>
+                  <option value="VIP">VIP</option>
+                </select>
+                <select
+                  value={m.status}
+                  onChange={(e) => updateStatus(m.id, e.target.value)}
+                  className="select select-inline"
+                >
+                  <option value="going">Going</option>
+                  <option value="maybe">Maybe</option>
+                  <option value="not-going">Not going</option>
+                </select>
+                <button type="button" className="btn btn-ghost btn-sm" onClick={() => remove(m.id)} aria-label="Delete">×</button>
+              </div>
+              <div className="member-person-allergies">
+                <label className="member-person-allergies-label" htmlFor={`member-allergies-${m.id}`}>Allergens</label>
+                <input
+                  id={`member-allergies-${m.id}`}
+                  type="text"
+                  className="input input-sm member-person-allergies-input"
+                  defaultValue={formatAllergiesInputValue(m)}
+                  key={`allergies-field-${m.id}-${m.allergies ?? ''}`}
+                  placeholder="e.g. peanuts, dairy (optional)"
+                  onBlur={(e) => updateMember(m.id, { allergies: e.target.value })}
+                  aria-label={`Food allergens for ${m.name}`}
+                />
+              </div>
             </li>
           ))}
         </ul>

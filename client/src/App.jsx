@@ -9,6 +9,7 @@ import { Schedule } from './components/Schedule';
 import { OfficialInfo } from './components/OfficialInfo';
 import { WeatherWidget } from './components/WeatherWidget';
 import { Bingo } from './components/Bingo';
+import { MealPlanner } from './components/MealPlanner';
 import { Notes } from './components/Notes';
 import { PasswordGate } from './components/PasswordGate';
 
@@ -68,6 +69,10 @@ export default function App() {
         ) : view === 'packing' ? (
           <section className="section">
             <PackingTab api={API} />
+          </section>
+        ) : view === 'meals' ? (
+          <section className="section">
+            <MealPlanner api={API} />
           </section>
         ) : view === 'official-info' ? (
           <section className="section">

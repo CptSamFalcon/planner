@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { formatAllergiesInputValue } from '../utils/memberAllergies';
 
 // Green only if they have a ride and a camp pass (campsite). Everything else is optional.
 export function isFullyAssigned(m) {
@@ -159,6 +160,8 @@ export function EditMemberModal({ member: initialMember, allMembers, api, onClos
   const { shelters, beds, beddings } = filterAssignablePacking(packingItems, otherMembers, member);
   const itemLabel = (i) => (i.list_name ? `${i.label} (${i.list_name})` : i.label);
 
+  const allergiesText = formatAllergiesInputValue(member);
+
   return (
     <div className="modal-backdrop" onClick={onClose} role="dialog" aria-modal="true" aria-labelledby="edit-member-title">
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
@@ -269,6 +272,20 @@ export function EditMemberModal({ member: initialMember, allMembers, api, onClos
               ))}
             </select>
             <span className="member-detail-hint">Campsite pass vehicle is set in Vehicles/Sites</span>
+          </div>
+          <div className="member-detail member-detail--full">
+            <label className="member-detail-label" htmlFor="edit-member-allergies">Allergens (optional)</label>
+            <input
+              id="edit-member-allergies"
+              type="text"
+              className="input input-sm"
+              defaultValue={allergiesText}
+              key={`allergies-${member.id}-${member.allergies || 'none'}`}
+              placeholder="e.g. peanuts, shellfish"
+              onBlur={(e) => updateMember({ allergies: e.target.value })}
+              aria-label="Food allergies"
+            />
+            <span className="member-detail-hint">Same field as under People. Shown on Meals when set so cooks can spot overlaps with recipes.</span>
           </div>
         </div>
         <div className="modal-footer">
