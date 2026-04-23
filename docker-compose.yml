@@ -11,6 +11,9 @@ services:
     environment:
       - PORT=3080
       - DATA_DIR=/app/data
+      - NODE_ENV=production
+      - PLANNER_PASSWORD=${PLANNER_PASSWORD}
+      - PLANNER_SESSION_SECRET=${PLANNER_SESSION_SECRET}
 
 volumes:
   bass-canyon-planner-data:

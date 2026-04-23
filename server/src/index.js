@@ -3,7 +3,7 @@ import cors from 'cors';
 import cookieParser from 'cookie-parser';
 import path from 'path';
 import { fileURLToPath } from 'url';
-import { initDb, getDb } from './db.js';
+import { initDb } from './db.js';
 import { authRouter, requireAuth } from './routes/auth.js';
 import { membersRouter } from './routes/members.js';
 import { campsitesRouter } from './routes/campsites.js';
@@ -11,7 +11,7 @@ import { vehiclesRouter } from './routes/vehicles.js';
 import { packingRouter } from './routes/packing.js';
 import { scheduleRouter } from './routes/schedule.js';
 import { notesRouter } from './routes/notes.js';
-import { bingoRouter } from './routes/bingo.js';
+import { mealsRouter } from './routes/meals.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -36,7 +36,7 @@ app.use('/api/vehicles', vehiclesRouter);
 app.use('/api/packing', packingRouter);
 app.use('/api/schedule', scheduleRouter);
 app.use('/api/notes', notesRouter);
-app.use('/api/bingo', bingoRouter);
+app.use('/api/meals', mealsRouter);
 
 // Festival info (static)
 app.get('/api/festival', (req, res) => {

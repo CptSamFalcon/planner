@@ -1,7 +1,6 @@
 import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
-
 let db = null;
 
 export function initDb(dataDir) {
@@ -52,6 +51,11 @@ export function initDb(dataDir) {
   }
   try {
     db.exec('ALTER TABLE members ADD COLUMN bingo_completed_at TEXT');
+  } catch (_) {
+    /* column already exists */
+  }
+  try {
+    db.exec("ALTER TABLE members ADD COLUMN allergies TEXT DEFAULT '[]'");
   } catch (_) {
     /* column already exists */
   }
@@ -190,6 +194,20 @@ export function initDb(dataDir) {
       PRIMARY KEY (event_id, member_id),
       FOREIGN KEY (event_id) REFERENCES schedule(id) ON DELETE CASCADE,
       FOREIGN KEY (member_id) REFERENCES members(id) ON DELETE CASCADE
+    );
+  `);
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS meals (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT NOT NULL,
+      slot_label TEXT,
+      preparer_member_id INTEGER NOT NULL,
+      recipe TEXT,
+      ingredients_json TEXT,
+      notes TEXT,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (preparer_member_id) REFERENCES members(id) ON DELETE CASCADE
     );
   `);
 
