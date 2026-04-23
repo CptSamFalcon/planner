@@ -5,9 +5,22 @@ const router = Router();
 const COOKIE_NAME = 'planner_session';
 const COOKIE_PAYLOAD = 'authenticated';
 
-// Password and signing secret from env only (never in client). Default for dev convenience.
-const PASSWORD = process.env.PLANNER_PASSWORD ?? 'joecamel';
-const SECRET = process.env.PLANNER_SESSION_SECRET || process.env.PLANNER_PASSWORD || 'planner-session-secret';
+// Password from env only (never in client). Empty string must not count as "set" — otherwise
+// timingSafeCompare("", "") accepts any blank submit. Default only when env is unset/whitespace (dev).
+function getConfiguredPassword() {
+  const raw = process.env.PLANNER_PASSWORD;
+  if (raw != null && String(raw).trim().length > 0) return String(raw);
+  if (process.env.NODE_ENV === 'production') return null;
+  return 'joecamel';
+}
+
+const PASSWORD = getConfiguredPassword();
+const SECRET =
+  (process.env.PLANNER_SESSION_SECRET && String(process.env.PLANNER_SESSION_SECRET).length > 0
+    ? process.env.PLANNER_SESSION_SECRET
+    : null)
+  || (PASSWORD != null ? PASSWORD : null)
+  || 'planner-session-secret';
 
 function sign(value) {
   return crypto.createHmac('sha256', SECRET).update(value).digest('hex');
@@ -32,8 +45,12 @@ function timingSafeCompare(a, b) {
 
 /** POST /api/auth — submit password; sets session cookie on success */
 router.post('/', (req, res) => {
+  if (PASSWORD == null) {
+    res.status(503).json({ error: 'Password not configured' });
+    return;
+  }
   const submitted = req.body?.password;
-  if (typeof submitted !== 'string') {
+  if (typeof submitted !== 'string' || submitted.length === 0) {
     res.status(401).json({ error: 'Invalid request' });
     return;
   }
@@ -54,6 +71,10 @@ router.post('/', (req, res) => {
 
 /** GET /api/auth — check if session is valid */
 router.get('/', (req, res) => {
+  if (PASSWORD == null) {
+    res.status(401).json({ error: 'Not authenticated' });
+    return;
+  }
   const cookie = req.cookies?.[COOKIE_NAME];
   if (!verifySigned(cookie)) {
     res.status(401).json({ error: 'Not authenticated' });
@@ -65,6 +86,10 @@ router.get('/', (req, res) => {
 /** Require valid session cookie for all /api except /api/auth */
 function requireAuth(req, res, next) {
   if (req.path === '/auth') return next();
+  if (PASSWORD == null) {
+    res.status(503).json({ error: 'Password not configured' });
+    return;
+  }
   const cookie = req.cookies?.[COOKIE_NAME];
   if (!verifySigned(cookie)) {
     res.status(401).json({ error: 'Not authenticated' });

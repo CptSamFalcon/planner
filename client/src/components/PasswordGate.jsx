@@ -7,6 +7,10 @@ export function PasswordGate({ api, onAuthenticated }) {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    if (!password.trim()) {
+      setError('Enter a password');
+      return;
+    }
     setError('');
     setSubmitting(true);
     fetch(`${api}/auth`, {
@@ -44,7 +48,11 @@ export function PasswordGate({ api, onAuthenticated }) {
             autoFocus
           />
           {error && <p className="password-gate-error" role="alert">{error}</p>}
-          <button type="submit" className="btn btn-primary password-gate-btn" disabled={submitting}>
+          <button
+            type="submit"
+            className="btn btn-primary password-gate-btn"
+            disabled={submitting || !password.trim()}
+          >
             {submitting ? 'Checking…' : 'Enter'}
           </button>
         </form>
