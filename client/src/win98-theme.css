@@ -103,6 +103,10 @@ h3 {
 
 .win98-caption-title {
   flex: 1;
+  margin: 0;
+  font-size: inherit;
+  font-weight: inherit;
+  line-height: 1.2;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
@@ -342,21 +346,39 @@ textarea:focus {
   display: none !important;
 }
 
-.hero-title,
-.hero-countdown {
-  background: none !important;
-  -webkit-background-clip: unset !important;
-  -webkit-text-fill-color: #000080 !important;
-  background-clip: unset !important;
+.hero-title--static {
   color: #000080 !important;
-  filter: none !important;
-  animation: none !important;
-  text-shadow: none;
+  font-family: var(--font-body);
 }
 
-.hero-countdown-until {
-  color: var(--text-muted) !important;
-  -webkit-text-fill-color: var(--text-muted) !important;
+/* Marquee lives inside gray panel; bezel is the “real” retro box */
+.hero-marquee-bezel {
+  background: #a0a0a0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 6px 8px 8px;
+}
+
+.hero-marquee-chrome-title {
+  color: #000000;
+  font-size: 0.65rem;
+}
+
+.hero-marquee-window {
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+  box-shadow: inset 1px 1px 0 #000000;
+  background: #0a0a06;
+}
+
+.hero-marquee-track {
+  color: #ffdd33;
+  text-shadow:
+    0 0 4px rgba(255, 220, 60, 0.9),
+    1px 1px 0 #503000;
+  font-family: var(--font-body);
 }
 
 .hero-loading {
