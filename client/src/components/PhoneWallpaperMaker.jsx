@@ -46,6 +46,13 @@ const COLOR_THEMES = [
   },
 ];
 
+const EMOJI_STRIPS = [
+  { id: 'rave', label: 'Rave', text: '🎧 ✨ 🔊 💜 🌌 🎶 ⚡' },
+  { id: 'festival', label: 'Festival', text: '🏕️ 🌲 🎡 🌄 🎵 🚌 🔥' },
+  { id: 'party', label: 'Party', text: '🪩 💃 🕺 🎉 🍕 🌈 😎' },
+  { id: 'space', label: 'Space', text: '🚀 🛸 🌠 🌙 ⭐️ 🔭 👾' },
+];
+
 function defaultOwner(memberName) {
   const trimmed = String(memberName || '').trim();
   if (!trimmed) return 'MY';
@@ -91,7 +98,8 @@ export function PhoneWallpaperMaker({ api }) {
   const [contacts, setContacts] = useState([newContact()]);
   const [presetId, setPresetId] = useState(PHONE_PRESETS[0].id);
   const [themeId, setThemeId] = useState(COLOR_THEMES[0].id);
-  const [showBadge, setShowBadge] = useState(true);
+  const [emojiStripId, setEmojiStripId] = useState(EMOJI_STRIPS[0].id);
+  const [showEmojiStrip, setShowEmojiStrip] = useState(true);
   const [showScanlines, setShowScanlines] = useState(true);
 
   useEffect(() => {
@@ -120,6 +128,7 @@ export function PhoneWallpaperMaker({ api }) {
 
   const preset = PHONE_PRESETS.find((p) => p.id === presetId) || PHONE_PRESETS[0];
   const theme = COLOR_THEMES.find((t) => t.id === themeId) || COLOR_THEMES[0];
+  const emojiStrip = EMOJI_STRIPS.find((e) => e.id === emojiStripId) || EMOJI_STRIPS[0];
   const contactLines = useMemo(() => {
     const clean = contacts
       .map((c) => ({
@@ -170,7 +179,7 @@ export function PhoneWallpaperMaker({ api }) {
     ctx.lineWidth = Math.max(6, Math.round(c.width * 0.006));
     ctx.strokeRect(ctx.lineWidth, ctx.lineWidth, c.width - ctx.lineWidth * 2, c.height - ctx.lineWidth * 2);
 
-    if (showBadge) {
+    if (showEmojiStrip) {
       const badgeW = Math.round(c.width * 0.36);
       const badgeH = Math.round(c.height * 0.055);
       const badgeX = Math.round((c.width - badgeW) / 2);
@@ -182,9 +191,9 @@ export function PhoneWallpaperMaker({ api }) {
       ctx.strokeRect(badgeX, badgeY, badgeW, badgeH);
       ctx.shadowBlur = 0;
       ctx.fillStyle = theme.accent;
-      ctx.font = `700 ${Math.round(c.width * 0.032)}px "VT323", "Courier New", monospace`;
+      ctx.font = `${Math.round(c.width * 0.027)}px "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", "VT323", sans-serif`;
       ctx.textAlign = 'center';
-      ctx.fillText('FESTOS RETURN SCREEN', c.width / 2, badgeY + Math.round(badgeH * 0.68));
+      ctx.fillText(emojiStrip.text, c.width / 2, badgeY + Math.round(badgeH * 0.7));
     }
 
     const mainFont = Math.round(c.width * 0.08);
@@ -259,6 +268,15 @@ export function PhoneWallpaperMaker({ api }) {
               ))}
             </select>
           </label>
+
+          <label className="wallpaper-label">
+            Emoji design
+            <select className="select" value={emojiStripId} onChange={(e) => setEmojiStripId(e.target.value)}>
+              {EMOJI_STRIPS.map((e) => (
+                <option key={e.id} value={e.id}>{e.label}</option>
+              ))}
+            </select>
+          </label>
         </div>
 
         <div className="wallpaper-contacts">
@@ -310,7 +328,7 @@ export function PhoneWallpaperMaker({ api }) {
             '--wallpaper-accent': theme.accent,
           }}
         >
-          {showBadge && <span className="wallpaper-badge">FESTOS RETURN SCREEN</span>}
+          {showEmojiStrip && <span className="wallpaper-badge">{emojiStrip.text}</span>}
           <p>{lines[0]}</p>
           <p>{lines[1]}</p>
           {contactLines.map((line, idx) => (
@@ -321,8 +339,8 @@ export function PhoneWallpaperMaker({ api }) {
 
         <div className="wallpaper-options">
           <label className="form-checkbox-label">
-            <input type="checkbox" className="form-checkbox" checked={showBadge} onChange={(e) => setShowBadge(e.target.checked)} />
-            Show FestOS badge
+            <input type="checkbox" className="form-checkbox" checked={showEmojiStrip} onChange={(e) => setShowEmojiStrip(e.target.checked)} />
+            Show emoji strip
           </label>
           <label className="form-checkbox-label">
             <input type="checkbox" className="form-checkbox" checked={showScanlines} onChange={(e) => setShowScanlines(e.target.checked)} />
