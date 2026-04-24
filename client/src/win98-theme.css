@@ -1,0 +1,686 @@
+/* Windows 98 / classic shell — loaded after index.css */
+
+:root {
+  --bg-deep: #008080;
+  --bg-card: #c0c0c0;
+  --bg-elevated: #ffffff;
+  --accent-cyan: #000080;
+  --accent-magenta: #800000;
+  --accent-purple: #000080;
+  --accent-glow: rgba(0, 0, 128, 0.2);
+  --accent-glow-magenta: rgba(128, 0, 0, 0.12);
+  --glow-strong: inset 1px 1px 0 #ffffff, inset -1px -1px 0 #808080;
+  --text: #000000;
+  --text-muted: #404040;
+  --border: #808080;
+  --font-display: Tahoma, "MS Sans Serif", "Segoe UI", sans-serif;
+  --font-body: Tahoma, "MS Sans Serif", "Segoe UI", sans-serif;
+  --win98-title-from: #000080;
+  --win98-title-to: #1084d0;
+}
+
+body {
+  background: var(--bg-deep);
+  background-image:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+    linear-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+  background-size: 2px 2px;
+  color: var(--text);
+  font-family: var(--font-body);
+  font-size: 13px;
+  -webkit-font-smoothing: auto;
+}
+
+h1,
+h2,
+h3 {
+  font-family: var(--font-display);
+  font-weight: 700;
+}
+
+/* Desktop + MDI-style app window */
+.win98-desktop {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  padding: 10px 10px 42px;
+  box-sizing: border-box;
+}
+
+.win98-desktop--gate {
+  padding-bottom: 10px;
+  justify-content: center;
+}
+
+.win98-app-window {
+  flex: 1;
+  max-width: 960px;
+  width: 100%;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  min-height: 0;
+  border: 2px solid;
+  border-color: #dfdfdf #404040 #404040 #dfdfdf;
+  box-shadow: 2px 2px 0 #000000;
+  background: #c0c0c0;
+}
+
+.win98-main {
+  flex: 1;
+  min-height: 0;
+  padding: 0 10px 12px;
+  background: #c0c0c0;
+}
+
+.win98-main > .section:first-child {
+  padding-top: 0.75rem;
+}
+
+/* Title bar */
+.win98-caption {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-height: 28px;
+  padding: 2px 4px 2px 6px;
+  background: linear-gradient(90deg, var(--win98-title-from) 0%, var(--win98-title-to) 100%);
+  color: #ffffff;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  flex-shrink: 0;
+  user-select: none;
+}
+
+.win98-caption-title {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.win98-caption-controls {
+  display: flex;
+  gap: 2px;
+  flex-shrink: 0;
+}
+
+.win98-caption-btn {
+  display: inline-block;
+  width: 16px;
+  height: 14px;
+  box-sizing: border-box;
+  background: #c0c0c0;
+  border: 1px solid;
+  border-color: #ffffff #000000 #000000 #ffffff;
+  font-size: 9px;
+  line-height: 12px;
+  text-align: center;
+  color: #000000;
+}
+
+.win98-caption-close {
+  font-weight: 700;
+  font-size: 10px;
+  line-height: 11px;
+}
+
+/* Toolbar row (tabs + branding) */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  background: #c0c0c0;
+  border: none;
+  border-bottom: 1px solid #808080;
+  box-shadow: none;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.header-inner {
+  padding: 4px 6px;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.logo {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  color: #000000;
+  background: none;
+  -webkit-text-fill-color: #000000;
+  filter: none;
+  text-shadow: none;
+}
+
+.tagline {
+  color: var(--text-muted);
+  font-size: 11px;
+}
+
+.header-menu-btn {
+  border-radius: 0;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+}
+
+.header-menu-btn:hover {
+  background: #c0c0c0;
+  border-color: #ffffff #404040 #404040 #ffffff;
+}
+
+.header-nav {
+  gap: 4px;
+}
+
+.header-nav-btn {
+  border-radius: 0;
+  background: #c0c0c0;
+  color: #000000;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  font-size: 11px;
+  padding: 3px 8px;
+  transition: none;
+}
+
+.header-nav-btn:hover {
+  color: #000000;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  background: #d4d0c8;
+}
+
+.header-nav-btn.active {
+  background: #c0c0c0;
+  color: #000000;
+  border-color: #404040 #ffffff #ffffff #404040;
+  box-shadow: inset 1px 1px 0 #808080;
+}
+
+@media (max-width: 768px) {
+  .header-nav {
+    background: #c0c0c0;
+    border-bottom: 2px solid #404040;
+  }
+
+  .header-nav-btn {
+    border-radius: 0;
+    border: 1px solid #808080;
+  }
+
+  .header-nav-btn.active {
+    background: #000080;
+    color: #ffffff;
+    border-color: #000080;
+    box-shadow: none;
+  }
+}
+
+main {
+  max-width: none;
+  margin: 0;
+  padding: 0;
+}
+
+.section {
+  padding: 1rem 0;
+}
+
+.section + .section {
+  border-top: 1px solid #808080;
+}
+
+/* Cards & panels */
+.card {
+  background: #c0c0c0;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+  border-radius: 0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  box-shadow: none;
+}
+
+.card:hover {
+  border-color: #ffffff #404040 #404040 #ffffff;
+  box-shadow: none;
+}
+
+.card-title {
+  color: #000080;
+  text-shadow: none;
+}
+
+/* Buttons */
+.btn {
+  border-radius: 0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  background: #c0c0c0;
+  color: #000000;
+  font-weight: 400;
+  transition: none;
+}
+
+.btn:active {
+  border-color: #404040 #ffffff #ffffff #404040;
+}
+
+.btn-primary {
+  background: #c0c0c0;
+  color: #000000;
+  box-shadow: none;
+}
+
+.btn-primary:hover {
+  filter: none;
+  transform: none;
+  box-shadow: none;
+}
+
+.btn-primary:active {
+  transform: none;
+}
+
+.btn-secondary {
+  background: #c0c0c0;
+  color: #000000;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+}
+
+.btn-secondary:hover {
+  border-color: #ffffff #404040 #404040 #ffffff;
+}
+
+.btn-ghost {
+  background: #c0c0c0;
+  color: #000000;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+}
+
+.btn-ghost:hover {
+  color: #000000;
+}
+
+/* Form controls */
+.input,
+.select,
+.password-gate-input,
+textarea {
+  border-radius: 0;
+  background: #ffffff;
+  color: #000000;
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+}
+
+textarea:focus {
+  outline: 1px dotted #000000;
+  outline-offset: -3px;
+  box-shadow: none;
+}
+
+.input:focus,
+.select:focus,
+.password-gate-input:focus {
+  outline: 1px dotted #000000;
+  outline-offset: -3px;
+  border-color: #808080 #ffffff #ffffff #808080;
+  box-shadow: none;
+}
+
+/* Password gate */
+.password-gate {
+  background: var(--bg-deep);
+  background-image:
+    linear-gradient(90deg, rgba(0, 0, 0, 0.035) 1px, transparent 1px),
+    linear-gradient(rgba(0, 0, 0, 0.035) 1px, transparent 1px);
+  background-size: 2px 2px;
+}
+
+.password-gate-card {
+  max-width: 320px;
+  background: #c0c0c0;
+  border-radius: 0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  box-shadow: 2px 2px 0 #000000;
+  backdrop-filter: none;
+  -webkit-backdrop-filter: none;
+}
+
+.password-gate-title {
+  -webkit-text-fill-color: #000080;
+  background: none;
+  color: #000080;
+}
+
+.password-gate-subtitle,
+.password-gate-hint {
+  color: var(--text-muted);
+}
+
+.password-gate-error {
+  color: #800000;
+}
+
+/* Hero */
+.hero {
+  padding: 1rem;
+  text-align: center;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+  margin-bottom: 0.5rem;
+}
+
+.hero-bg {
+  display: none !important;
+}
+
+.hero-title,
+.hero-countdown {
+  background: none !important;
+  -webkit-background-clip: unset !important;
+  -webkit-text-fill-color: #000080 !important;
+  background-clip: unset !important;
+  color: #000080 !important;
+  filter: none !important;
+  animation: none !important;
+  text-shadow: none;
+}
+
+.hero-countdown-until {
+  color: var(--text-muted) !important;
+  -webkit-text-fill-color: var(--text-muted) !important;
+}
+
+.hero-loading {
+  color: var(--text-muted);
+}
+
+/* Lineup spotlight */
+.lineup-spotlight-glow {
+  display: none !important;
+}
+
+.lineup-spotlight {
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  padding: 1rem 0;
+  margin-top: 0.5rem;
+}
+
+.lineup-spotlight-eyebrow {
+  color: #000080;
+  letter-spacing: 0.12em;
+}
+
+.lineup-spotlight-title {
+  background: none !important;
+  -webkit-text-fill-color: #000080 !important;
+  color: #000080 !important;
+  filter: none !important;
+}
+
+.lineup-spotlight-poster-frame {
+  border-radius: 0;
+  box-shadow: none;
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+  transform: none !important;
+  background: #c0c0c0;
+}
+
+.lineup-spotlight-poster-link:hover .lineup-spotlight-poster-frame,
+.lineup-spotlight-poster-link:focus-visible .lineup-spotlight-poster-frame {
+  transform: none !important;
+  box-shadow: none;
+  border-color: #000080;
+}
+
+/* Weather strip */
+.weather-shell-glow {
+  display: none !important;
+}
+
+.weather-title {
+  background: none !important;
+  -webkit-text-fill-color: #000080 !important;
+  color: #000080 !important;
+}
+
+.weather-pill {
+  border-radius: 0;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  box-shadow: none;
+}
+
+.weather-pill:hover {
+  transform: none;
+  box-shadow: none;
+}
+
+.weather-pill--today,
+.weather-pill--fest {
+  border-color: #ffffff #404040 #404040 #ffffff;
+  box-shadow: none;
+}
+
+.weather-pill-hi {
+  background: none !important;
+  -webkit-text-fill-color: #000080 !important;
+  color: #000080 !important;
+}
+
+.weather-pill-fest {
+  color: #000080;
+  background: #ffffff;
+  border-color: #808080;
+}
+
+.weather-skeleton-pill {
+  border-radius: 0;
+  animation: none;
+  background: #a0a0a0;
+}
+
+/* Modals */
+.modal-backdrop {
+  background: rgba(0, 0, 0, 0.45);
+}
+
+.modal-content,
+.calendar-export-modal {
+  border-radius: 0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  box-shadow: 4px 4px 0 #000000;
+}
+
+/* Schedule grid (desktop) */
+.schedule-grid-event {
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.schedule-grid-event-set {
+  background: #d4d0c8 !important;
+  border-left: 3px solid #000080 !important;
+  color: #000000 !important;
+}
+
+.schedule-grid-event-meetup {
+  background: #ece9d8 !important;
+  border-left: 3px solid #800000 !important;
+  color: #000000 !important;
+}
+
+.schedule-grid-event:hover {
+  filter: none;
+  box-shadow: inset 0 0 0 1px #000080;
+}
+
+.schedule-grid-event-all-selected {
+  box-shadow: inset 0 0 0 2px #000080 !important;
+}
+
+.schedule-grid-event-all-badge {
+  color: #ffffff !important;
+  background: #000080 !important;
+  border-radius: 0;
+}
+
+/* Schedule day tabs */
+.schedule-day-tab {
+  border-radius: 0;
+}
+
+.schedule-day-tab:hover {
+  border-color: #000080;
+  color: #000080;
+  background: #ffffff;
+}
+
+.schedule-day-tab.active {
+  background: #000080 !important;
+  color: #ffffff !important;
+  box-shadow: none !important;
+  border-color: #000080 !important;
+}
+
+.schedule-day-tab.active:hover {
+  box-shadow: none !important;
+  filter: none;
+}
+
+.schedule-grid-wrap {
+  border-radius: 0;
+}
+
+/* Schedule mobile cards */
+.schedule-mobile-event {
+  border-radius: 0;
+  box-shadow: none;
+  border-left-width: 4px;
+}
+
+.schedule-mobile-event-set {
+  background: #d4d0c8 !important;
+  border-left-color: #000080 !important;
+}
+
+.schedule-mobile-event-meetup {
+  background: #ece9d8 !important;
+  border-left-color: #800000 !important;
+}
+
+.schedule-mobile-event:hover {
+  filter: none;
+  background: #e0e0e0 !important;
+}
+
+/* Options / campsites hub */
+.options-page {
+  background: transparent;
+}
+
+.options-page-card {
+  margin-top: 0.75rem;
+}
+
+/* Bingo / misc glow kills */
+.bingo-card,
+.bingo-square {
+  border-radius: 0;
+}
+
+/* Taskbar */
+.win98-taskbar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 50;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  height: 34px;
+  padding: 2px 4px;
+  background: #c0c0c0;
+  border-top: 2px solid #ffffff;
+  border-left: none;
+  box-sizing: border-box;
+  box-shadow: 0 -1px 0 #808080;
+}
+
+.win98-start-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  height: 26px;
+  padding: 0 8px 0 6px;
+  font-weight: 700;
+  font-size: 11px;
+  font-family: var(--font-body);
+  color: #000000;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  cursor: pointer;
+}
+
+.win98-start-btn:hover {
+  background: #d4d0c8;
+}
+
+.win98-start-btn:active {
+  border-color: #404040 #ffffff #ffffff #404040;
+}
+
+.win98-start-flag {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  background: linear-gradient(90deg, #7bfa4a 45%, #ffffff 45% 55%, #7bfa4a 55%);
+  border: 1px solid #000000;
+  flex-shrink: 0;
+}
+
+.win98-taskbar-spacer {
+  flex: 1;
+}
+
+.win98-taskbar-tray {
+  display: flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 8px;
+  border: 1px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+  background: #c0c0c0;
+  font-size: 11px;
+  font-variant-numeric: tabular-nums;
+  color: #000000;
+}
+
+/* Links in content */
+main a:not(.btn):not(.header-nav-btn):not(.win98-start-btn) {
+  color: #0000ff;
+}
+
+main a:not(.btn):not(.header-nav-btn):not(.win98-start-btn):visited {
+  color: #800080;
+}
