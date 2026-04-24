@@ -490,7 +490,6 @@ export function Schedule({ api }) {
       <div className="schedule-card card block">
         <div className="schedule-header-row">
           <h3 className="card-title">Festival Schedule</h3>
-          <p className="schedule-subtitle">Set times by stage + your meetups. Pick a day to see the grid.</p>
           <button
             type="button"
             className="btn btn-secondary schedule-calendar-export-btn"

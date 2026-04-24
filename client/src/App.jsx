@@ -12,6 +12,7 @@ import { Bingo } from './components/Bingo';
 import { MealPlanner } from './components/MealPlanner';
 import { Notes } from './components/Notes';
 import { PasswordGate } from './components/PasswordGate';
+import { Win98StartMenu } from './components/Win98StartMenu';
 
 const API = '/api';
 
@@ -32,6 +33,7 @@ export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
   const [view, setView] = useState('group');
+  const [startMenuOpen, setStartMenuOpen] = useState(false);
   const [festival, setFestival] = useState(null);
 
   useEffect(() => {
@@ -68,7 +70,7 @@ export default function App() {
   return (
     <div className="win98-desktop">
       <div className="win98-app-window">
-        <Header view={view} onViewChange={setView} />
+        <Header currentViewId={view} />
         <main className="win98-main">
           {view === 'schedule' ? (
             <section className="section">
@@ -109,10 +111,12 @@ export default function App() {
         </main>
       </div>
       <footer className="win98-taskbar">
-        <button type="button" className="win98-start-btn" onClick={() => setView('group')}>
-          <span className="win98-start-flag" aria-hidden />
-          Start
-        </button>
+        <Win98StartMenu
+          view={view}
+          open={startMenuOpen}
+          onOpenChange={setStartMenuOpen}
+          onSelectView={setView}
+        />
         <div className="win98-taskbar-spacer" aria-hidden />
         <Win98TaskbarClock />
       </footer>
