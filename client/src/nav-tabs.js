@@ -6,7 +6,6 @@ export const NAV_TABS = [
   { id: 'meals', label: 'Meals' },
   { id: 'people', label: 'People' },
   { id: 'packing', label: 'Packing' },
-  { id: 'print-pack', label: 'Print Pack' },
   { id: 'official-info', label: 'Official Info' },
   { id: 'bingo', label: 'Bingo' },
 ];

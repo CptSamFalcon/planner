@@ -13,7 +13,6 @@ import { MealPlanner } from './components/MealPlanner';
 import { Notes } from './components/Notes';
 import { PasswordGate } from './components/PasswordGate';
 import { Win98StartMenu } from './components/Win98StartMenu';
-import { PrintPack } from './components/PrintPack';
 import { navLabelForView } from './nav-tabs';
 
 const API = '/api';
@@ -107,10 +106,6 @@ export default function App() {
           ) : view === 'packing' ? (
             <section className="section">
               <PackingTab api={API} />
-            </section>
-          ) : view === 'print-pack' ? (
-            <section className="section">
-              <PrintPack api={API} />
             </section>
           ) : view === 'official-info' ? (
             <section className="section">
