@@ -3479,10 +3479,11 @@ main > .section:first-child {
   padding: 0.2rem 0.55rem;
   border: 1px solid var(--wallpaper-accent, #6af0ff);
   background: rgba(0, 0, 0, 0.35);
-  font-size: 0.78rem;
-  letter-spacing: 0.08em;
+  font-size: 1rem;
+  letter-spacing: 0.03em;
   color: var(--wallpaper-accent, #6af0ff);
   margin-bottom: 0.25rem;
+  font-family: "Apple Color Emoji", "Segoe UI Emoji", "Noto Color Emoji", sans-serif;
 }
 .wallpaper-scanlines {
   position: absolute;
