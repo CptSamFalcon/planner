@@ -271,7 +271,7 @@ export function EditMemberModal({ member: initialMember, allMembers, api, onClos
                 <option key={v.id} value={v.id}>{v.name}</option>
               ))}
             </select>
-            <span className="member-detail-hint">Campsite pass vehicle is set in Vehicles/Sites</span>
+            <span className="member-detail-hint">Campsite pass vehicle is set on the Campsites tab</span>
           </div>
           <div className="member-detail member-detail--full">
             <label className="member-detail-label" htmlFor="edit-member-allergies">Allergens (optional)</label>

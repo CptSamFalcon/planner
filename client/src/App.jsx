@@ -1,12 +1,12 @@
 import { useState, useEffect } from 'react';
 import { Header } from './components/Header';
 import { FestivalHero } from './components/FestivalHero';
-import { Campsites } from './components/Campsites';
-import { VehiclesSites } from './components/VehiclesSites';
+import { CampsitesHub } from './components/CampsitesHub';
 import { Members } from './components/Members';
 import { PackingTab } from './components/PackingTab';
 import { Schedule } from './components/Schedule';
 import { OfficialInfo } from './components/OfficialInfo';
+import { LineupSpotlight } from './components/LineupSpotlight';
 import { WeatherWidget } from './components/WeatherWidget';
 import { Bingo } from './components/Bingo';
 import { MealPlanner } from './components/MealPlanner';
@@ -50,39 +50,37 @@ export default function App() {
     <>
       <Header view={view} onViewChange={setView} />
       <main>
-        {view === 'vehicles-sites' ? (
+        {view === 'schedule' ? (
           <section className="section">
-            <VehiclesSites api={API} />
+            <Schedule api={API} />
+          </section>
+        ) : view === 'campsites' ? (
+          <CampsitesHub api={API} />
+        ) : view === 'meals' ? (
+          <section className="section">
+            <MealPlanner api={API} />
           </section>
         ) : view === 'people' ? (
           <section className="section">
             <Members api={API} />
           </section>
-        ) : view === 'schedule' ? (
-          <section className="section">
-            <Schedule api={API} />
-          </section>
-        ) : view === 'bingo' ? (
-          <section className="section">
-            <Bingo api={API} />
-          </section>
         ) : view === 'packing' ? (
           <section className="section">
             <PackingTab api={API} />
-          </section>
-        ) : view === 'meals' ? (
-          <section className="section">
-            <MealPlanner api={API} />
           </section>
         ) : view === 'official-info' ? (
           <section className="section">
             <OfficialInfo />
           </section>
+        ) : view === 'bingo' ? (
+          <section className="section">
+            <Bingo api={API} />
+          </section>
         ) : (
           <>
             <FestivalHero festival={festival} />
+            <LineupSpotlight />
             <WeatherWidget />
-            <Campsites api={API} onMemberUpdated={() => {}} />
             <section className="section section-notes">
               <Notes api={API} />
             </section>
