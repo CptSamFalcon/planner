@@ -36,17 +36,18 @@ membersRouter.get('/', (req, res) => {
 
 membersRouter.post('/', (req, res) => {
   try {
-    const { name, status = 'going', note, contact_number, campsite_id, wristband, vehicle_id, shelter_packing_id, bed_packing_id, bedding_packing_id, pre_party, allergies } = req.body;
+    const { name, status = 'going', note, contact_number, emergency_contact, campsite_id, wristband, vehicle_id, shelter_packing_id, bed_packing_id, bedding_packing_id, pre_party, allergies } = req.body;
     const prePartyVal = pre_party === true || pre_party === 1 || pre_party === 'Y' || pre_party === 'y' ? 1 : (pre_party === false || pre_party === 0 || pre_party === 'N' || pre_party === 'n' ? 0 : null);
     const allergiesJson = normalizeAllergies(allergies);
     const stmt = db().prepare(
-      'INSERT INTO members (name, status, note, contact_number, campsite_id, wristband, vehicle_id, shelter_packing_id, bed_packing_id, bedding_packing_id, pre_party, allergies) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      'INSERT INTO members (name, status, note, contact_number, emergency_contact, campsite_id, wristband, vehicle_id, shelter_packing_id, bed_packing_id, bedding_packing_id, pre_party, allergies) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     );
     const result = stmt.run(
       name || 'Anonymous',
       status,
       note || null,
       contact_number || null,
+      emergency_contact || null,
       campsite_id || null,
       wristband || null,
       vehicle_id || null,
@@ -66,13 +67,14 @@ membersRouter.post('/', (req, res) => {
 membersRouter.patch('/:id', (req, res) => {
   try {
     const { id } = req.params;
-    const { name, status, note, contact_number, campsite_id, wristband, vehicle_id, shelter_packing_id, bed_packing_id, bedding_packing_id, pre_party, allergies } = req.body;
+    const { name, status, note, contact_number, emergency_contact, campsite_id, wristband, vehicle_id, shelter_packing_id, bed_packing_id, bedding_packing_id, pre_party, allergies } = req.body;
     const updates = [];
     const values = [];
     if (name !== undefined) { updates.push('name = ?'); values.push(name); }
     if (status !== undefined) { updates.push('status = ?'); values.push(status); }
     if (note !== undefined) { updates.push('note = ?'); values.push(note); }
     if (contact_number !== undefined) { updates.push('contact_number = ?'); values.push(contact_number); }
+    if (emergency_contact !== undefined) { updates.push('emergency_contact = ?'); values.push(emergency_contact); }
     if (campsite_id !== undefined) { updates.push('campsite_id = ?'); values.push(campsite_id); }
     if (wristband !== undefined) { updates.push('wristband = ?'); values.push(wristband); }
     if (vehicle_id !== undefined) { updates.push('vehicle_id = ?'); values.push(vehicle_id); }

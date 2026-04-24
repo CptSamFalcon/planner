@@ -28,7 +28,7 @@ export function initDb(dataDir) {
   `);
 
   // Migrate existing DBs: add new columns if missing
-  const memberCols = ['contact_number', 'wristband'];
+  const memberCols = ['contact_number', 'wristband', 'emergency_contact'];
   for (const col of memberCols) {
     try {
       db.exec(`ALTER TABLE members ADD COLUMN ${col} TEXT`);
