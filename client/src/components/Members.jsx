@@ -36,7 +36,14 @@ function MemberPersonRow({ m, isGoing, updateMember, updateStatus, remove, editi
             <option value="maybe">Maybe</option>
             <option value="not-going">Not going</option>
           </select>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={() => remove(m.id)} aria-label={`Delete ${m.name}`}>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={() => remove(m.id)}
+            aria-label={`Delete ${m.name}`}
+            data-retro-tip={`Delete ${m.name}`}
+            data-status-tip={`Delete person: ${m.name}`}
+          >
             ×
           </button>
         </div>
@@ -73,19 +80,33 @@ function MemberPersonRow({ m, isGoing, updateMember, updateStatus, remove, editi
           <div className="member-allergy-saved">
             <span className="member-allergy-label">Allergies:</span>
             <span className="member-allergy-text">{formatAllergiesInputValue(m)}</span>
-            <button type="button" className="btn btn-secondary btn-sm" onClick={() => setEditingAllergyId(m.id)}>
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={() => setEditingAllergyId(m.id)}
+              data-retro-tip={`Edit allergies for ${m.name}`}
+              data-status-tip={`Edit allergies for ${m.name}`}
+            >
               Edit
             </button>
             <button
               type="button"
               className="btn btn-ghost btn-sm"
               onClick={() => updateMember(m.id, { allergies: null })}
+              data-retro-tip={`Remove allergies for ${m.name}`}
+              data-status-tip={`Remove allergies for ${m.name}`}
             >
               Remove
             </button>
           </div>
         ) : (
-          <button type="button" className="btn btn-secondary btn-sm member-allergy-add" onClick={() => setEditingAllergyId(m.id)}>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm member-allergy-add"
+            onClick={() => setEditingAllergyId(m.id)}
+            data-retro-tip={`Add allergies for ${m.name}`}
+            data-status-tip={`Add allergies for ${m.name}`}
+          >
             + Add allergy
           </button>
         )}

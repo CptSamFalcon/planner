@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { Win98Dialog } from './Win98Dialog';
 
 const ITEM_TYPES = [
   { value: '', label: '—' },
@@ -27,6 +28,7 @@ export function PackingTab({ api }) {
   const [label, setLabel] = useState('');
   const [itemType, setItemType] = useState('');
   const [occupants, setOccupants] = useState('');
+  const [pendingDeleteList, setPendingDeleteList] = useState(null);
 
   const loadLists = () => {
     fetch(`${api}/packing/lists`)
@@ -96,11 +98,12 @@ export function PackingTab({ api }) {
 
   const deleteCustomList = (id) => {
     if (typeof id !== 'number') return;
-    if (!window.confirm('Delete this packing list and all its items?')) return;
+    if (pendingDeleteList !== id) return;
     fetch(`${api}/packing/lists/${id}`, { method: 'DELETE' })
       .then(() => {
         loadLists();
         if (selectedListId === id) setSelectedListId('general');
+        setPendingDeleteList(null);
       })
       .catch(console.error);
   };
@@ -258,8 +261,10 @@ export function PackingTab({ api }) {
             <button
               type="button"
               className="btn btn-ghost btn-sm packing-tab-delete-list"
-              onClick={() => deleteCustomList(selectedList.id)}
+              onClick={() => setPendingDeleteList(selectedList.id)}
               aria-label="Delete this list"
+              data-retro-tip="Delete list and all items"
+              data-status-tip="Delete current packing list"
             >
               Delete list
             </button>
@@ -391,6 +396,16 @@ export function PackingTab({ api }) {
           })}
         </div>
       </div>
+      <Win98Dialog
+        open={pendingDeleteList != null}
+        title="Delete packing list"
+        message="Delete this packing list and all its items?"
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        confirmTone="danger"
+        onConfirm={() => deleteCustomList(pendingDeleteList)}
+        onCancel={() => setPendingDeleteList(null)}
+      />
     </div>
   );
 }
