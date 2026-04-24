@@ -669,6 +669,18 @@ textarea:focus {
   color: #000000;
 }
 
+/* Wallpaper maker */
+.wallpaper-preview {
+  border-radius: 0;
+  border: 2px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+  box-shadow: inset 1px 1px 0 #000000;
+}
+.wallpaper-badge {
+  border-color: #ffffff #404040 #404040 #ffffff;
+  color: #ffffff;
+}
+
 /* Schedule mobile cards */
 .schedule-mobile-event {
   border-radius: 0;
