@@ -1782,13 +1782,6 @@ main > .section:first-child {
 .schedule-header-row .card-title {
   margin: 0;
 }
-.schedule-subtitle {
-  color: var(--text-muted);
-  font-size: 0.9rem;
-  margin: 0.25rem 0 0;
-  flex: 1;
-  min-width: 0;
-}
 .schedule-calendar-export-btn {
   margin-left: auto;
   flex-shrink: 0;

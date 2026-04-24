@@ -13,8 +13,8 @@
   --text: #000000;
   --text-muted: #404040;
   --border: #808080;
-  --font-display: Tahoma, "MS Sans Serif", "Segoe UI", sans-serif;
-  --font-body: Tahoma, "MS Sans Serif", "Segoe UI", sans-serif;
+  --font-display: "VT323", "Courier New", monospace;
+  --font-body: "VT323", "Courier New", monospace;
   --win98-title-from: #000080;
   --win98-title-to: #1084d0;
 }
@@ -27,8 +27,16 @@ body {
   background-size: 2px 2px;
   color: var(--text);
   font-family: var(--font-body);
-  font-size: 13px;
-  -webkit-font-smoothing: auto;
+  font-size: 18px;
+  -webkit-font-smoothing: antialiased;
+}
+
+#root,
+button,
+input,
+select,
+textarea {
+  font-family: var(--font-body);
 }
 
 h1,
@@ -146,6 +154,12 @@ h3 {
   padding: 4px 6px;
   gap: 0.5rem;
   align-items: center;
+  flex-wrap: wrap;
+}
+
+.header-current-view {
+  font-weight: 700;
+  color: #000080;
 }
 
 .logo {
@@ -162,65 +176,6 @@ h3 {
 .tagline {
   color: var(--text-muted);
   font-size: 11px;
-}
-
-.header-menu-btn {
-  border-radius: 0;
-  background: #c0c0c0;
-  border: 2px solid;
-  border-color: #ffffff #404040 #404040 #ffffff;
-}
-
-.header-menu-btn:hover {
-  background: #c0c0c0;
-  border-color: #ffffff #404040 #404040 #ffffff;
-}
-
-.header-nav {
-  gap: 4px;
-}
-
-.header-nav-btn {
-  border-radius: 0;
-  background: #c0c0c0;
-  color: #000000;
-  border: 2px solid;
-  border-color: #ffffff #404040 #404040 #ffffff;
-  font-size: 11px;
-  padding: 3px 8px;
-  transition: none;
-}
-
-.header-nav-btn:hover {
-  color: #000000;
-  border-color: #ffffff #404040 #404040 #ffffff;
-  background: #d4d0c8;
-}
-
-.header-nav-btn.active {
-  background: #c0c0c0;
-  color: #000000;
-  border-color: #404040 #ffffff #ffffff #404040;
-  box-shadow: inset 1px 1px 0 #808080;
-}
-
-@media (max-width: 768px) {
-  .header-nav {
-    background: #c0c0c0;
-    border-bottom: 2px solid #404040;
-  }
-
-  .header-nav-btn {
-    border-radius: 0;
-    border: 1px solid #808080;
-  }
-
-  .header-nav-btn.active {
-    background: #000080;
-    color: #ffffff;
-    border-color: #000080;
-    box-shadow: none;
-  }
 }
 
 main {
@@ -646,8 +601,64 @@ textarea:focus {
   background: #d4d0c8;
 }
 
-.win98-start-btn:active {
+.win98-start-btn:active,
+.win98-start-btn.is-pressed {
   border-color: #404040 #ffffff #ffffff #404040;
+  box-shadow: inset 1px 1px 0 #404040;
+}
+
+.win98-start-btn.is-pressed {
+  background: #a0a0a0;
+}
+
+.win98-start-wrap {
+  position: relative;
+  flex-shrink: 0;
+  z-index: 60;
+}
+
+.win98-start-menu {
+  position: absolute;
+  bottom: calc(100% + 2px);
+  left: 0;
+  min-width: 12rem;
+  max-height: min(60vh, 24rem);
+  overflow-y: auto;
+  z-index: 70;
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #dfdfdf #000000 #000000 #dfdfdf;
+  padding: 2px 0;
+  box-shadow: 2px 2px 0 #000000;
+}
+
+.win98-start-menu-item {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  margin: 0;
+  text-align: left;
+  padding: 6px 10px 6px 12px;
+  font-size: 1rem;
+  font-family: var(--font-body);
+  line-height: 1.2;
+  color: #000000;
+  background: #c0c0c0;
+  border: none;
+  cursor: pointer;
+}
+
+.win98-start-menu-item:hover,
+.win98-start-menu-item:focus {
+  outline: none;
+  background: #000080;
+  color: #ffffff;
+}
+
+.win98-start-menu-item.is-active {
+  font-weight: 700;
+  box-shadow: inset 3px 0 0 #000080;
+  padding-left: 9px;
 }
 
 .win98-start-flag {
@@ -677,10 +688,10 @@ textarea:focus {
 }
 
 /* Links in content */
-main a:not(.btn):not(.header-nav-btn):not(.win98-start-btn) {
+main a:not(.btn):not(.win98-start-btn):not(.win98-start-menu-item) {
   color: #0000ff;
 }
 
-main a:not(.btn):not(.header-nav-btn):not(.win98-start-btn):visited {
+main a:not(.btn):not(.win98-start-btn):not(.win98-start-menu-item):visited {
   color: #800080;
 }
