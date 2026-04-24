@@ -523,6 +523,80 @@ textarea:focus {
 
 .schedule-grid-wrap {
   border-radius: 0;
+  background: #c0c0c0;
+}
+
+/* Schedule: per-stage / meetups column title row */
+.schedule-grid-stage-header {
+  background: #c0c0c0 !important;
+  color: #000000 !important;
+  text-transform: none;
+  letter-spacing: 0.02em;
+  font-weight: 700;
+  font-size: 0.85rem;
+  border-bottom: 2px solid #808080;
+  border-left: 4px solid var(--stage-color, #000080);
+}
+
+.schedule-grid-meetups-col .schedule-grid-stage-header {
+  color: #000000 !important;
+  background: #c0c0c0 !important;
+  border-left-color: #800000 !important;
+}
+
+/* Mobile: day header (replaces purple gradient) */
+.schedule-mobile-day-bar {
+  background: #c0c0c0 !important;
+  color: #000000 !important;
+  border: 2px solid !important;
+  border-color: #ffffff #404040 #404040 #ffffff !important;
+  border-radius: 0 !important;
+  min-height: 0 !important;
+  padding: 6px 8px !important;
+  gap: 8px !important;
+}
+
+.schedule-mobile-day-label {
+  color: #000000 !important;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.schedule-mobile-day-arrow {
+  width: 36px !important;
+  height: 32px !important;
+  min-width: 36px !important;
+  min-height: 32px !important;
+  background: #c0c0c0 !important;
+  border: 2px solid !important;
+  border-color: #ffffff #404040 #404040 #ffffff !important;
+  border-radius: 0 !important;
+  color: #000000 !important;
+  font-size: 1rem !important;
+}
+
+.schedule-mobile-day-arrow:hover:not(:disabled),
+.schedule-mobile-day-arrow:active:not(:disabled) {
+  background: #d4d0c8 !important;
+}
+
+.schedule-mobile-day-arrow:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* People page: name-as-title cards */
+.options-list--people-rows .options-item.member-person-card {
+  background: #c0c0c0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  border-radius: 0;
+}
+
+.member-person-title {
+  color: #000080;
+  font-family: var(--font-body);
+  font-size: 1.5rem;
 }
 
 /* Schedule mobile cards */
