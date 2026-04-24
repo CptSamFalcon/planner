@@ -649,6 +649,26 @@ textarea:focus {
   font-size: 1.5rem;
 }
 
+/* Issue Solver */
+.issue-panel {
+  border-radius: 0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  background: #c0c0c0;
+}
+
+.issue-title {
+  color: #000080;
+}
+
+.issue-pill {
+  border-radius: 0;
+  border: 1px solid;
+  border-color: #808080 #ffffff #ffffff #808080;
+  background: #c0c0c0;
+  color: #000000;
+}
+
 /* Schedule mobile cards */
 .schedule-mobile-event {
   border-radius: 0;

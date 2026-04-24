@@ -14,6 +14,7 @@ import { Notes } from './components/Notes';
 import { PasswordGate } from './components/PasswordGate';
 import { Win98StartMenu } from './components/Win98StartMenu';
 import { navLabelForView } from './nav-tabs';
+import { IssueSolver } from './components/IssueSolver';
 
 const API = '/api';
 
@@ -103,6 +104,8 @@ export default function App() {
             <section className="section">
               <Members api={API} />
             </section>
+          ) : view === 'issue-solver' ? (
+            <IssueSolver api={API} onNavigate={setView} />
           ) : view === 'packing' ? (
             <section className="section">
               <PackingTab api={API} />

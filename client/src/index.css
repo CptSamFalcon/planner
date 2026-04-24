@@ -3335,3 +3335,62 @@ main > .section:first-child {
     max-width: 100%;
   }
 }
+
+/* Issue Solver dashboard */
+.issue-solver-card {
+  margin-top: 0.5rem;
+}
+.issue-solver-loading {
+  margin: 0.5rem 0 0;
+  color: var(--text-muted);
+}
+.issue-solver-summary {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+  margin-bottom: 1rem;
+}
+.issue-pill {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.55rem;
+  border-radius: 999px;
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+.issue-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: 0.75rem;
+}
+.issue-panel {
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg-elevated);
+  padding: 0.75rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.issue-title {
+  margin: 0;
+  font-size: 0.92rem;
+  color: var(--accent-cyan);
+}
+.issue-list {
+  margin: 0;
+  padding-left: 1rem;
+  display: grid;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+}
+.issue-item {
+  color: var(--text);
+}
+.issue-empty {
+  margin: 0;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
