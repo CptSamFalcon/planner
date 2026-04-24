@@ -3394,3 +3394,110 @@ main > .section:first-child {
   font-size: 0.85rem;
   color: var(--text-muted);
 }
+
+/* Wallpaper maker */
+.wallpaper-card {
+  margin-top: 0.5rem;
+}
+.wallpaper-controls {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+  gap: 0.75rem;
+  margin-bottom: 1rem;
+}
+.wallpaper-label {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.85rem;
+  color: var(--text-muted);
+}
+.wallpaper-contacts {
+  margin: 0 0 1rem;
+}
+.wallpaper-contacts-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+.wallpaper-contact-list {
+  display: grid;
+  gap: 0.45rem;
+}
+.wallpaper-contact-row {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr) auto;
+  gap: 0.4rem;
+}
+.wallpaper-preview {
+  margin: 0 0 1rem;
+  border: 2px solid var(--border);
+  border-radius: 8px;
+  min-height: 200px;
+  padding: 1rem;
+  background: linear-gradient(165deg, var(--wallpaper-c0, #0a0a13) 0%, var(--wallpaper-c1, #00103c) 50%, var(--wallpaper-c2, #0c2a56) 100%);
+  color: var(--wallpaper-text, #f5f7ff);
+  display: grid;
+  align-content: center;
+  justify-items: center;
+  text-align: center;
+  gap: 0.55rem;
+  text-transform: uppercase;
+  letter-spacing: 0.04em;
+  box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--wallpaper-border, #7bd6ff) 35%, transparent);
+  position: relative;
+  overflow: hidden;
+}
+.wallpaper-preview p {
+  margin: 0;
+  text-shadow: 0 0 12px var(--wallpaper-glow, rgba(123, 214, 255, 0.65));
+  position: relative;
+  z-index: 1;
+}
+.wallpaper-preview p:first-child {
+  font-size: clamp(1.35rem, 3vw, 2rem);
+  font-weight: 700;
+}
+.wallpaper-preview p:nth-child(2) {
+  font-size: clamp(1rem, 2.2vw, 1.35rem);
+}
+.wallpaper-preview p:last-child {
+  font-size: clamp(0.95rem, 2.1vw, 1.2rem);
+}
+.wallpaper-contact-line {
+  font-size: clamp(0.92rem, 2vw, 1.18rem);
+  line-height: 1.2;
+}
+.wallpaper-badge {
+  position: relative;
+  z-index: 1;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.2rem 0.55rem;
+  border: 1px solid var(--wallpaper-accent, #6af0ff);
+  background: rgba(0, 0, 0, 0.35);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  color: var(--wallpaper-accent, #6af0ff);
+  margin-bottom: 0.25rem;
+}
+.wallpaper-scanlines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.13) 0 1px,
+    rgba(255, 255, 255, 0) 1px 3px
+  );
+  opacity: 0.26;
+}
+.wallpaper-options {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  margin: -0.35rem 0 0.9rem;
+}
