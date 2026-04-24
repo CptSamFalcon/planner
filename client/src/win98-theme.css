@@ -681,6 +681,31 @@ textarea:focus {
   color: #ffffff;
 }
 
+/* Perler planner */
+.perler-palette,
+.perler-grid-wrap,
+.perler-count-item {
+  border-radius: 0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  background: #c0c0c0;
+}
+
+.perler-color-chip {
+  border-radius: 0;
+  border: 1px solid;
+  border-color: #ffffff #808080 #808080 #ffffff;
+}
+
+.perler-color-chip.is-selected {
+  border-color: #000080;
+  background: #d4d0c8;
+}
+
+.perler-cell {
+  border-color: #808080;
+}
+
 /* Schedule mobile cards */
 .schedule-mobile-event {
   border-radius: 0;
