@@ -15,6 +15,19 @@ import { PasswordGate } from './components/PasswordGate';
 
 const API = '/api';
 
+function Win98TaskbarClock() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => {
+    const id = setInterval(() => setNow(new Date()), 30000);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <time className="win98-taskbar-tray" dateTime={now.toISOString()}>
+      {now.toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' })}
+    </time>
+  );
+}
+
 export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
@@ -37,56 +50,72 @@ export default function App() {
 
   if (!authChecked) {
     return (
-      <div className="password-gate password-gate-loading">
-        <div className="password-gate-card"><p className="password-gate-subtitle">Loading…</p></div>
+      <div className="win98-desktop win98-desktop--gate">
+        <div className="password-gate password-gate-loading">
+          <div className="password-gate-card"><p className="password-gate-subtitle">Loading…</p></div>
+        </div>
       </div>
     );
   }
   if (!authenticated) {
-    return <PasswordGate api={API} onAuthenticated={() => setAuthenticated(true)} />;
+    return (
+      <div className="win98-desktop win98-desktop--gate">
+        <PasswordGate api={API} onAuthenticated={() => setAuthenticated(true)} />
+      </div>
+    );
   }
 
   return (
-    <>
-      <Header view={view} onViewChange={setView} />
-      <main>
-        {view === 'schedule' ? (
-          <section className="section">
-            <Schedule api={API} />
-          </section>
-        ) : view === 'campsites' ? (
-          <CampsitesHub api={API} />
-        ) : view === 'meals' ? (
-          <section className="section">
-            <MealPlanner api={API} />
-          </section>
-        ) : view === 'people' ? (
-          <section className="section">
-            <Members api={API} />
-          </section>
-        ) : view === 'packing' ? (
-          <section className="section">
-            <PackingTab api={API} />
-          </section>
-        ) : view === 'official-info' ? (
-          <section className="section">
-            <OfficialInfo />
-          </section>
-        ) : view === 'bingo' ? (
-          <section className="section">
-            <Bingo api={API} />
-          </section>
-        ) : (
-          <>
-            <FestivalHero festival={festival} />
-            <LineupSpotlight />
-            <WeatherWidget />
-            <section className="section section-notes">
-              <Notes api={API} />
+    <div className="win98-desktop">
+      <div className="win98-app-window">
+        <Header view={view} onViewChange={setView} />
+        <main className="win98-main">
+          {view === 'schedule' ? (
+            <section className="section">
+              <Schedule api={API} />
             </section>
-          </>
-        )}
-      </main>
-    </>
+          ) : view === 'campsites' ? (
+            <CampsitesHub api={API} />
+          ) : view === 'meals' ? (
+            <section className="section">
+              <MealPlanner api={API} />
+            </section>
+          ) : view === 'people' ? (
+            <section className="section">
+              <Members api={API} />
+            </section>
+          ) : view === 'packing' ? (
+            <section className="section">
+              <PackingTab api={API} />
+            </section>
+          ) : view === 'official-info' ? (
+            <section className="section">
+              <OfficialInfo />
+            </section>
+          ) : view === 'bingo' ? (
+            <section className="section">
+              <Bingo api={API} />
+            </section>
+          ) : (
+            <>
+              <FestivalHero festival={festival} />
+              <LineupSpotlight />
+              <WeatherWidget />
+              <section className="section section-notes">
+                <Notes api={API} />
+              </section>
+            </>
+          )}
+        </main>
+      </div>
+      <footer className="win98-taskbar">
+        <button type="button" className="win98-start-btn" onClick={() => setView('group')}>
+          <span className="win98-start-flag" aria-hidden />
+          Start
+        </button>
+        <div className="win98-taskbar-spacer" aria-hidden />
+        <Win98TaskbarClock />
+      </footer>
+    </div>
   );
 }
