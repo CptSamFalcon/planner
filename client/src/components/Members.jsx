@@ -36,13 +36,34 @@ function MemberPersonRow({ m, isGoing, updateMember, updateStatus, remove, editi
             <option value="maybe">Maybe</option>
             <option value="not-going">Not going</option>
           </select>
-          <button type="button" className="btn btn-ghost btn-sm" onClick={() => remove(m.id)} aria-label={`Delete ${m.name}`}>
+          <button
+            type="button"
+            className="btn btn-ghost btn-sm"
+            onClick={() => remove(m.id)}
+            aria-label={`Delete ${m.name}`}
+            data-retro-tip={`Delete ${m.name}`}
+            data-status-tip={`Delete person: ${m.name}`}
+          >
             ×
           </button>
         </div>
       </div>
       {m.note ? <p className="member-person-note">{m.note}</p> : null}
       {isGoing && m.pre_party ? <span className="member-badge">Pre-Party</span> : null}
+      <div className="member-person-emergency">
+        <label className="member-allergy-label" htmlFor={`member-emergency-${m.id}`}>Emergency contact:</label>
+        <input
+          id={`member-emergency-${m.id}`}
+          type="text"
+          className="input input-sm member-allergy-input"
+          defaultValue={m.emergency_contact || ''}
+          key={`emergency-${m.id}-${m.emergency_contact || ''}`}
+          placeholder="Name + phone"
+          onBlur={(e) => updateMember(m.id, { emergency_contact: e.target.value.trim() || null })}
+          data-retro-tip={`Emergency contact for ${m.name}`}
+          data-status-tip={`Edit emergency contact for ${m.name}`}
+        />
+      </div>
       <div className="member-person-allergies">
         {isEditing ? (
           <input
@@ -73,19 +94,33 @@ function MemberPersonRow({ m, isGoing, updateMember, updateStatus, remove, editi
           <div className="member-allergy-saved">
             <span className="member-allergy-label">Allergies:</span>
             <span className="member-allergy-text">{formatAllergiesInputValue(m)}</span>
-            <button type="button" className="btn btn-secondary btn-sm" onClick={() => setEditingAllergyId(m.id)}>
+            <button
+              type="button"
+              className="btn btn-secondary btn-sm"
+              onClick={() => setEditingAllergyId(m.id)}
+              data-retro-tip={`Edit allergies for ${m.name}`}
+              data-status-tip={`Edit allergies for ${m.name}`}
+            >
               Edit
             </button>
             <button
               type="button"
               className="btn btn-ghost btn-sm"
               onClick={() => updateMember(m.id, { allergies: null })}
+              data-retro-tip={`Remove allergies for ${m.name}`}
+              data-status-tip={`Remove allergies for ${m.name}`}
             >
               Remove
             </button>
           </div>
         ) : (
-          <button type="button" className="btn btn-secondary btn-sm member-allergy-add" onClick={() => setEditingAllergyId(m.id)}>
+          <button
+            type="button"
+            className="btn btn-secondary btn-sm member-allergy-add"
+            onClick={() => setEditingAllergyId(m.id)}
+            data-retro-tip={`Add allergies for ${m.name}`}
+            data-status-tip={`Add allergies for ${m.name}`}
+          >
             + Add allergy
           </button>
         )}
@@ -100,6 +135,7 @@ export function Members({ api }) {
   const [status, setStatus] = useState('going');
   const [wristband, setWristband] = useState('GA');
   const [note, setNote] = useState('');
+  const [emergencyContact, setEmergencyContact] = useState('');
   const [preParty, setPreParty] = useState(false);
   const [editingAllergyId, setEditingAllergyId] = useState(null);
 
@@ -123,6 +159,7 @@ export function Members({ api }) {
       status,
       wristband,
       note: note.trim() || null,
+      emergency_contact: emergencyContact.trim() || null,
       pre_party: preParty ? 1 : 0,
     };
     fetch(`${api}/members`, {
@@ -136,6 +173,7 @@ export function Members({ api }) {
       .then(() => {
         setName('');
         setNote('');
+        setEmergencyContact('');
         setStatus('going');
         setWristband('GA');
         setPreParty(false);
@@ -173,7 +211,7 @@ export function Members({ api }) {
       <h3 className="card-title">Who&apos;s Going</h3>
       <p className="card-description">
         Add people and set their status. Use <strong>+ Add allergy</strong> on a person when you need to record food allergies; they also show on the <strong>Meals</strong> tab. Assign
-        campsites, shelter, bed, bedding, and vehicle on the <strong>Campsites</strong> tab.
+        campsites, shelter, bed, bedding, and vehicle on the <strong>Campsites</strong> tab. Add an emergency contact for each person so the info is quick to find.
       </p>
 
       <form className="form-row form-add-member" onSubmit={add}>
@@ -207,6 +245,13 @@ export function Members({ api }) {
           placeholder="Note (optional)"
           value={note}
           onChange={(e) => setNote(e.target.value)}
+          className="input input-note"
+        />
+        <input
+          type="text"
+          placeholder="Emergency contact (optional)"
+          value={emergencyContact}
+          onChange={(e) => setEmergencyContact(e.target.value)}
           className="input input-note"
         />
         <button type="submit" className="btn btn-primary">Add</button>

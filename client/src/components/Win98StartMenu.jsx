@@ -39,6 +39,8 @@ export function Win98StartMenu({ view, open, onOpenChange, onSelectView }) {
         aria-expanded={open}
         aria-controls={open ? 'win98-start-menu' : undefined}
         onClick={() => onOpenChange(!open)}
+        data-retro-tip={open ? 'Close Start menu' : 'Open Start menu'}
+        data-status-tip={open ? 'Close Start menu' : 'Open Start menu'}
       >
         <span className="win98-start-flag" aria-hidden />
         Start
@@ -57,6 +59,8 @@ export function Win98StartMenu({ view, open, onOpenChange, onSelectView }) {
               role="menuitem"
               className={`win98-start-menu-item${view === tab.id ? ' is-active' : ''}`}
               onClick={() => pick(tab.id)}
+              data-retro-tip={`Open ${tab.label}`}
+              data-status-tip={`Open ${tab.label}`}
             >
               {tab.label}
             </button>

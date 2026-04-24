@@ -13,6 +13,7 @@ import { MealPlanner } from './components/MealPlanner';
 import { Notes } from './components/Notes';
 import { PasswordGate } from './components/PasswordGate';
 import { Win98StartMenu } from './components/Win98StartMenu';
+import { navLabelForView } from './nav-tabs';
 
 const API = '/api';
 
@@ -35,6 +36,7 @@ export default function App() {
   const [view, setView] = useState('group');
   const [startMenuOpen, setStartMenuOpen] = useState(false);
   const [festival, setFestival] = useState(null);
+  const [statusHint, setStatusHint] = useState('');
 
   useEffect(() => {
     fetch(`${API}/auth`, { credentials: 'include' })
@@ -49,6 +51,21 @@ export default function App() {
       .then(setFestival)
       .catch(() => setFestival({ name: 'Bass Canyon 2026', venue: 'The Gorge', dates: {} }));
   }, [authenticated]);
+
+  useEffect(() => {
+    const resolveTip = (target) => {
+      if (!(target instanceof HTMLElement)) return '';
+      const hit = target.closest('[data-status-tip]');
+      return hit?.getAttribute('data-status-tip') || '';
+    };
+    const onHover = (e) => setStatusHint(resolveTip(e.target));
+    document.addEventListener('mousemove', onHover);
+    document.addEventListener('focusin', onHover);
+    return () => {
+      document.removeEventListener('mousemove', onHover);
+      document.removeEventListener('focusin', onHover);
+    };
+  }, []);
 
   if (!authChecked) {
     return (
@@ -109,6 +126,10 @@ export default function App() {
             </>
           )}
         </main>
+        <div className="win98-statusbar">
+          <span className="win98-statusbar-pane">{statusHint || 'Ready.'}</span>
+          <span className="win98-statusbar-pane win98-statusbar-pane--right">{navLabelForView(view)}</span>
+        </div>
       </div>
       <footer className="win98-taskbar">
         <Win98StartMenu

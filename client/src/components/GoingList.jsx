@@ -185,6 +185,17 @@ export function EditMemberModal({ member: initialMember, allMembers, api, onClos
             />
           </div>
           <div className="member-detail">
+            <label className="member-detail-label">Emergency contact</label>
+            <input
+              type="text"
+              placeholder="Name + phone"
+              value={member.emergency_contact || ''}
+              onChange={(e) => setMember((prev) => ({ ...prev, emergency_contact: e.target.value }))}
+              onBlur={(e) => updateMember({ emergency_contact: e.target.value.trim() || null })}
+              className="input input-sm"
+            />
+          </div>
+          <div className="member-detail">
             <label className="member-detail-label">Campsite</label>
             <select
               value={member.campsite_id ?? ''}

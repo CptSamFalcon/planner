@@ -1,6 +1,7 @@
 import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { googleCalendarUrl, downloadIcs } from '../utils/calendarExport';
+import { Win98Dialog } from './Win98Dialog';
 
 const DAYS = ['Wednesday', 'Thursday Pre-Party', 'Friday', 'Saturday', 'Sunday'];
 
@@ -307,6 +308,7 @@ export function Schedule({ api }) {
 
   // Edit event
   const [editingEvent, setEditingEvent] = useState(null);
+  const [pendingRemoveStage, setPendingRemoveStage] = useState(null);
 
   // New stage name
   const [newStageName, setNewStageName] = useState('');
@@ -476,11 +478,12 @@ export function Schedule({ api }) {
   };
 
   const removeStage = (id) => {
-    if (!window.confirm('Remove this stage? Events on it will become meetups.')) return;
+    if (pendingRemoveStage !== id) return;
     fetch(`${api}/schedule/stages/${id}`, { method: 'DELETE', credentials: 'include' })
       .then(() => {
         setStages((prev) => prev.filter((s) => s.id !== id));
         setEvents((prev) => prev.map((e) => (e.stage_id === id ? { ...e, stage_id: null, stage_name: null, event_type: 'meetup' } : e)));
+        setPendingRemoveStage(null);
       })
       .catch(console.error);
   };
@@ -509,6 +512,8 @@ export function Schedule({ api }) {
               aria-selected={selectedDay === d}
               className={`schedule-day-tab ${selectedDay === d ? 'active' : ''}`}
               onClick={() => setSelectedDay(d)}
+              data-status-tip={`Show schedule for ${d}`}
+              data-retro-tip={`View ${d}`}
             >
               {d.split(' ')[0]}
             </button>
@@ -876,7 +881,16 @@ export function Schedule({ api }) {
                         —
                       </button>
                     </div>
-                    <button type="button" className="btn btn-ghost btn-sm" onClick={() => removeStage(s.id)} aria-label={`Remove ${s.name}`}>×</button>
+                    <button
+                      type="button"
+                      className="btn btn-ghost btn-sm"
+                      onClick={() => setPendingRemoveStage(s.id)}
+                      aria-label={`Remove ${s.name}`}
+                      data-status-tip={`Remove stage ${s.name}`}
+                      data-retro-tip="Remove stage (events become meetups)"
+                    >
+                      ×
+                    </button>
                   </li>
                 ))}
               </ul>
@@ -924,6 +938,16 @@ export function Schedule({ api }) {
           onRemove={() => removeEvent(editingEvent.id)}
         />
       )}
+      <Win98Dialog
+        open={pendingRemoveStage != null}
+        title="Remove stage"
+        message="Remove this stage? Events on it will become meetups."
+        confirmLabel="Remove"
+        cancelLabel="Cancel"
+        confirmTone="danger"
+        onConfirm={() => removeStage(pendingRemoveStage)}
+        onCancel={() => setPendingRemoveStage(null)}
+      />
     </div>
   );
 }

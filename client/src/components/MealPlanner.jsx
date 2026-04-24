@@ -1,6 +1,7 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { parseMemberAllergies } from '../utils/memberAllergies';
 import { mealAllergenConflicts } from '../utils/mealAllergenConflicts';
+import { Win98Dialog } from './Win98Dialog';
 
 const SLOT_SUGGESTIONS = [
   'Wed — Breakfast',
@@ -46,6 +47,7 @@ export function MealPlanner({ api }) {
 
   const [editingId, setEditingId] = useState(null);
   const [editState, setEditState] = useState(null);
+  const [mealPendingDeleteId, setMealPendingDeleteId] = useState(null);
 
   const load = useCallback(() => {
     setLoading(true);
@@ -157,9 +159,10 @@ export function MealPlanner({ api }) {
   };
 
   const removeMeal = (id) => {
-    if (!window.confirm('Delete this meal?')) return;
+    if (mealPendingDeleteId !== id) return;
     fetch(`${api}/meals/${id}`, { method: 'DELETE', credentials: 'include' })
       .then(() => setMeals((prev) => prev.filter((m) => m.id !== id)))
+      .then(() => setMealPendingDeleteId(null))
       .catch(console.error);
   };
 
@@ -387,7 +390,15 @@ export function MealPlanner({ api }) {
                     </div>
                     <div className="meal-item-actions">
                       <button type="button" className="btn btn-ghost btn-sm" onClick={() => startEdit(meal)}>Edit</button>
-                      <button type="button" className="btn btn-ghost btn-sm" onClick={() => removeMeal(meal.id)}>Delete</button>
+                      <button
+                        type="button"
+                        className="btn btn-ghost btn-sm"
+                        onClick={() => setMealPendingDeleteId(meal.id)}
+                        data-retro-tip="Delete this meal entry"
+                        data-status-tip={`Delete meal: ${meal.title}`}
+                      >
+                        Delete
+                      </button>
                     </div>
                   </div>
                   {meal.recipe && (
@@ -415,6 +426,16 @@ export function MealPlanner({ api }) {
           </ul>
         </>
       )}
+      <Win98Dialog
+        open={mealPendingDeleteId != null}
+        title="Delete meal"
+        message="Delete this meal?"
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        confirmTone="danger"
+        onConfirm={() => removeMeal(mealPendingDeleteId)}
+        onCancel={() => setMealPendingDeleteId(null)}
+      />
     </section>
   );
 }

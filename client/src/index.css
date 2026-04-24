@@ -1095,6 +1095,12 @@ main > .section:first-child {
   color: var(--text-muted);
   line-height: 1.4;
 }
+.member-person-emergency {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.45rem;
+}
 .member-person-allergies {
   display: flex;
   flex-wrap: wrap;
