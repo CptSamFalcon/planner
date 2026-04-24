@@ -7,6 +7,7 @@ export const NAV_TABS = [
   { id: 'people', label: 'People' },
   { id: 'issue-solver', label: 'Issue Solver' },
   { id: 'wallpaper-maker', label: 'Wallpaper Maker' },
+  { id: 'perler-planner', label: 'Perler Planner' },
   { id: 'packing', label: 'Packing' },
   { id: 'official-info', label: 'Official Info' },
   { id: 'bingo', label: 'Bingo' },

@@ -16,6 +16,7 @@ import { Win98StartMenu } from './components/Win98StartMenu';
 import { navLabelForView } from './nav-tabs';
 import { IssueSolver } from './components/IssueSolver';
 import { PhoneWallpaperMaker } from './components/PhoneWallpaperMaker';
+import { PerlerPlanner } from './components/PerlerPlanner';
 
 const API = '/api';
 
@@ -109,6 +110,8 @@ export default function App() {
             <IssueSolver api={API} onNavigate={setView} />
           ) : view === 'wallpaper-maker' ? (
             <PhoneWallpaperMaker api={API} />
+          ) : view === 'perler-planner' ? (
+            <PerlerPlanner />
           ) : view === 'packing' ? (
             <section className="section">
               <PackingTab api={API} />
