@@ -3,12 +3,12 @@ import { useState } from 'react';
 const TABS = [
   { id: 'group', label: 'Home' },
   { id: 'schedule', label: 'Schedule' },
-  { id: 'bingo', label: 'Bingo' },
-  { id: 'packing', label: 'Packing' },
+  { id: 'campsites', label: 'Campsites' },
   { id: 'meals', label: 'Meals' },
-  { id: 'vehicles-sites', label: 'Vehicles/Sites' },
   { id: 'people', label: 'People' },
+  { id: 'packing', label: 'Packing' },
   { id: 'official-info', label: 'Official Info' },
+  { id: 'bingo', label: 'Bingo' },
 ];
 
 export function Header({ view, onViewChange }) {

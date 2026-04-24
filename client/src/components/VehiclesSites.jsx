@@ -1,18 +1,22 @@
 import { useState, useEffect } from 'react';
 
-export function VehiclesSites({ api }) {
+const fetchOpts = { credentials: 'include' };
+
+export function VehiclesSites({ api, onDataChanged }) {
   const [campsites, setCampsites] = useState([]);
   const [vehicles, setVehicles] = useState([]);
   const [newCampsite, setNewCampsite] = useState('');
   const [newVehicle, setNewVehicle] = useState('');
   const [newVehicleCapacity, setNewVehicleCapacity] = useState(1);
 
+  const notify = () => { onDataChanged?.(); };
+
   const load = () => {
-    fetch(`${api}/campsites`)
+    fetch(`${api}/campsites`, fetchOpts)
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((data) => setCampsites(Array.isArray(data) ? data : []))
       .catch(() => setCampsites([]));
-    fetch(`${api}/vehicles`)
+    fetch(`${api}/vehicles`, fetchOpts)
       .then((r) => { if (!r.ok) throw new Error(); return r.json(); })
       .then((data) => setVehicles(Array.isArray(data) ? data : []))
       .catch(() => setVehicles([]));
@@ -27,17 +31,20 @@ export function VehiclesSites({ api }) {
     fetch(`${api}/campsites`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ name: label }),
     })
       .then((r) => r.json())
       .then((c) => setCampsites((prev) => [...prev, c].sort((a, b) => a.name.localeCompare(b.name))))
       .then(() => setNewCampsite(''))
+      .then(() => notify())
       .catch(console.error);
   };
 
   const removeCampsite = (id) => {
-    fetch(`${api}/campsites/${id}`, { method: 'DELETE' })
+    fetch(`${api}/campsites/${id}`, { method: 'DELETE', credentials: 'include' })
       .then(() => setCampsites((prev) => prev.filter((c) => c.id !== id)))
+      .then(() => notify())
       .catch(console.error);
   };
 
@@ -53,10 +60,12 @@ export function VehiclesSites({ api }) {
     fetch(`${api}/campsites/${campsiteId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ vehicle_id: value }),
     })
       .then((r) => r.json())
       .then((updated) => setCampsites((prev) => prev.map((c) => (c.id === campsiteId ? updated : c))))
+      .then(() => notify())
       .catch(console.error);
   };
 
@@ -65,10 +74,12 @@ export function VehiclesSites({ api }) {
     fetch(`${api}/campsites/${campsiteId}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ area: value }),
     })
       .then((r) => r.json())
       .then((updated) => setCampsites((prev) => prev.map((c) => (c.id === campsiteId ? updated : c))))
+      .then(() => notify())
       .catch(console.error);
   };
 
@@ -80,11 +91,13 @@ export function VehiclesSites({ api }) {
     fetch(`${api}/vehicles`, {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ name: label, capacity: cap }),
     })
       .then((r) => r.json())
       .then((v) => setVehicles((prev) => [...prev, v].sort((a, b) => a.name.localeCompare(b.name))))
       .then(() => { setNewVehicle(''); setNewVehicleCapacity(1); })
+      .then(() => notify())
       .catch(console.error);
   };
 
@@ -93,24 +106,27 @@ export function VehiclesSites({ api }) {
     fetch(`${api}/vehicles/${id}`, {
       method: 'PATCH',
       headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
       body: JSON.stringify({ capacity: cap }),
     })
       .then((r) => r.json())
       .then((updated) => setVehicles((prev) => prev.map((v) => (v.id === id ? updated : v))))
+      .then(() => notify())
       .catch(console.error);
   };
 
   const removeVehicle = (id) => {
-    fetch(`${api}/vehicles/${id}`, { method: 'DELETE' })
+    fetch(`${api}/vehicles/${id}`, { method: 'DELETE', credentials: 'include' })
       .then(() => setVehicles((prev) => prev.filter((v) => v.id !== id)))
+      .then(() => notify())
       .catch(console.error);
   };
 
   return (
     <div className="options-page">
       <div className="card block options-page-card">
-        <h3 className="card-title">Campsites & Vehicles</h3>
-        <p className="card-description">Add campsites and vehicles here. Assign one vehicle per campsite. Set area (Front Yard, Premier, General) for each campsite.</p>
+        <h3 className="card-title">Sites & vehicles</h3>
+        <p className="card-description">Add named campsites and rides. One vehicle per campsite; set area (Front Yard, Premier, General) when it applies.</p>
 
         <div className="options-grid">
           <div className="options-panel">

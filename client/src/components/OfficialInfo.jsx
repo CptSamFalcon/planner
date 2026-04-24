@@ -46,6 +46,7 @@ export function OfficialInfo() {
         <h3 className="official-info-heading">Links</h3>
         <ul className="official-info-links">
           <li><a href="https://www.basscanyon.com/" target="_blank" rel="noopener noreferrer">Official site — basscanyon.com</a></li>
+          <li><a href="https://www.basscanyon.com/lineup" target="_blank" rel="noopener noreferrer">Lineup</a></li>
           <li><a href="https://www.basscanyon.com/tickets" target="_blank" rel="noopener noreferrer">Tickets</a></li>
           <li><a href="https://www.basscanyon.com/camping" target="_blank" rel="noopener noreferrer">Camping</a></li>
           <li><a href="https://www.basscanyon.com/faq" target="_blank" rel="noopener noreferrer">FAQ</a></li>

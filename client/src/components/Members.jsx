@@ -77,7 +77,7 @@ export function Members({ api }) {
   return (
     <div className="card block">
       <h3 className="card-title">Who&apos;s Going</h3>
-      <p className="card-description">Add people and set their status. Food allergies (optional) are saved per person below; they appear on the <strong>Meals</strong> tab when set. Assign campsites, shelter, bed, bedding, and vehicle on the <strong>Group</strong> page.</p>
+      <p className="card-description">Add people and set their status. Food allergies (optional) are saved per person below; they appear on the <strong>Meals</strong> tab when set. Assign campsites, shelter, bed, bedding, and vehicle on the <strong>Campsites</strong> tab.</p>
 
       <form className="form-row form-add-member" onSubmit={add}>
         <input

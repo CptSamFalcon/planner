@@ -46,6 +46,11 @@ export function Campsites({ api, onMemberUpdated }) {
   return (
     <section className="section section-campsites">
       <div className="card block campsites-card">
+        <h3 className="card-title">Roster by campsite</h3>
+        <p className="card-description">
+          Everyone going, grouped by campsite (up to {CAMPSITE_CAPACITY} per site). Tap a chip to edit ride, campsite, and details. Add people in{' '}
+          <strong>People</strong>; add sites and vehicles in <strong>Sites &amp; vehicles</strong> above.
+        </p>
         <div className="campsite-boxes">
           {/* Unassigned */}
           <div className="campsite-box">
@@ -100,7 +105,7 @@ export function Campsites({ api, onMemberUpdated }) {
         </div>
 
         {goingMembers.length === 0 && (
-          <p className="campsites-empty">Add people in People and campsites in Vehicles/Sites to see them here.</p>
+          <p className="campsites-empty">Add people in People and set up campsites above to see them here.</p>
         )}
       </div>
 
