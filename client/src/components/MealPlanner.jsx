@@ -22,9 +22,14 @@ function MealAllergyWarnings({ conflicts }) {
     <div className="meal-allergy-warning" role="alert">
       <span className="meal-allergy-warning-icon" aria-hidden>⚠</span>
       <ul className="meal-allergy-warning-list">
-        {conflicts.map(({ member }) => (
+        {conflicts.map(({ member, terms, suggestedAllergens }) => (
           <li key={member.id} className="meal-allergy-warning-item">
             Possible allergy for <strong className="meal-allergy-warning-name">{member.name}</strong>
+            {Array.isArray(suggestedAllergens) && suggestedAllergens.length > 0 ? (
+              <> ({suggestedAllergens.join(', ')})</>
+            ) : Array.isArray(terms) && terms.length > 0 ? (
+              <> ({terms.join(', ')})</>
+            ) : null}
           </li>
         ))}
       </ul>
@@ -35,6 +40,7 @@ function MealAllergyWarnings({ conflicts }) {
 export function MealPlanner({ api }) {
   const [members, setMembers] = useState([]);
   const [meals, setMeals] = useState([]);
+  const [allergenCatalog, setAllergenCatalog] = useState([]);
   const [loading, setLoading] = useState(true);
 
   const [formTitle, setFormTitle] = useState('');
@@ -54,14 +60,17 @@ export function MealPlanner({ api }) {
     Promise.all([
       fetch(`${api}/members`, { credentials: 'include' }).then((r) => (r.ok ? r.json() : [])),
       fetch(`${api}/meals`, { credentials: 'include' }).then((r) => (r.ok ? r.json() : [])),
+      fetch(`${api}/allergens`, { credentials: 'include' }).then((r) => (r.ok ? r.json() : [])),
     ])
-      .then(([m, ml]) => {
+      .then(([m, ml, ac]) => {
         setMembers(Array.isArray(m) ? m : []);
         setMeals(Array.isArray(ml) ? ml : []);
+        setAllergenCatalog(Array.isArray(ac) ? ac : []);
       })
       .catch(() => {
         setMembers([]);
         setMeals([]);
+        setAllergenCatalog([]);
       })
       .finally(() => setLoading(false));
   }, [api]);
@@ -171,7 +180,7 @@ export function MealPlanner({ api }) {
       <div className="card block meal-planner-intro">
         <h3 className="card-title">Meal planner</h3>
         <p className="card-description">
-          Assign who&apos;s making each camp meal and add recipe and ingredients. Food allergies are saved on each person (People when you add them, or Group → tap a person). Anyone with allergies listed below is checked against the dish name, recipe, and ingredients (text match — double-check in the kitchen). The cook is included too, so you still see a flag if your own allergens appear in what you&apos;re making.
+          Assign who&apos;s making each camp meal and add recipe and ingredients. Food allergies are saved on each person (People when you add them, or Group → tap a person). Anyone with allergies listed below is checked against the dish name, recipe, and ingredients using an allergen catalog with fuzzy matching (still double-check in the kitchen). The cook is included too, so you still see a flag if your own allergens appear in what you&apos;re making.
         </p>
       </div>
 
@@ -293,7 +302,7 @@ export function MealPlanner({ api }) {
           )}
           <ul className="meals-card-list">
             {meals.map((meal) => {
-              const conflicts = mealAllergenConflicts(meal, members);
+              const conflicts = mealAllergenConflicts(meal, members, allergenCatalog);
               const isEditing = editingId === meal.id;
               if (isEditing && editState) {
                 const editConflicts = mealAllergenConflicts(
@@ -302,7 +311,8 @@ export function MealPlanner({ api }) {
                     recipe: editState.recipe,
                     ingredients: editState.ingredients.split('\n').map((s) => s.trim()).filter(Boolean),
                   },
-                  members
+                  members,
+                  allergenCatalog
                 );
                 return (
                   <li key={meal.id} className="card block meal-item meal-item--editing">

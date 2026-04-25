@@ -706,6 +706,40 @@ textarea:focus {
   border-color: #808080;
 }
 
+/* Photo dump */
+.photo-item,
+.photo-lightbox-img {
+  border-radius: 0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  background: #c0c0c0;
+}
+
+.photo-thumb {
+  border-radius: 0;
+}
+
+.photo-tag-filter,
+.photo-tag-toggle,
+.photo-tag-pill,
+.photo-tag-add .input,
+.photo-tag-quick-controls .select {
+  border-radius: 0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  background: #c0c0c0;
+}
+
+.photo-tag-toggle.is-on {
+  background: #d4d0c8;
+  border-color: #000080;
+  color: #000000;
+}
+
+.photo-tag-pill {
+  background: #ece9d8;
+}
+
 /* Schedule mobile cards */
 .schedule-mobile-event {
   border-radius: 0;
