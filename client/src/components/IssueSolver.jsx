@@ -67,6 +67,7 @@ export function IssueSolver({ api, onNavigate }) {
   const [events, setEvents] = useState([]);
   const [lists, setLists] = useState([]);
   const [meals, setMeals] = useState([]);
+  const [allergenCatalog, setAllergenCatalog] = useState([]);
 
   useEffect(() => {
     setLoading(true);
@@ -75,18 +76,21 @@ export function IssueSolver({ api, onNavigate }) {
       fetch(`${api}/schedule`, { credentials: 'include' }).then((r) => (r.ok ? r.json() : [])),
       fetch(`${api}/packing/lists`, { credentials: 'include' }).then((r) => (r.ok ? r.json() : [])),
       fetch(`${api}/meals`, { credentials: 'include' }).then((r) => (r.ok ? r.json() : [])),
+      fetch(`${api}/allergens`, { credentials: 'include' }).then((r) => (r.ok ? r.json() : [])),
     ])
-      .then(([m, s, p, ml]) => {
+      .then(([m, s, p, ml, ac]) => {
         setMembers(Array.isArray(m) ? m : []);
         setEvents(Array.isArray(s) ? s : []);
         setLists(Array.isArray(p) ? p : []);
         setMeals(Array.isArray(ml) ? ml : []);
+        setAllergenCatalog(Array.isArray(ac) ? ac : []);
       })
       .catch(() => {
         setMembers([]);
         setEvents([]);
         setLists([]);
         setMeals([]);
+        setAllergenCatalog([]);
       })
       .finally(() => setLoading(false));
   }, [api]);
@@ -137,10 +141,10 @@ export function IssueSolver({ api, onNavigate }) {
       .map((meal) => ({
         id: meal.id,
         title: meal.title,
-        conflicts: mealAllergenConflicts(meal, going),
+        conflicts: mealAllergenConflicts(meal, going, allergenCatalog),
       }))
       .filter((x) => x.conflicts.length > 0);
-  }, [meals, members]);
+  }, [meals, members, allergenCatalog]);
 
   const peopleWithAllergies = useMemo(
     () => members.filter((m) => m.status === 'going' && parseMemberAllergies(m).length > 0).length,

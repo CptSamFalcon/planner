@@ -148,6 +148,40 @@ export function initDb(dataDir) {
     );
   `);
 
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS photos (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      filename TEXT NOT NULL,
+      display_filename TEXT,
+      thumb_filename TEXT,
+      original_name TEXT,
+      mime_type TEXT,
+      size_bytes INTEGER,
+      caption TEXT,
+      uploader_member_id INTEGER,
+      created_at TEXT DEFAULT (datetime('now')),
+      FOREIGN KEY (uploader_member_id) REFERENCES members(id) ON DELETE SET NULL
+    );
+  `);
+  try {
+    db.exec('ALTER TABLE photos ADD COLUMN display_filename TEXT');
+  } catch (_) {}
+  try {
+    db.exec('ALTER TABLE photos ADD COLUMN thumb_filename TEXT');
+  } catch (_) {}
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS photo_tags (
+      photo_id INTEGER NOT NULL,
+      tag TEXT NOT NULL,
+      PRIMARY KEY (photo_id, tag),
+      FOREIGN KEY (photo_id) REFERENCES photos(id) ON DELETE CASCADE
+    );
+  `);
+  try {
+    db.exec('CREATE INDEX IF NOT EXISTS idx_photo_tags_tag ON photo_tags (tag)');
+  } catch (_) {}
+
   // Migrate existing notes: add created_at if missing (old schema had updated_at)
   try {
     db.exec('ALTER TABLE notes ADD COLUMN created_at TEXT');
@@ -210,6 +244,46 @@ export function initDb(dataDir) {
       FOREIGN KEY (preparer_member_id) REFERENCES members(id) ON DELETE CASCADE
     );
   `);
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS allergen_catalog (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      canonical_name TEXT NOT NULL UNIQUE,
+      aliases_json TEXT NOT NULL DEFAULT '[]',
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
+  try {
+    db.exec("ALTER TABLE allergen_catalog ADD COLUMN aliases_json TEXT NOT NULL DEFAULT '[]'");
+  } catch (_) {}
+  const allergenCount = db.prepare('SELECT COUNT(*) AS n FROM allergen_catalog').get();
+  if (allergenCount && allergenCount.n === 0) {
+    const defaults = [
+      ['peanut', ['peanuts', 'groundnut', 'groundnuts', 'arachis']],
+      ['tree nut', ['tree nuts', 'almond', 'almonds', 'cashew', 'cashews', 'walnut', 'walnuts', 'pecan', 'pecans', 'pistachio', 'pistachios', 'hazelnut', 'hazelnuts']],
+      ['milk', ['dairy', 'lactose', 'whey', 'casein', 'butter', 'cream', 'cheese', 'yogurt']],
+      ['egg', ['eggs', 'egg white', 'egg whites', 'egg yolk', 'mayo', 'mayonnaise']],
+      ['soy', ['soya', 'soybean', 'soybeans', 'soy sauce', 'tofu', 'edamame', 'miso', 'tempeh']],
+      ['wheat', ['gluten', 'flour', 'semolina', 'farina', 'bulgur', 'spelt', 'seitan']],
+      ['fish', ['salmon', 'tuna', 'cod', 'halibut', 'anchovy', 'anchovies', 'sardine', 'sardines']],
+      ['shellfish', ['shrimp', 'prawn', 'prawns', 'crab', 'lobster', 'clam', 'clams', 'mussel', 'mussels', 'oyster', 'oysters', 'scallop', 'scallops']],
+      ['sesame', ['sesame seed', 'sesame seeds', 'tahini']],
+      ['mustard', ['mustard seed', 'mustard seeds']],
+      ['celery', ['celeriac']],
+      ['sulfite', ['sulphite', 'sulfites', 'sulphites']],
+      ['corn', ['maize', 'cornstarch', 'corn starch', 'corn syrup']],
+      ['coconut', ['coconut milk', 'coconut oil', 'coconut cream']],
+      ['garlic', ['garlic powder']],
+      ['onion', ['onions', 'shallot', 'shallots']],
+      ['mushroom', ['mushrooms']],
+      ['strawberry', ['strawberries']],
+      ['kiwi', ['kiwifruit']],
+      ['banana', ['bananas']],
+      ['latex', ['natural rubber latex']],
+    ];
+    const ins = db.prepare('INSERT INTO allergen_catalog (canonical_name, aliases_json) VALUES (?, ?)');
+    defaults.forEach(([name, aliases]) => ins.run(name, JSON.stringify(aliases)));
+  }
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS bingo_items (

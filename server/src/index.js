@@ -12,6 +12,8 @@ import { packingRouter } from './routes/packing.js';
 import { scheduleRouter } from './routes/schedule.js';
 import { notesRouter } from './routes/notes.js';
 import { mealsRouter } from './routes/meals.js';
+import { createPhotosRouter } from './routes/photos.js';
+import { allergensRouter } from './routes/allergens.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -20,6 +22,8 @@ const PORT = process.env.PORT || 3080;
 // Persist data in /app/data when in Docker, else ./data
 const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data');
 initDb(dataDir);
+const uploadsDir = path.join(dataDir, 'uploads');
+const photosDir = path.join(uploadsDir, 'photos');
 
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
@@ -37,6 +41,9 @@ app.use('/api/packing', packingRouter);
 app.use('/api/schedule', scheduleRouter);
 app.use('/api/notes', notesRouter);
 app.use('/api/meals', mealsRouter);
+app.use('/api/allergens', allergensRouter);
+app.use('/api/photos', createPhotosRouter({ photosDir }));
+app.use('/uploads/photos', requireAuth, express.static(photosDir));
 
 // Festival info (static)
 app.get('/api/festival', (req, res) => {

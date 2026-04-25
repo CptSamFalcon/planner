@@ -17,6 +17,7 @@ import { navLabelForView } from './nav-tabs';
 import { IssueSolver } from './components/IssueSolver';
 import { PhoneWallpaperMaker } from './components/PhoneWallpaperMaker';
 import { PerlerPlanner } from './components/PerlerPlanner';
+import { PhotoDump } from './components/PhotoDump';
 
 const API = '/api';
 
@@ -112,6 +113,8 @@ export default function App() {
             <PhoneWallpaperMaker api={API} />
           ) : view === 'perler-planner' ? (
             <PerlerPlanner />
+          ) : view === 'photo-dump' ? (
+            <PhotoDump api={API} />
           ) : view === 'packing' ? (
             <section className="section">
               <PackingTab api={API} />
