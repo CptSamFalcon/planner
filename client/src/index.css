@@ -3668,7 +3668,7 @@ main > .section:first-child {
 }
 .photo-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
   gap: 0.8rem;
 }
 .photo-item {
@@ -3688,7 +3688,7 @@ main > .section:first-child {
 .photo-thumb {
   display: block;
   width: 100%;
-  aspect-ratio: 4 / 5;
+  aspect-ratio: 1 / 1;
   object-fit: cover;
   border-radius: 6px;
   border: 1px solid var(--border);
@@ -3931,6 +3931,12 @@ main > .section:first-child {
 }
 
 @media (max-width: 560px) {
+  .photo-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 380px) {
   .photo-grid {
     grid-template-columns: 1fr;
   }
