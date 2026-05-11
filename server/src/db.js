@@ -1,6 +1,9 @@
 import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let db = null;
 
 export function initDb(dataDir) {
@@ -305,6 +308,118 @@ export function initDb(dataDir) {
     ];
     const ins = db.prepare('INSERT INTO bingo_items (label, sort_order) VALUES (?, ?)');
     items.forEach((label, i) => ins.run(label, i));
+  }
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS lineup_artists (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      name TEXT NOT NULL,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      tags_json TEXT NOT NULL DEFAULT '[]',
+      bio TEXT NOT NULL DEFAULT '',
+      deezer_id INTEGER,
+      image_url TEXT NOT NULL DEFAULT '',
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+  `);
+  // Migrate older lineup_artists schema (initially only had id/name/created_at)
+  for (const stmt of [
+    "ALTER TABLE lineup_artists ADD COLUMN sort_order INTEGER NOT NULL DEFAULT 0",
+    "ALTER TABLE lineup_artists ADD COLUMN tags_json TEXT NOT NULL DEFAULT '[]'",
+    "ALTER TABLE lineup_artists ADD COLUMN bio TEXT NOT NULL DEFAULT ''",
+    "ALTER TABLE lineup_artists ADD COLUMN deezer_id INTEGER",
+    "ALTER TABLE lineup_artists ADD COLUMN image_url TEXT NOT NULL DEFAULT ''",
+  ]) {
+    try {
+      db.exec(stmt);
+    } catch (_) {
+      /* column already exists */
+    }
+  }
+  // Some earlier schema versions created `name` as UNIQUE, which breaks duplicate rows
+  // like Excision appearing twice in the official lineup list.
+  const lineupTableSql = db
+    .prepare("SELECT sql FROM sqlite_master WHERE type = 'table' AND name = 'lineup_artists'")
+    .get()?.sql;
+  if (typeof lineupTableSql === 'string' && /\bname\b\s+TEXT\s+NOT\s+NULL\s+UNIQUE/i.test(lineupTableSql)) {
+    db.exec('DROP TABLE lineup_artists');
+    db.exec(`
+      CREATE TABLE lineup_artists (
+        id INTEGER PRIMARY KEY AUTOINCREMENT,
+        name TEXT NOT NULL,
+        sort_order INTEGER NOT NULL DEFAULT 0,
+        tags_json TEXT NOT NULL DEFAULT '[]',
+        bio TEXT NOT NULL DEFAULT '',
+        deezer_id INTEGER,
+        image_url TEXT NOT NULL DEFAULT '',
+        created_at TEXT DEFAULT (datetime('now'))
+      );
+    `);
+  }
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS lineup_poster_ocr (
+      id INTEGER PRIMARY KEY CHECK (id = 1),
+      poster_url TEXT NOT NULL DEFAULT '',
+      ocr_raw TEXT NOT NULL DEFAULT '',
+      ocr_note TEXT,
+      generated_at TEXT
+    );
+  `);
+
+  db.exec(`
+    CREATE TABLE IF NOT EXISTS app_kv (
+      k TEXT PRIMARY KEY,
+      v TEXT NOT NULL
+    );
+  `);
+
+  const seedPath = path.join(__dirname, '..', 'data', 'lineup-poster-ocr-seed.json');
+  if (fs.existsSync(seedPath)) {
+    const payload = JSON.parse(fs.readFileSync(seedPath, 'utf8'));
+    const wantVersion = Number(payload.seedVersion);
+    const haveRow = db.prepare('SELECT v FROM app_kv WHERE k = ?').get('lineup_seed_version');
+    const haveVersion = haveRow && haveRow.v != null ? Number(haveRow.v) : 0;
+    const artistCount = db.prepare('SELECT COUNT(*) AS n FROM lineup_artists').get().n;
+    const versionBump = Number.isFinite(wantVersion) && wantVersion > 0 && wantVersion > haveVersion;
+    const shouldReseed = artistCount === 0 || versionBump;
+
+    if (shouldReseed) {
+      const ins = db.prepare(
+        'INSERT INTO lineup_artists (name, sort_order, tags_json, bio, deezer_id, image_url) VALUES (?, ?, ?, ?, ?, ?)'
+      );
+      const list = payload.artists || [];
+      const raw = String(payload.ocrRaw ?? payload.ocrPreview ?? '');
+      const tx = db.transaction(() => {
+        db.exec('DELETE FROM lineup_artists');
+        db.exec('DELETE FROM lineup_poster_ocr');
+        for (let i = 0; i < list.length; i++) {
+          const a = list[i];
+          ins.run(
+            a.name,
+            Number.isFinite(a.sort_order) ? a.sort_order : i,
+            JSON.stringify(Array.isArray(a.tags) ? a.tags : []),
+            a.bio != null ? String(a.bio) : '',
+            a.deezerId != null ? a.deezerId : null,
+            a.image != null ? String(a.image) : ''
+          );
+        }
+        if (raw.length > 0 || (payload.posterUrl && String(payload.posterUrl))) {
+          db.prepare(
+            'INSERT INTO lineup_poster_ocr (id, poster_url, ocr_raw, ocr_note, generated_at) VALUES (1, ?, ?, ?, ?)'
+          ).run(
+            String(payload.posterUrl ?? ''),
+            raw,
+            payload.ocrNote != null ? String(payload.ocrNote) : '',
+            payload.generatedAt != null ? String(payload.generatedAt) : ''
+          );
+        }
+        if (Number.isFinite(wantVersion) && wantVersion > 0) {
+          db.prepare('INSERT OR REPLACE INTO app_kv (k, v) VALUES (?, ?)').run('lineup_seed_version', String(wantVersion));
+        }
+      });
+      tx();
+    }
   }
 
   return db;
