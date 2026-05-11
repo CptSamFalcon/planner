@@ -19,22 +19,45 @@ export function PasswordGate({ api, onAuthenticated }) {
       credentials: 'include',
       body: JSON.stringify({ password }),
     })
-      .then((r) => {
+      .then(async (r) => {
         if (r.ok) {
           setPassword('');
           onAuthenticated();
-        } else {
-          setError('Wrong password');
+          return;
         }
+        let msg = 'Wrong password';
+        try {
+          const body = await r.json();
+          if (body?.error === 'Password not configured') {
+            msg = 'Server has no password configured. Set PLANNER_PASSWORD on the server.';
+          } else if (body?.error) {
+            msg = body.error;
+          }
+        } catch (_) {
+          if (r.status === 503) msg = 'Server is not ready (password not configured).';
+        }
+        setError(msg);
       })
-      .catch(() => setError('Something went wrong'))
+      .catch(() => setError('Cannot reach the server. Is it running, and is the app URL correct?'))
       .finally(() => setSubmitting(false));
   };
 
   return (
     <div className="password-gate">
       <div className="password-gate-card">
-        <p className="password-gate-hint">hint: he&apos;s the coolest.</p>
+        <p className="password-gate-hint">Hint: he&apos;s the coolest (camel).</p>
+        {import.meta.env.DEV && (
+          <p className="password-gate-devhint">
+            Local dev: if you have not set <code>PLANNER_PASSWORD</code> on the server, the default password is{' '}
+            <code>joecamel</code>.
+          </p>
+        )}
+        {!import.meta.env.DEV && (
+          <p className="password-gate-devhint password-gate-devhint--prod">
+            Use the password your host set (<code>PLANNER_PASSWORD</code> on the server). If the page loads but
+            nothing works after login, the server may need <code>PLANNER_COOKIE_SECURE=false</code> when not using HTTPS.
+          </p>
+        )}
         <form className="password-gate-form" onSubmit={handleSubmit}>
           <input
             id="gate-password"

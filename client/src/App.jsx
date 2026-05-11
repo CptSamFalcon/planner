@@ -18,6 +18,7 @@ import { IssueSolver } from './components/IssueSolver';
 import { PhoneWallpaperMaker } from './components/PhoneWallpaperMaker';
 import { PerlerPlanner } from './components/PerlerPlanner';
 import { PhotoDump } from './components/PhotoDump';
+import { ArtistBios } from './components/ArtistBios';
 
 const API = '/api';
 
@@ -97,6 +98,8 @@ export default function App() {
             <section className="section">
               <Schedule api={API} />
             </section>
+          ) : view === 'artist-bios' ? (
+            <ArtistBios api={API} />
           ) : view === 'campsites' ? (
             <CampsitesHub api={API} />
           ) : view === 'meals' ? (

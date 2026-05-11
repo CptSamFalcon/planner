@@ -59,12 +59,17 @@ router.post('/', (req, res) => {
     return;
   }
   const value = `${COOKIE_PAYLOAD}.${sign(COOKIE_PAYLOAD)}`;
+  // Secure cookies do not persist on plain HTTP (common in LAN / internal deploys). Set
+  // PLANNER_COOKIE_SECURE=false to allow the session cookie over HTTP in production.
+  const secureCookie =
+    process.env.PLANNER_COOKIE_SECURE === 'true' ||
+    (process.env.NODE_ENV === 'production' && process.env.PLANNER_COOKIE_SECURE !== 'false');
   res.cookie(COOKIE_NAME, value, {
     httpOnly: true,
     sameSite: 'lax',
     path: '/',
     maxAge: 7 * 24 * 60 * 60 * 1000,
-    secure: process.env.NODE_ENV === 'production',
+    secure: secureCookie,
   });
   res.status(200).json({ ok: true });
 });
@@ -85,7 +90,6 @@ router.get('/', (req, res) => {
 
 /** Require valid session cookie for all /api except /api/auth */
 function requireAuth(req, res, next) {
-  if (req.path === '/auth') return next();
   if (PASSWORD == null) {
     res.status(503).json({ error: 'Password not configured' });
     return;
