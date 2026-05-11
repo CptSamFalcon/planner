@@ -2,7 +2,9 @@ node_modules
 client/node_modules
 client/dist
 server/node_modules
-data
+# Only ignore runtime data at repo root — a bare `data` rule also matched
+# `client/src/data/` and broke the Vite build (ArtistBios lineup import).
+/data
 *.db
 .git
 .env
