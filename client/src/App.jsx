@@ -19,6 +19,7 @@ import { PhoneWallpaperMaker } from './components/PhoneWallpaperMaker';
 import { PerlerPlanner } from './components/PerlerPlanner';
 import { PhotoDump } from './components/PhotoDump';
 import { ArtistBios } from './components/ArtistBios';
+import { ShoppingList } from './components/ShoppingList';
 
 const API = '/api';
 
@@ -121,6 +122,10 @@ export default function App() {
           ) : view === 'packing' ? (
             <section className="section">
               <PackingTab api={API} />
+            </section>
+          ) : view === 'shopping' ? (
+            <section className="section">
+              <ShoppingList api={API} />
             </section>
           ) : view === 'official-info' ? (
             <section className="section">

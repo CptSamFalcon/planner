@@ -4107,3 +4107,381 @@ main > .section:first-child {
     grid-template-columns: 1fr;
   }
 }
+
+/* --- Grocery Run (shopping list) --- */
+.section-shopping .shopping-card {
+  overflow: hidden;
+}
+
+.shopping-add-form {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+  margin-bottom: 1.25rem;
+}
+
+.shopping-add-input {
+  flex: 1;
+  min-width: 12rem;
+}
+
+.shopping-stage {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 1fr);
+  gap: 1rem;
+  align-items: stretch;
+}
+
+@media (max-width: 720px) {
+  .shopping-stage {
+    grid-template-columns: 1fr;
+  }
+}
+
+.shopping-counter {
+  position: relative;
+  background: linear-gradient(180deg, #fffef8 0%, #f4f0e6 100%);
+  border: 2px solid var(--border);
+  border-radius: 4px;
+  padding: 0.75rem 0.75rem 0.75rem 1.1rem;
+  box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.7), 2px 3px 0 rgba(0, 0, 0, 0.12);
+  transition: box-shadow 0.25s ease, transform 0.25s ease;
+}
+
+.shopping-counter-rail {
+  position: absolute;
+  left: 0.35rem;
+  top: 0.5rem;
+  bottom: 0.5rem;
+  width: 4px;
+  border-radius: 2px;
+  background: repeating-linear-gradient(
+    180deg,
+    #c41e3a 0 4px,
+    #fff 4px 8px
+  );
+  opacity: 0.85;
+}
+
+.shopping-counter--pulse {
+  animation: shopping-counter-pulse 0.5s ease;
+}
+
+@keyframes shopping-counter-pulse {
+  0% {
+    transform: scale(1);
+  }
+  40% {
+    transform: scale(1.01);
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.9), 0 0 0 3px rgba(0, 245, 255, 0.35);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.shopping-counter-head {
+  margin-left: 0.65rem;
+  margin-bottom: 0.65rem;
+}
+
+.shopping-counter-label {
+  display: block;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: #1a1a1a;
+}
+
+.shopping-counter-sub {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.shopping-slip-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.shopping-slip-empty,
+.shopping-cart-empty,
+.shopping-bag-empty {
+  margin: 0.5rem 0 0.25rem 0.65rem;
+  font-size: 0.88rem;
+  color: var(--text-muted);
+  font-style: italic;
+}
+
+.shopping-slip {
+  position: relative;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem 0.5rem;
+  margin-left: 0.5rem;
+  padding: 0.5rem 0.6rem 0.55rem 0.75rem;
+  background: linear-gradient(180deg, #ffffff 0%, #faf8f2 100%);
+  border: 1px solid #c8c4b8;
+  border-radius: 2px;
+  box-shadow: 0 1px 0 rgba(0, 0, 0, 0.06);
+  cursor: grab;
+  animation: shopping-slip-in 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.shopping-slip:active {
+  cursor: grabbing;
+}
+
+@keyframes shopping-slip-in {
+  0% {
+    opacity: 0;
+    transform: translateY(-12px) rotate(-1deg);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0) rotate(0);
+  }
+}
+
+.shopping-slip-tear {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 4px;
+  background: repeating-linear-gradient(
+    90deg,
+    transparent 0 4px,
+    rgba(0, 0, 0, 0.08) 4px 8px
+  );
+  border-radius: 2px 2px 0 0;
+}
+
+.shopping-slip-label {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--text);
+  padding-top: 0.2rem;
+}
+
+.shopping-slip-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.shopping-toss-btn {
+  font-weight: 700;
+}
+
+.shopping-cart-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  background: linear-gradient(165deg, rgba(0, 245, 255, 0.08) 0%, rgba(139, 92, 246, 0.1) 100%);
+  border: 2px dashed rgba(0, 0, 0, 0.28);
+  border-radius: 8px;
+  padding: 0.75rem;
+  min-height: 12rem;
+  transition: border-color 0.2s ease, transform 0.35s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.2s ease;
+}
+
+.shopping-drop-target--active {
+  border-color: var(--accent-cyan, #00f5ff);
+  box-shadow: 0 0 0 2px rgba(0, 245, 255, 0.25);
+}
+
+.shopping-cart-panel--bump {
+  animation: shopping-cart-bump 0.65s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes shopping-cart-bump {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.03) rotate(-0.5deg);
+  }
+  60% {
+    transform: scale(0.99) rotate(0.4deg);
+  }
+  100% {
+    transform: scale(1) rotate(0);
+  }
+}
+
+.shopping-cart-visual {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 0.25rem 0 0.15rem;
+  color: #1a1a1a;
+}
+
+.shopping-cart-svg {
+  width: 72px;
+  height: auto;
+  filter: drop-shadow(0 2px 1px rgba(0, 0, 0, 0.15));
+}
+
+.shopping-cart-badge {
+  position: absolute;
+  top: 0.1rem;
+  right: calc(50% - 52px);
+  min-width: 1.35rem;
+  height: 1.35rem;
+  padding: 0 0.25rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 800;
+  background: #c41e3a;
+  color: #fff;
+  border-radius: 999px;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+}
+
+.shopping-cart-head {
+  text-align: center;
+  margin-bottom: 0.5rem;
+}
+
+.shopping-cart-title {
+  display: block;
+  font-weight: 800;
+  font-size: 0.95rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.shopping-cart-hint {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+}
+
+.shopping-cart-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  flex: 1;
+}
+
+.shopping-cart-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.45rem 0.5rem;
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  border-radius: 4px;
+  cursor: grab;
+}
+
+.shopping-cart-row:active {
+  cursor: grabbing;
+}
+
+.shopping-cart-row-label {
+  flex: 1;
+  min-width: 0;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.shopping-got-btn {
+  flex-shrink: 0;
+}
+
+.shopping-bag-section {
+  margin-top: 1.25rem;
+  padding-top: 1rem;
+  border-top: 1px solid var(--border);
+}
+
+.shopping-bag-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 0.5rem 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.shopping-bag-title {
+  margin: 0;
+  font-size: 1rem;
+  color: var(--accent-purple, #8b5cf6);
+}
+
+.shopping-bag-sub {
+  font-size: 0.82rem;
+  color: var(--text-muted);
+  flex: 1;
+}
+
+.shopping-bag-clear {
+  margin-left: auto;
+}
+
+.shopping-bag-list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.shopping-bag-row {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.4rem 0.5rem;
+  background: var(--bg-elevated);
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  animation: shopping-bag-in 0.4s ease;
+}
+
+@keyframes shopping-bag-in {
+  0% {
+    opacity: 0;
+    transform: translateX(8px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.shopping-bag-check {
+  color: #15803d;
+  font-weight: 800;
+  width: 1.25rem;
+  text-align: center;
+}
+
+.shopping-bag-label {
+  flex: 1;
+  text-decoration: line-through;
+  text-decoration-thickness: 2px;
+  text-decoration-color: rgba(0, 0, 0, 0.25);
+  color: var(--text-muted);
+  font-size: 0.92rem;
+}

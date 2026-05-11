@@ -15,6 +15,7 @@ import { mealsRouter } from './routes/meals.js';
 import { createPhotosRouter } from './routes/photos.js';
 import { allergensRouter } from './routes/allergens.js';
 import { lineupRouter } from './routes/lineup.js';
+import { shoppingRouter } from './routes/shopping.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -44,6 +45,7 @@ app.use('/api/notes', notesRouter);
 app.use('/api/meals', mealsRouter);
 app.use('/api/allergens', allergensRouter);
 app.use('/api/lineup', lineupRouter);
+app.use('/api/shopping', shoppingRouter);
 app.use('/api/photos', createPhotosRouter({ photosDir }));
 app.use('/uploads/photos', requireAuth, express.static(photosDir));
 

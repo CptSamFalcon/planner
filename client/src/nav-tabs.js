@@ -11,6 +11,7 @@ export const NAV_TABS = [
   { id: 'perler-planner', label: 'Perler Planner' },
   { id: 'photo-dump', label: 'Photo Dump' },
   { id: 'packing', label: 'Packing' },
+  { id: 'shopping', label: 'Grocery Run' },
   { id: 'official-info', label: 'Official Info' },
   { id: 'bingo', label: 'Bingo' },
 ];

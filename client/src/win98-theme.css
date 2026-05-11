@@ -811,6 +811,15 @@ textarea:focus {
   border-radius: 0;
 }
 
+/* Grocery Run — flat Win98 edges */
+.shopping-slip,
+.shopping-cart-row,
+.shopping-bag-row,
+.shopping-counter,
+.shopping-cart-panel {
+  border-radius: 0 !important;
+}
+
 /* Taskbar */
 .win98-taskbar {
   position: fixed;
