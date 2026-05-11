@@ -814,7 +814,7 @@ textarea:focus {
 /* Grocery Run — flat Win98 edges */
 .shopping-slip,
 .shopping-cart-row,
-.shopping-bag-row,
+.shopping-receipt-card,
 .shopping-counter,
 .shopping-cart-panel {
   border-radius: 0 !important;

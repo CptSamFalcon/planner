@@ -321,6 +321,26 @@ export function initDb(dataDir) {
   `);
 
   db.exec(`
+    CREATE TABLE IF NOT EXISTS shopping_trips (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      total REAL NOT NULL,
+      created_at TEXT DEFAULT (datetime('now'))
+    );
+    CREATE TABLE IF NOT EXISTS shopping_trip_lines (
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      trip_id INTEGER NOT NULL,
+      label TEXT NOT NULL,
+      sort_order INTEGER NOT NULL DEFAULT 0,
+      FOREIGN KEY (trip_id) REFERENCES shopping_trips(id) ON DELETE CASCADE
+    );
+  `);
+  try {
+    db.exec("UPDATE shopping_items SET bucket = 'cart' WHERE bucket = 'checked'");
+  } catch (_) {
+    /* ignore */
+  }
+
+  db.exec(`
     CREATE TABLE IF NOT EXISTS lineup_artists (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       name TEXT NOT NULL,
