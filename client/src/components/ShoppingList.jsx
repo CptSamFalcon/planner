@@ -196,7 +196,7 @@ export function ShoppingList({ api }) {
       <div className="card block shopping-card">
         <h3 className="card-title">Grocery run</h3>
         <p className="card-description">
-          Stack items on the <strong>counter slip</strong>, drag or toss them into the <strong>cart</strong>, then hit{' '}
+          Build your <strong>wanted list</strong>, drag or toss items into the <strong>cart</strong>, then hit{' '}
           <strong>Checkout</strong> and enter what you paid. Past runs show up as receipts below.
         </p>
 
@@ -208,10 +208,10 @@ export function ShoppingList({ api }) {
             onChange={(e) => setLabel(e.target.value)}
             placeholder="Ice, buns, AA batteries…"
             aria-label="New item"
-            data-status-tip="Type an item and Add — it prints on the counter slip"
+            data-status-tip="Type an item and Add — it lands on your wanted list"
           />
           <button type="submit" className="btn btn-primary">
-            Add to counter
+            Add to wanted list
           </button>
         </form>
 
@@ -227,12 +227,12 @@ export function ShoppingList({ api }) {
           >
             <div className="shopping-counter-rail" aria-hidden />
             <div className="shopping-counter-head">
-              <span className="shopping-counter-label">Counter</span>
+              <span className="shopping-counter-label">Wanted List</span>
               <span className="shopping-counter-sub">Tap add, then toss in the cart</span>
             </div>
-            <ul className="shopping-slip-list" aria-label="Items on counter">
+            <ul className="shopping-slip-list" aria-label="Items on wanted list">
               {counterItems.length === 0 ? (
-                <li className="shopping-slip-empty">Nothing on the slip yet.</li>
+                <li className="shopping-slip-empty">Nothing on the list yet.</li>
               ) : (
                 counterItems.map((item) => (
                   <li
@@ -282,11 +282,11 @@ export function ShoppingList({ api }) {
             </div>
             <div className="shopping-cart-head">
               <span className="shopping-cart-title">Cart</span>
-              <span className="shopping-cart-hint">Drop slips here</span>
+              <span className="shopping-cart-hint">Drop from the list here</span>
             </div>
             <ul className="shopping-cart-list" aria-label="Items in cart">
               {cartItems.length === 0 ? (
-                <li className="shopping-cart-empty">Cart’s empty — drag a slip in.</li>
+                <li className="shopping-cart-empty">Cart’s empty — drag something from the list.</li>
               ) : (
                 cartItems.map((item) => (
                   <li
@@ -300,8 +300,8 @@ export function ShoppingList({ api }) {
                       type="button"
                       className="btn btn-ghost btn-sm"
                       onClick={() => patchItem(item.id, { bucket: BUCKET_COUNTER })}
-                      aria-label={`Move ${item.label} back to counter`}
-                      title="Back to counter"
+                      aria-label={`Move ${item.label} back to wanted list`}
+                      title="Back to wanted list"
                     >
                       ↩
                     </button>
