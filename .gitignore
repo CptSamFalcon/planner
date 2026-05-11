@@ -7,8 +7,9 @@ server/node_modules/
 client/dist/
 *.local
 
-# Data & env
-data/
+# Data & env (anchor to repo root — bare `data/` also ignored `client/src/data/`
+# and kept lineup source out of git, breaking Docker builds on fresh clones)
+/data/
 *.db
 .env
 .env.*
