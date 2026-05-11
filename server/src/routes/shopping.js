@@ -52,9 +52,16 @@ shoppingRouter.post('/', (req, res) => {
   }
 });
 
-/** Body: { total: number } — snapshots current cart, records price, clears cart rows. */
+/** Body: { total: number, checked_out_by: string } — snapshots cart, records price + shopper, clears cart. */
 shoppingRouter.post('/checkout', (req, res) => {
   try {
+    const checkedOutBy = String(req.body?.checked_out_by ?? '').trim();
+    if (!checkedOutBy) {
+      return res.status(400).json({ error: 'checked_out_by is required' });
+    }
+    if (checkedOutBy.length > 200) {
+      return res.status(400).json({ error: 'checked_out_by is too long' });
+    }
     const raw = req.body?.total;
     const total = typeof raw === 'string' ? parseFloat(raw) : Number(raw);
     if (!Number.isFinite(total) || total < 0) {
@@ -69,7 +76,9 @@ shoppingRouter.post('/checkout', (req, res) => {
 
     const run = db();
     const tx = run.transaction(() => {
-      const tripResult = run.prepare('INSERT INTO shopping_trips (total) VALUES (?)').run(total);
+      const tripResult = run
+        .prepare('INSERT INTO shopping_trips (total, checked_out_by) VALUES (?, ?)')
+        .run(total, checkedOutBy);
       const tripId = tripResult.lastInsertRowid;
       const insLine = run.prepare(
         'INSERT INTO shopping_trip_lines (trip_id, label, sort_order) VALUES (?, ?, ?)'

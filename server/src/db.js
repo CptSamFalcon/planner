@@ -324,6 +324,7 @@ export function initDb(dataDir) {
     CREATE TABLE IF NOT EXISTS shopping_trips (
       id INTEGER PRIMARY KEY AUTOINCREMENT,
       total REAL NOT NULL,
+      checked_out_by TEXT,
       created_at TEXT DEFAULT (datetime('now'))
     );
     CREATE TABLE IF NOT EXISTS shopping_trip_lines (
@@ -336,6 +337,17 @@ export function initDb(dataDir) {
   `);
   try {
     db.exec("UPDATE shopping_items SET bucket = 'cart' WHERE bucket = 'checked'");
+  } catch (_) {
+    /* ignore */
+  }
+
+  try {
+    db.exec('ALTER TABLE shopping_trips ADD COLUMN checked_out_by TEXT');
+  } catch (_) {
+    /* column already exists */
+  }
+  try {
+    db.prepare(`UPDATE shopping_trips SET checked_out_by = 'Unknown' WHERE checked_out_by IS NULL OR trim(checked_out_by) = ''`).run();
   } catch (_) {
     /* ignore */
   }

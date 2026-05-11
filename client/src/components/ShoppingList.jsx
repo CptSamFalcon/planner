@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
+import { compareMemberNames } from '../utils/compareMemberNames';
 
 const BUCKET_COUNTER = 'counter';
 const BUCKET_CART = 'cart';
@@ -43,6 +44,8 @@ export function ShoppingList({ api }) {
   const [dragOver, setDragOver] = useState(null);
   const [checkoutOpen, setCheckoutOpen] = useState(false);
   const [totalInput, setTotalInput] = useState('');
+  const [shopperInput, setShopperInput] = useState('');
+  const [members, setMembers] = useState([]);
   const [checkoutSaving, setCheckoutSaving] = useState(false);
   const [checkoutError, setCheckoutError] = useState('');
 
@@ -63,6 +66,19 @@ export function ShoppingList({ api }) {
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => {
+    fetch(`${api}/members`, { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : []))
+      .then((data) => setMembers(Array.isArray(data) ? data : []))
+      .catch(() => setMembers([]));
+  }, [api]);
+
+  const goingMemberNames = useMemo(() => {
+    const names = members.filter((m) => m.status === 'going').map((m) => String(m.name || '').trim()).filter(Boolean);
+    names.sort((a, b) => compareMemberNames({ name: a }, { name: b }));
+    return [...new Set(names)];
+  }, [members]);
 
   const bumpCart = useCallback(() => {
     setCartBump(true);
@@ -128,12 +144,22 @@ export function ShoppingList({ api }) {
 
   const openCheckout = () => {
     setTotalInput('');
+    setShopperInput('');
     setCheckoutError('');
     setCheckoutOpen(true);
   };
 
   const submitCheckout = (e) => {
     e.preventDefault();
+    const who = shopperInput.trim();
+    if (!who) {
+      setCheckoutError('Enter who checked out (pick from the list or type a name).');
+      return;
+    }
+    if (who.length > 200) {
+      setCheckoutError('That name is too long — use 200 characters or fewer.');
+      return;
+    }
     const n = parseFloat(String(totalInput).replace(/[^0-9.]/g, ''));
     if (!Number.isFinite(n) || n < 0) {
       setCheckoutError('Enter a valid total (e.g. 47.32)');
@@ -145,7 +171,7 @@ export function ShoppingList({ api }) {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       credentials: 'include',
-      body: JSON.stringify({ total: n }),
+      body: JSON.stringify({ total: n, checked_out_by: who }),
     })
       .then(async (r) => {
         const body = await r.json().catch(() => ({}));
@@ -197,7 +223,7 @@ export function ShoppingList({ api }) {
         <h3 className="card-title">Grocery run</h3>
         <p className="card-description">
           Build your <strong>wanted list</strong>, drag or toss items into the <strong>cart</strong>, then hit{' '}
-          <strong>Checkout</strong> and enter what you paid. Past runs show up as receipts below.
+          <strong>Checkout</strong> to log who shopped and what you paid. Past runs show up as receipts below.
         </p>
 
         <form className="shopping-add-form" onSubmit={add}>
@@ -338,7 +364,7 @@ export function ShoppingList({ api }) {
 
         <div className="shopping-receipts-section">
           <h4 className="shopping-receipts-title">Checked-out carts</h4>
-          <p className="shopping-receipts-sub">Each run keeps what was in the cart and what you paid.</p>
+          <p className="shopping-receipts-sub">Each run keeps what was in the cart, what you paid, and who checked out.</p>
           {trips.length === 0 ? (
             <p className="shopping-receipts-empty">No checkouts yet — your first receipt will land here.</p>
           ) : (
@@ -356,6 +382,11 @@ export function ShoppingList({ api }) {
                           : 'Run'}
                       </span>
                       <span className="shopping-receipt-total">{formatUsd(trip.total)}</span>
+                      {(trip.checked_out_by || '').trim() ? (
+                        <span className="shopping-receipt-by">Checked out by {trip.checked_out_by.trim()}</span>
+                      ) : (
+                        <span className="shopping-receipt-by shopping-receipt-by--muted">Checked out by unknown</span>
+                      )}
                     </div>
                     <button
                       type="button"
@@ -390,7 +421,30 @@ export function ShoppingList({ api }) {
             </div>
             <form className="shopping-checkout-form" onSubmit={submitCheckout}>
               <p className="shopping-checkout-lead">
-                How much was this cart? ({cartItems.length} item{cartItems.length !== 1 ? 's' : ''})
+                Cart with {cartItems.length} item{cartItems.length !== 1 ? 's' : ''} — log who paid and the total.
+              </p>
+              <label className="shopping-checkout-label" htmlFor="shopping-shopper-input">
+                Who checked out?
+              </label>
+              <input
+                id="shopping-shopper-input"
+                type="text"
+                className="input shopping-checkout-shopper-input"
+                list="shopping-shopper-suggestions"
+                value={shopperInput}
+                onChange={(e) => setShopperInput(e.target.value)}
+                placeholder="Name on the receipt"
+                autoFocus
+                autoComplete="off"
+                disabled={checkoutSaving}
+              />
+              <datalist id="shopping-shopper-suggestions">
+                {goingMemberNames.map((name) => (
+                  <option key={name} value={name} />
+                ))}
+              </datalist>
+              <p className="shopping-checkout-hint shopping-checkout-hint--field">
+                Suggestions from your <strong>Going</strong> list; you can type anyone else.
               </p>
               <label className="shopping-checkout-label" htmlFor="shopping-total-input">
                 Total (USD)
@@ -405,7 +459,6 @@ export function ShoppingList({ api }) {
                   value={totalInput}
                   onChange={(e) => setTotalInput(e.target.value)}
                   placeholder="0.00"
-                  autoFocus
                   disabled={checkoutSaving}
                 />
               </div>

@@ -4496,6 +4496,18 @@ main > .section:first-child {
   color: var(--text);
 }
 
+.shopping-receipt-by {
+  flex-basis: 100%;
+  font-size: 0.86rem;
+  font-weight: 600;
+  color: var(--text);
+}
+
+.shopping-receipt-by--muted {
+  color: var(--text-muted);
+  font-weight: 500;
+}
+
 .shopping-receipt-lines {
   list-style: disc;
   margin: 0;
@@ -4531,6 +4543,17 @@ main > .section:first-child {
   letter-spacing: 0.04em;
   color: var(--text-muted);
   margin-bottom: 0.35rem;
+}
+
+.shopping-checkout-shopper-input {
+  width: 100%;
+  margin-bottom: 0.25rem;
+}
+
+.shopping-checkout-hint--field {
+  margin: 0 0 0.85rem 0;
+  font-size: 0.78rem;
+  color: var(--text-muted);
 }
 
 .shopping-checkout-input-row {
