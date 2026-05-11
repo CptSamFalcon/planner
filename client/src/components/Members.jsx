@@ -5,6 +5,10 @@ function hasAllergiesValue(member) {
   return formatAllergiesInputValue(member).trim() !== '';
 }
 
+function compareMemberNames(a, b) {
+  return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
+}
+
 function MemberPersonRow({ m, isGoing, updateMember, updateStatus, remove, editingAllergyId, setEditingAllergyId }) {
   const skipSaveBlur = useRef(false);
   const hasAll = hasAllergiesValue(m);
@@ -148,8 +152,8 @@ export function Members({ api }) {
 
   useEffect(load, [api]);
 
-  const goingMembers = members.filter((m) => m.status === 'going');
-  const otherMembers = members.filter((m) => m.status !== 'going');
+  const goingMembers = members.filter((m) => m.status === 'going').sort(compareMemberNames);
+  const otherMembers = members.filter((m) => m.status !== 'going').sort(compareMemberNames);
 
   const add = (e) => {
     e.preventDefault();

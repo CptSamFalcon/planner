@@ -1,6 +1,7 @@
 /** Main app views — order matches Start menu */
 export const NAV_TABS = [
   { id: 'group', label: 'Home' },
+  { id: 'artist-bios', label: 'Artist Bios' },
   { id: 'schedule', label: 'Schedule' },
   { id: 'campsites', label: 'Campsites' },
   { id: 'meals', label: 'Meals' },

@@ -187,8 +187,8 @@ export function PhotoDump({ api }) {
       <div className="card block photo-dump-card">
         <h3 className="card-title">Photo Dump</h3>
         <p className="card-description">
-          Upload your post-festival photos to the server. Files are stored in <code>data/uploads/photos</code> so you
-          can archive or copy them later. Tags use letters, numbers, and hyphens (e.g. <code>sunset</code>,{' '}
+          Upload your post-festival photos so everyone can view them here. You can still download and save the full set
+          later anytime. Tags use letters, numbers, and hyphens (e.g. <code>sunset</code>,{' '}
           <code>day-1</code>).
         </p>
 

@@ -14,6 +14,7 @@ import { notesRouter } from './routes/notes.js';
 import { mealsRouter } from './routes/meals.js';
 import { createPhotosRouter } from './routes/photos.js';
 import { allergensRouter } from './routes/allergens.js';
+import { lineupRouter } from './routes/lineup.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -29,9 +30,9 @@ app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
 app.use(cookieParser());
 
-// Auth: require session for all /api except /api/auth
-app.use('/api', requireAuth);
+// Auth: login must be registered before the blanket /api guard (otherwise POST /api/auth can be blocked).
 app.use('/api/auth', authRouter);
+app.use('/api', requireAuth);
 
 // API routes
 app.use('/api/members', membersRouter);
@@ -42,6 +43,7 @@ app.use('/api/schedule', scheduleRouter);
 app.use('/api/notes', notesRouter);
 app.use('/api/meals', mealsRouter);
 app.use('/api/allergens', allergensRouter);
+app.use('/api/lineup', lineupRouter);
 app.use('/api/photos', createPhotosRouter({ photosDir }));
 app.use('/uploads/photos', requireAuth, express.static(photosDir));
 

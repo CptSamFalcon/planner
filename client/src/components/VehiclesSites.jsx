@@ -35,7 +35,7 @@ export function VehiclesSites({ api, onDataChanged }) {
       body: JSON.stringify({ name: label }),
     })
       .then((r) => r.json())
-      .then((c) => setCampsites((prev) => [...prev, c].sort((a, b) => a.name.localeCompare(b.name))))
+      .then((c) => setCampsites((prev) => [...prev, c].sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))))
       .then(() => setNewCampsite(''))
       .then(() => notify())
       .catch(console.error);
@@ -79,6 +79,25 @@ export function VehiclesSites({ api, onDataChanged }) {
     })
       .then((r) => r.json())
       .then((updated) => setCampsites((prev) => prev.map((c) => (c.id === campsiteId ? updated : c))))
+      .then(() => notify())
+      .catch(console.error);
+  };
+
+  const updateCampsiteName = (campsiteId, name) => {
+    const label = name.trim();
+    if (!label) return;
+    fetch(`${api}/campsites/${campsiteId}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      credentials: 'include',
+      body: JSON.stringify({ name: label }),
+    })
+      .then((r) => r.json())
+      .then((updated) =>
+        setCampsites((prev) =>
+          prev.map((c) => (c.id === campsiteId ? updated : c)).sort((a, b) => a.name.localeCompare(b.name, undefined, { sensitivity: 'base' }))
+        )
+      )
       .then(() => notify())
       .catch(console.error);
   };
@@ -144,7 +163,25 @@ export function VehiclesSites({ api, onDataChanged }) {
             <ul className="options-list options-list-full">
               {campsites.map((c) => (
                 <li key={c.id} className="options-item options-item-campsite">
-                  <span>{c.name}</span>
+                  <input
+                    type="text"
+                    className="input input-sm options-campsite-name"
+                    defaultValue={c.name}
+                    key={`campsite-name-${c.id}-${c.name}`}
+                    aria-label={`Rename camp pass ${c.name}`}
+                    title="Rename — people stay assigned to this pass"
+                    onBlur={(e) => {
+                      const v = e.target.value.trim();
+                      if (!v) {
+                        e.target.value = c.name;
+                        return;
+                      }
+                      if (v !== c.name) updateCampsiteName(c.id, v);
+                    }}
+                    onKeyDown={(e) => {
+                      if (e.key === 'Enter') e.currentTarget.blur();
+                    }}
+                  />
                   <select
                     value={c.area ?? ''}
                     onChange={(e) => updateCampsiteArea(c.id, e.target.value)}

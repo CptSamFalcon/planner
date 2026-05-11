@@ -335,7 +335,7 @@ textarea:focus {
 }
 
 .password-gate-card {
-  max-width: 320px;
+  max-width: min(380px, 94vw);
   background: #c0c0c0;
   border-radius: 0;
   border: 2px solid;
@@ -352,8 +352,16 @@ textarea:focus {
 }
 
 .password-gate-subtitle,
-.password-gate-hint {
+.password-gate-hint,
+.password-gate-devhint {
   color: var(--text-muted);
+}
+
+.password-gate-devhint {
+  border-radius: 0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  background: #ece9d8;
 }
 
 .password-gate-error {
@@ -737,6 +745,32 @@ textarea:focus {
 }
 
 .photo-tag-pill {
+  background: #ece9d8;
+}
+
+.artist-bio-item,
+.artist-bio-media,
+.artist-bio-tag-pill {
+  border-radius: 0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+  background: #c0c0c0;
+}
+
+.artist-bio-tag-pill {
+  background: #ece9d8;
+  color: #000000;
+}
+
+.artist-bios-poster-thumb {
+  border-radius: 0;
+  border: 2px solid;
+  border-color: #ffffff #404040 #404040 #ffffff;
+}
+
+.artist-bio-img--placeholder {
+  border-radius: 0;
+  border: 2px dashed #808080;
   background: #ece9d8;
 }
 
