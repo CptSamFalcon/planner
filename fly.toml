@@ -1,0 +1,46 @@
+# FestOS — Fly.io (https://fly.io/docs/)
+# Set `app` to your Fly app name (must match `fly apps list` / dashboard).
+app = "festos"
+primary_region = "sjc"
+
+[build]
+  dockerfile = "Dockerfile"
+
+[env]
+  # Must match internal_port. Fly’s default proxy port is 8080; a mismatch yields “hangs” (TLS ok, no bytes).
+  PORT = "8080"
+  NODE_ENV = "production"
+  DATA_DIR = "/app/data"
+  PUBLIC_DIR = "/app/client/dist"
+
+[http_service]
+  internal_port = 8080
+  force_https = true
+  auto_stop_machines = "stop"
+  auto_start_machines = true
+  min_machines_running = 1
+
+  [http_service.concurrency]
+    type = "requests"
+    soft_limit = 100
+    hard_limit = 200
+
+[[http_service.checks]]
+  grace_period = "45s"
+  interval = "30s"
+  method = "GET"
+  timeout = "10s"
+  path = "/healthz"
+
+# Persistent SQLite + uploads. Create before first deploy if not auto-created:
+#   fly volumes create festos_data --region sjc --size 3
+# Region must match `primary_region`.
+[mounts]
+  source = "festos_data"
+  destination = "/app/data"
+  initial_size = "3gb"
+
+[[vm]]
+  cpu_kind = "shared"
+  cpus = 1
+  memory = "1gb"

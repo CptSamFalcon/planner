@@ -1,0 +1,975 @@
+{
+  "seedVersion": 23,
+  "posterUrl": "https://www.basscanyon.com/wp-content/uploads/2026/04/Bass_Canyon_2026_Lineup4x5_v2.jpg",
+  "generatedAt": "2026-04-26T07:22:33.523Z",
+  "ocrRaw": "",
+  "ocrNote": "Manual lineup; seed rebuilt from client/src/data/bassCanyon2026Lineup.js (no OCR). Deduped Excision rows; bios tightened (manual patch).",
+  "artists": [
+    {
+      "name": "ATLiens",
+      "sort_order": 0,
+      "tags": [
+        "experimental-bass",
+        "trap",
+        "bass"
+      ],
+      "bio": "Masked bass duo: alien, heavy, and high-energy for big-stage moments.",
+      "deezerId": 7464270,
+      "image": "https://cdn-images.dzcdn.net/images/artist/bcd67cfa4a09aa091bde3dc079d0fd4e/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Barely Alive",
+      "sort_order": 1,
+      "tags": [
+        "dubstep",
+        "riddim",
+        "bass"
+      ],
+      "bio": "Dubstep duo with aggressive sound design and festival-ready anthems.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Bear Grillz",
+      "sort_order": 2,
+      "tags": [
+        "dubstep",
+        "bass",
+        "throwback"
+      ],
+      "bio": "Rowdy, personality-forward dubstep with classic festival punch.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Big Gigantic",
+      "sort_order": 3,
+      "tags": [
+        "electro",
+        "funk",
+        "bass",
+        "live"
+      ],
+      "bio": "Sax + electronics: live-instrument energy over big groove drops.",
+      "deezerId": 394702,
+      "image": "https://cdn-images.dzcdn.net/images/artist/1660a2cf9d0a6fea9481c5f7326012f2/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Borgore",
+      "sort_order": 4,
+      "tags": [
+        "dubstep",
+        "electro",
+        "bass"
+      ],
+      "bio": "Scene OG energy — dubstep and electro with a chaotic sense of fun.",
+      "deezerId": 406688,
+      "image": "https://cdn-images.dzcdn.net/images/artist/818d073ade5e33ebbe92b67d30e34fbd/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Calcium",
+      "sort_order": 5,
+      "tags": [
+        "dubstep",
+        "riddim",
+        "bass"
+      ],
+      "bio": "Riddim-forward producer — sharp drums and unapologetically heavy low end.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Canabliss",
+      "sort_order": 6,
+      "tags": [
+        "experimental-bass",
+        "dubstep"
+      ],
+      "bio": "Colorful, bass-forward project built for high-motion festival sets.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Crankdat",
+      "sort_order": 7,
+      "tags": [
+        "dubstep",
+        "trap",
+        "bass"
+      ],
+      "bio": "Trap-leaning festival energy: crisp drums, huge hooks, big-room bounce.",
+      "deezerId": 9787378,
+      "image": "https://cdn-images.dzcdn.net/images/artist/b97718710e1842ba0844d35e58244036/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Culture Shock",
+      "sort_order": 8,
+      "tags": [
+        "dnb",
+        "drum-and-bass",
+        "bass"
+      ],
+      "bio": "UK DnB precision — clean mixes and rolling stage presence.",
+      "deezerId": 410770,
+      "image": "https://cdn-images.dzcdn.net/images/artist/24e121558b70d74d5077122078651f25/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Dion Timmer",
+      "sort_order": 9,
+      "tags": [
+        "dubstep",
+        "melodic",
+        "bass"
+      ],
+      "bio": "Melodic-leaning dubstep with a playful, high-detail production style.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Dirtyphonics",
+      "sort_order": 10,
+      "tags": [
+        "dubstep",
+        "dnb",
+        "electro"
+      ],
+      "bio": "French team blending DnB, dubstep, and festival electro in one set.",
+      "deezerId": 407883,
+      "image": "https://cdn-images.dzcdn.net/images/artist/ac81fb00bd2ab96c5984cd7f24872f5b/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "EAZYBAKED",
+      "sort_order": 11,
+      "tags": [
+        "experimental-bass",
+        "dubstep"
+      ],
+      "bio": "Southern weird-bass: smoked-out low end, trippy texture, and heavy swings.",
+      "deezerId": 6513049,
+      "image": "https://cdn-images.dzcdn.net/images/artist/206a6da0b780ef0324ffb5c4c58c5eeb/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Emorfik",
+      "sort_order": 12,
+      "tags": [
+        "dubstep",
+        "riddim",
+        "bass"
+      ],
+      "bio": "Riddim-leaning producer with sharp percussion and a heavier modern edge.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Excision",
+      "sort_order": 13,
+      "tags": [
+        "dubstep",
+        "bass",
+        "headliner"
+      ],
+      "bio": "Bass Canyon host and dubstep centerpiece—multiple sets on the bill, including a dedicated Detox set and a Slander B2B (per official poster).",
+      "deezerId": 398333,
+      "image": "https://cdn-images.dzcdn.net/images/artist/4ae646ba4e91f3b1271c6e925cef65be/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Slander",
+      "sort_order": 14,
+      "tags": [
+        "melodic-bass",
+        "dubstep",
+        "headliner"
+      ],
+      "bio": "Melodic bass duo: emotional builds and huge singalong festival drops.",
+      "deezerId": 984314,
+      "image": "https://cdn-images.dzcdn.net/images/artist/aee1c2039a0e754ec53f9931e7632a20/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "FuntCase",
+      "sort_order": 15,
+      "tags": [
+        "dubstep",
+        "riddim",
+        "bass"
+      ],
+      "bio": "UK scene staple — grimy, aggressive, and unapologetically rowdy energy.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Ganja White Night",
+      "sort_order": 16,
+      "tags": [
+        "dubstep",
+        "experimental-bass",
+        "wobble"
+      ],
+      "bio": "Wobbly, character-filled dub with a worldbuilding vibe end-to-end.",
+      "deezerId": 1947921,
+      "image": "https://cdn-images.dzcdn.net/images/artist/4a8fc9ebb1b32e34806e46c025a527e2/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Ghastly",
+      "sort_order": 17,
+      "tags": [
+        "dubstep",
+        "electro",
+        "bass"
+      ],
+      "bio": "Electro-leaning bass with a sleek, high-energy modern festival feel.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Ghengar",
+      "sort_order": 18,
+      "tags": [
+        "dubstep",
+        "riddim",
+        "bass"
+      ],
+      "bio": "Riddim-forward producer — sharp, stompy, and made for the rail.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Heyz",
+      "sort_order": 19,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Undercard pick with a bass-forward, club-to-stage punch.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Illenium",
+      "sort_order": 20,
+      "tags": [
+        "melodic-bass",
+        "future-bass",
+        "headliner"
+      ],
+      "bio": "Arena-scale melodic dance music — big chords, big feelings, big drops.",
+      "deezerId": 4740968,
+      "image": "https://cdn-images.dzcdn.net/images/artist/0e4f30513c3c06fbeed3f2e403aad80f/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "INZO",
+      "sort_order": 21,
+      "tags": [
+        "experimental-bass",
+        "dubstep"
+      ],
+      "bio": "Left-field bass: weird, cinematic, and made for “what was that?!” moments.",
+      "deezerId": 6096812,
+      "image": "https://cdn-images.dzcdn.net/images/artist/ab89a1a7b73579e06b161a780961296a/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "JKYL & HYDE",
+      "sort_order": 22,
+      "tags": [
+        "dubstep",
+        "trap",
+        "bass"
+      ],
+      "bio": "Bass and trap energy — high-motion sets built to move a big floor.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Kill Safari",
+      "sort_order": 23,
+      "tags": [
+        "dubstep",
+        "trap",
+        "bass"
+      ],
+      "bio": "Hard-hitting bass/trap blend — great for big-room hype moments.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Level Up",
+      "sort_order": 24,
+      "tags": [
+        "dubstep",
+        "riddim",
+        "bass"
+      ],
+      "bio": "Riddim DJ energy — quick cuts, fast drums, and heavy low-end focus.",
+      "deezerId": 377847261,
+      "image": "https://cdn-images.dzcdn.net/images/artist/bcdd4dbcd5852296ebba380b3ee74f9b/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Mersiv",
+      "sort_order": 25,
+      "tags": [
+        "experimental-bass",
+        "dubstep",
+        "sunset"
+      ],
+      "bio": "Liquid and crunch colliding — scenic, vibey, and still filthy when it counts.",
+      "deezerId": 14298123,
+      "image": "https://cdn-images.dzcdn.net/images/artist/353604c1c048ec8f42b9ba367a7d6012/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Muzz",
+      "sort_order": 26,
+      "tags": [
+        "dnb",
+        "drum-and-bass",
+        "bass"
+      ],
+      "bio": "DnB producer with a stadium-sized melodic streak and big breakdowns.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "NGHTMRE",
+      "sort_order": 27,
+      "tags": [
+        "dubstep",
+        "trap",
+        "bass"
+      ],
+      "bio": "Trap meets bass: festival-sized hooks, drops, and crowd chants on repeat.",
+      "deezerId": 6461577,
+      "image": "https://cdn-images.dzcdn.net/images/artist/21e69a3e92f166992d4edba43e087490/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Nikita, The Wicked",
+      "sort_order": 28,
+      "tags": [
+        "experimental-bass",
+        "dubstep"
+      ],
+      "bio": "Villain-coded bass — dark, dramatic, and theatrical in the best way.",
+      "deezerId": 101721002,
+      "image": "https://cdn-images.dzcdn.net/images/artist/4e54c0e36ae916cb3d2201267e41ac40/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Pegboard Nerds",
+      "sort_order": 29,
+      "tags": [
+        "electro",
+        "dubstep",
+        "house"
+      ],
+      "bio": "Norwegian duo: electro, dubstep, and melodic energy in a tight package.",
+      "deezerId": 1626459,
+      "image": "https://cdn-images.dzcdn.net/images/artist/3f0bc54b732a6cc7efc6c351fe3a874c/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Ray Volpe",
+      "sort_order": 30,
+      "tags": [
+        "dubstep",
+        "bass",
+        "festival"
+      ],
+      "bio": "Festival-scale dubstep with laser-focused bangers and crowd-chant energy.",
+      "deezerId": 5244067,
+      "image": "https://cdn-images.dzcdn.net/images/artist/17bd7449fd75a6f897b4bd1fcf1c0aea/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Ravenscoon",
+      "sort_order": 31,
+      "tags": [
+        "experimental-bass",
+        "dubstep",
+        "b2b"
+      ],
+      "bio": "Weird, playful bass; billed B2B with Jantsen on the poster—two flavors, one set.",
+      "deezerId": 53156592,
+      "image": "https://cdn-images.dzcdn.net/images/artist/b27db7ffd9e26a7622f8d9df1cd8b0f7/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Jantsen",
+      "sort_order": 32,
+      "tags": [
+        "dubstep",
+        "experimental-bass",
+        "b2b"
+      ],
+      "bio": "Groovy, heavy, personality-forward dubstep; B2B with Ravenscoon at this fest.",
+      "deezerId": 53156592,
+      "image": "https://cdn-images.dzcdn.net/images/artist/b27db7ffd9e26a7622f8d9df1cd8b0f7/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Sigma with Armani Reign",
+      "sort_order": 33,
+      "tags": [
+        "dnb",
+        "drum-and-bass",
+        "bass",
+        "b2b"
+      ],
+      "bio": "Crossover DnB with Armani Reign in the mix — hooks and rollers built for a big field.",
+      "deezerId": 278529,
+      "image": "https://cdn-images.dzcdn.net/images/artist/e27b8d84ef2dcde65053295acb6c356b/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Smith.",
+      "sort_order": 34,
+      "tags": [
+        "dubstep",
+        "bass",
+        "up-and-coming"
+      ],
+      "bio": "Dubstep selector with a crisp, high-energy style—built for a tight undercard set before the night peaks.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Smoakland",
+      "sort_order": 35,
+      "tags": [
+        "dubstep",
+        "west-coast",
+        "bass"
+      ],
+      "bio": "West-coast lean with grimy bounce — dubstep for late-night head-nodding.",
+      "deezerId": 75978202,
+      "image": "https://cdn-images.dzcdn.net/images/artist/8606a1bd5755ef0da1d9e4b929a0773d/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Sullivan King",
+      "sort_order": 36,
+      "tags": [
+        "dubstep",
+        "metal",
+        "bass"
+      ],
+      "bio": "Metal + dubstep: scream-along energy and pit-friendly festival chaos.",
+      "deezerId": 5590006,
+      "image": "https://cdn-images.dzcdn.net/images/artist/baf870b01d64ebda36900b5b56b2b633/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Svdden Death presents VOYD",
+      "sort_order": 37,
+      "tags": [
+        "dubstep",
+        "experimental-bass",
+        "bass"
+      ],
+      "bio": "The VOYD side of Svdden Death: dark, widescreen, brutally heavy.",
+      "deezerId": 12428974,
+      "image": "https://cdn-images.dzcdn.net/images/artist/4f2b9171582e3937141065c4a915dfb7/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "The Resistance",
+      "sort_order": 38,
+      "tags": [
+        "bass",
+        "branding",
+        "b2b"
+      ],
+      "bio": "Collaborative or branded bass moment on the bill—treat it like a special 'show within the show' set.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "The Stoogs",
+      "sort_order": 39,
+      "tags": [
+        "experimental-bass",
+        "dubstep"
+      ],
+      "bio": "Off-kilter bass and left-field energy—comedy-leaning name, serious weight when the subs hit.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Virtual Riot",
+      "sort_order": 40,
+      "tags": [
+        "dubstep",
+        "electro",
+        "bass"
+      ],
+      "bio": "Sound-design masterclass — pretty melodies into aggressive bass payoffs.",
+      "deezerId": 2263591,
+      "image": "https://cdn-images.dzcdn.net/images/artist/4324311180ab5f10ea5b70e1996f18ed/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Whipped Cream",
+      "sort_order": 41,
+      "tags": [
+        "trap",
+        "bass",
+        "hip-hop"
+      ],
+      "bio": "Trap, hip-hop, and bass crossover: vocal hooks, hard drums, and big-room energy.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "$J",
+      "sort_order": 42,
+      "tags": [
+        "experimental-bass",
+        "bass",
+        "up-and-coming"
+      ],
+      "bio": "Bass and experimental club textures—an early-day discovery slot for curious ears.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "All The Reason",
+      "sort_order": 43,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Melodic bass and emotional build-ups—good for a golden-hour or pre-headliner mood shift.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Austeria",
+      "sort_order": 44,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Dark, cinematic low end—drama-first bass built for a packed tent or late-lane slot.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Badklaat",
+      "sort_order": 45,
+      "tags": [
+        "dubstep",
+        "riddim",
+        "bass"
+      ],
+      "bio": "UK riddim and dubstep: grimy, swaggering, and built for the rail.",
+      "deezerId": 1182428,
+      "image": "https://cdn-images.dzcdn.net/images/artist/a4e573399e8017800e014e4294efb762/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Brainrack",
+      "sort_order": 46,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Gnarly, technical dubstep and riddim-leaning chaos—spiky, fast, rail-friendly.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Wiley",
+      "sort_order": 47,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Low-end–forward selector on this bill: rolling energy and room-filling bass without playing it safe.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Capochino",
+      "sort_order": 48,
+      "tags": [
+        "bass",
+        "up-and-coming"
+      ],
+      "bio": "Bounce-heavy bass and party-forward mixing—meant to move a floor fast.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Crumb Pit",
+      "sort_order": 49,
+      "tags": [
+        "experimental-bass",
+        "bass"
+      ],
+      "bio": "Gritty, crunchy dubstep with a “stop scrolling and get in the pit” feel.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Dennett",
+      "sort_order": 50,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Rising name on the undercard: tight, heavy, and worth catching early.",
+      "deezerId": 92351412,
+      "image": "https://cdn-images.dzcdn.net/images/artist/9609b0dfba5271b9fa36b03f67c2ef31/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Dodge & Fuski",
+      "sort_order": 51,
+      "tags": [
+        "dubstep",
+        "electro",
+        "bass"
+      ],
+      "bio": "UK-bred dubstep and electro: rowdy, dancefloor-proven, and built to sprint.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Domina",
+      "sort_order": 52,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Dark, assertive low end—moody and intense, made for a late set when the crowd wants danger.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Dream Takers",
+      "sort_order": 53,
+      "tags": [
+        "bass",
+        "melodic",
+        "up-and-coming"
+      ],
+      "bio": "Melodic and trap-influenced bass—hooky, vocal-friendly energy with a hard drop spine.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Flozone",
+      "sort_order": 54,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Textured dubstep: forward, weird, and built for a packed tent.",
+      "deezerId": 11827645,
+      "image": "https://cdn-images.dzcdn.net/images/artist/cd4edb02d7186ee891747b0135e24559/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Hekler",
+      "sort_order": 55,
+      "tags": [
+        "dubstep",
+        "trap",
+        "bass"
+      ],
+      "bio": "Brutish hybrid bass — crisp drums, sharp drops, and a rowdy feel.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Hexxa",
+      "sort_order": 56,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Tight, modern dubstep: sharp transients, heavy drops, and a fast-mixing pace.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Hostage Situation",
+      "sort_order": 57,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "In-your-face bass—high tension, big drops, and a rowdy, confrontational edge.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Ivory",
+      "sort_order": 58,
+      "tags": [
+        "melodic-bass",
+        "bass",
+        "festival"
+      ],
+      "bio": "Melodic bass textures — good for a sunset-adjacent, emotional set.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Izadi",
+      "sort_order": 59,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Primal, aggressive bass—short, punchy sets that land hard between bigger names.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Justin Hawkes",
+      "sort_order": 60,
+      "tags": [
+        "dnb",
+        "drum-and-bass",
+        "bass"
+      ],
+      "bio": "UK DnB with festival polish — clean rollers and jump-up moments.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "KLO",
+      "sort_order": 61,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Bass selector with a modern, undercard “wait, this is hard” feel.",
+      "deezerId": 1585860,
+      "image": "https://cdn-images.dzcdn.net/images/artist/fd9f7d7fbf0e238cd191326af543042a/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Liquid Smoak",
+      "sort_order": 62,
+      "tags": [
+        "experimental-bass",
+        "bass"
+      ],
+      "bio": "Hazy, liquid-leaning low end in the Smoakland family lane—groovy, smoked-out, and vibey.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Luci",
+      "sort_order": 63,
+      "tags": [
+        "bass",
+        "up-and-coming"
+      ],
+      "bio": "Bass and electronic pop crossover—earworm hooks with enough sub to still feel at home here.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Machaki",
+      "sort_order": 64,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Fresh undercard: tight sets and heavy, modern bass color.",
+      "deezerId": 110419852,
+      "image": "https://cdn-images.dzcdn.net/images/artist/823f46ea35d3cc40631959f2ba831aac/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Neotek",
+      "sort_order": 65,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Future-leaning bass textures—late-night, neon, and a little cyber in the low end.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Otsukare",
+      "sort_order": 66,
+      "tags": [
+        "experimental-bass",
+        "bass"
+      ],
+      "bio": "Weird, playful bass—lighter weirdness to break up back-to-back heavy blocks.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Paper Skies",
+      "sort_order": 67,
+      "tags": [
+        "melodic-bass",
+        "bass",
+        "festival"
+      ],
+      "bio": "Melodic, airy, and still weighty—floaty top lines with subs that still punch.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "PHRVA",
+      "sort_order": 68,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Stage-forward energy with sharp, present mixes—meant to hold attention in a busy day.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Pretty Sweet",
+      "sort_order": 69,
+      "tags": [
+        "bass",
+        "festival",
+        "up-and-coming"
+      ],
+      "bio": "Cute name, mean subs—bass with hooky moments and a sugary-meets-savage feel.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Rossy",
+      "sort_order": 70,
+      "tags": [
+        "dubstep",
+        "bass",
+        "festival"
+      ],
+      "bio": "High-energy, club-born bass with a mainstage-ready bounce.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Seth David",
+      "sort_order": 71,
+      "tags": [
+        "dubstep",
+        "house",
+        "groovy"
+      ],
+      "bio": "Groove-first DJ: bass and house textures that keep bodies moving.",
+      "deezerId": 4434773,
+      "image": "https://cdn-images.dzcdn.net/images/artist/ed79d01a2cd64fa710183cc43ef838f3/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Siren",
+      "sort_order": 72,
+      "tags": [
+        "experimental-bass",
+        "bass"
+      ],
+      "bio": "Cinematic, dramatic bass—tension-and-release energy that leans story-driven.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Sumthin Sumthin",
+      "sort_order": 73,
+      "tags": [
+        "experimental-bass",
+        "bass"
+      ],
+      "bio": "Funky, textured bass and future beats—groove-first, weird-second, in the best way.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Super Future",
+      "sort_order": 74,
+      "tags": [
+        "melodic-bass",
+        "bass",
+        "festival"
+      ],
+      "bio": "Melodic future bass and emotional peaks—great for a softer lane between heavier blocks.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Tripp St.",
+      "sort_order": 75,
+      "tags": [
+        "dubstep",
+        "trap",
+        "bass"
+      ],
+      "bio": "High-impact trap and bass hybrid—punchy drums, vocal chops, and festival-sized payoffs.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Twopercent",
+      "sort_order": 76,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Quirky undercard with internet-era bass humor and actual weight behind it.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "TYNAN",
+      "sort_order": 77,
+      "tags": [
+        "dubstep",
+        "trap",
+        "bass"
+      ],
+      "bio": "Trap-dubstep hybrid: precise drums, festival-sized drops, and clean mixes.",
+      "deezerId": 5024588,
+      "image": "https://cdn-images.dzcdn.net/images/artist/f336255b920515e9da8460655751af1d/1000x1000-000000-80-0-0.jpg"
+    },
+    {
+      "name": "Usaybflow",
+      "sort_order": 78,
+      "tags": [
+        "bass",
+        "up-and-coming"
+      ],
+      "bio": "Future-leaning trap and bass: catchy leads, big drums, and drops sized for a daytime field.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Vaski",
+      "sort_order": 79,
+      "tags": [
+        "dubstep",
+        "experimental-bass"
+      ],
+      "bio": "Melodic, grittier bass edges — a nice in-between of pretty and filthy.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Versa",
+      "sort_order": 80,
+      "tags": [
+        "experimental-bass",
+        "bass"
+      ],
+      "bio": "Bass and experimental electronic textures—moody builds with a low-end that keeps evolving.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Yosuf",
+      "sort_order": 81,
+      "tags": [
+        "bass",
+        "up-and-coming"
+      ],
+      "bio": "Bright, vocal-led bass and trap crossover—anthem-y moments with a heavy finish.",
+      "deezerId": null,
+      "image": ""
+    },
+    {
+      "name": "Z3LLA",
+      "sort_order": 82,
+      "tags": [
+        "dubstep",
+        "riddim",
+        "bass"
+      ],
+      "bio": "Riddim-leaning cuts—fast, spiky, and engineered for the rail when the night turns mean.",
+      "deezerId": null,
+      "image": ""
+    }
+  ]
+}

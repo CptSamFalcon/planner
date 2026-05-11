@@ -24,6 +24,11 @@ const PORT = process.env.PORT || 3080;
 // Persist data in /app/data when in Docker, else ./data
 const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data');
 initDb(dataDir);
+
+app.get('/healthz', (_req, res) => {
+  res.status(200).type('text/plain').send('ok');
+});
+
 const uploadsDir = path.join(dataDir, 'uploads');
 const photosDir = path.join(uploadsDir, 'photos');
 

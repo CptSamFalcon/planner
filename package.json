@@ -10,7 +10,7 @@
     "build": "cd client && npm run build && cd ../server && npm run build",
     "start": "cd server && npm start",
     "docker:build": "docker build -t bass-canyon-planner .",
-    "docker:run": "docker run -p 3080:3080 -v bass-canyon-data:/app/data bass-canyon-planner"
+    "docker:run": "docker run -p 3080:8080 -v bass-canyon-data:/app/data bass-canyon-planner"
   },
   "devDependencies": {
     "concurrently": "^8.2.2"
