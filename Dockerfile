@@ -2,8 +2,11 @@
 FROM node:20-alpine AS client
 WORKDIR /app/client
 COPY client/package.json client/package-lock.json* ./
-RUN npm ci 2>/dev/null || npm install
+# Do not hide stderr: a failed `npm ci` was hard to diagnose on the server.
+RUN npm ci --no-audit --no-fund || npm install --no-audit --no-fund
 COPY client/ ./
+# Small VPS / CasaOS hosts sometimes OOM during Vite; raise heap for this step only.
+ENV NODE_OPTIONS=--max-old-space-size=4096
 RUN npm run build
 
 # Runtime
