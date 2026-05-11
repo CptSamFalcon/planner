@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { formatAllergiesInputValue } from '../utils/memberAllergies';
+import { compareMemberNames } from '../utils/compareMemberNames';
 
 // Green only if they have a ride and a camp pass (campsite). Everything else is optional.
 export function isFullyAssigned(m) {
@@ -33,7 +34,7 @@ export function GoingList({ api, refreshKey = 0, onRefresh }) {
       .catch(() => setCampsites([]));
   }, [api, refreshKey]);
 
-  const going = members.filter((m) => m.status === 'going');
+  const going = members.filter((m) => m.status === 'going').sort(compareMemberNames);
   if (going.length === 0) return null;
 
   return (
@@ -68,7 +69,7 @@ export function GoingList({ api, refreshKey = 0, onRefresh }) {
       {editingMember && (
         <EditMemberModal
           member={editingMember}
-          allMembers={members}
+          allMembers={[...members].sort(compareMemberNames)}
           api={api}
           onClose={() => {
             setEditingMember(null);

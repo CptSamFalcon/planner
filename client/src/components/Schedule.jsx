@@ -2,6 +2,7 @@ import { useState, useEffect, useMemo, useRef, useCallback } from 'react';
 import { createPortal } from 'react-dom';
 import { googleCalendarUrl, downloadIcs } from '../utils/calendarExport';
 import { Win98Dialog } from './Win98Dialog';
+import { compareMemberNames } from '../utils/compareMemberNames';
 
 const DAYS = ['Wednesday', 'Thursday Pre-Party', 'Friday', 'Saturday', 'Sunday'];
 
@@ -313,7 +314,10 @@ export function Schedule({ api }) {
   // New stage name
   const [newStageName, setNewStageName] = useState('');
 
-  const goingMembers = useMemo(() => members.filter((m) => m.status === 'going'), [members]);
+  const goingMembers = useMemo(
+    () => members.filter((m) => m.status === 'going').sort(compareMemberNames),
+    [members]
+  );
 
   const load = () => {
     setLoading(true);

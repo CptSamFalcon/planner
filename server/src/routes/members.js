@@ -27,7 +27,7 @@ function normalizeAllergies(val) {
 
 membersRouter.get('/', (req, res) => {
   try {
-    const rows = db().prepare('SELECT * FROM members ORDER BY name COLLATE NOCASE').all();
+    const rows = db().prepare('SELECT * FROM members ORDER BY lower(name)').all();
     res.json(rows);
   } catch (e) {
     res.status(500).json({ error: e.message });

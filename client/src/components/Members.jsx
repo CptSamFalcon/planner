@@ -1,12 +1,9 @@
 import { useState, useEffect, useRef } from 'react';
 import { formatAllergiesInputValue } from '../utils/memberAllergies';
+import { compareMemberNames } from '../utils/compareMemberNames';
 
 function hasAllergiesValue(member) {
   return formatAllergiesInputValue(member).trim() !== '';
-}
-
-function compareMemberNames(a, b) {
-  return a.name.localeCompare(b.name, undefined, { sensitivity: 'base' });
 }
 
 function MemberPersonRow({ m, isGoing, updateMember, updateStatus, remove, editingAllergyId, setEditingAllergyId }) {

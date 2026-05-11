@@ -1,4 +1,5 @@
 import { useState, useEffect, useCallback } from 'react';
+import { compareMemberNames } from '../utils/compareMemberNames';
 
 // 5x5 grid: rows, columns, and both diagonals (indices 0–24)
 const BINGO_LINES = [
@@ -41,7 +42,7 @@ export function Bingo({ api }) {
     refreshLeaderboard();
   }, [refreshLeaderboard]);
 
-  const goingMembers = members.filter((m) => m.status === 'going');
+  const goingMembers = members.filter((m) => m.status === 'going').sort(compareMemberNames);
 
   useEffect(() => {
     if (selectedMemberId == null || selectedMemberId === '') {

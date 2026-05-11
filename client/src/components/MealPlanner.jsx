@@ -1,5 +1,6 @@
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { parseMemberAllergies } from '../utils/memberAllergies';
+import { compareMemberNames } from '../utils/compareMemberNames';
 import { mealAllergenConflicts } from '../utils/mealAllergenConflicts';
 import { Win98Dialog } from './Win98Dialog';
 
@@ -80,7 +81,7 @@ export function MealPlanner({ api }) {
   }, [load]);
 
   const goingMembers = useMemo(
-    () => members.filter((m) => m.status === 'going'),
+    () => members.filter((m) => m.status === 'going').sort(compareMemberNames),
     [members]
   );
 

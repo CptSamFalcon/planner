@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react';
 import { isFullyAssigned, getMissing, EditMemberModal } from './GoingList';
+import { compareMemberNames } from '../utils/compareMemberNames';
 
 const CAMPSITE_CAPACITY = 6;
 
@@ -26,7 +27,7 @@ export function Campsites({ api, onMemberUpdated }) {
 
   useEffect(load, [api]);
 
-  const goingMembers = members.filter((m) => m.status === 'going');
+  const goingMembers = members.filter((m) => m.status === 'going').sort(compareMemberNames);
 
   const byCampsite = new Map();
   byCampsite.set(null, []);
@@ -112,7 +113,7 @@ export function Campsites({ api, onMemberUpdated }) {
       {editingMember && (
         <EditMemberModal
           member={editingMember}
-          allMembers={members}
+          allMembers={[...members].sort(compareMemberNames)}
           api={api}
           onClose={() => setEditingMember(null)}
           onSaved={handleSaved}
