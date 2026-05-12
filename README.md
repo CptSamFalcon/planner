@@ -33,10 +33,6 @@ docker compose up -d --build
 
 Then open **http://localhost:3080** (or `http://<your-server-ip>:3080`).
 
-## Fly.io
-
-Use [`fly.toml`](./fly.toml) with the Dockerfile. The app listens on **8080** inside the container/Fly Machine (Fly’s default `internal_port`); the host URL is still `https://…fly.dev`. See **[docs/fly-deploy.md](./docs/fly-deploy.md)** for volumes and secrets.
-
 ## Deploy on CasaOS
 
 **→ Full guide: [CASAOS.md](./CASAOS.md)**
@@ -44,11 +40,11 @@ Use [`fly.toml`](./fly.toml) with the Dockerfile. The app listens on **8080** in
 1. In CasaOS, go to **App Store** or **Custom App**.
 2. **Option A — Docker Compose**
    - Copy the contents of `docker-compose.yml` into a new Compose app.
-   - Map host **3080** to container **8080** (e.g. `3080:8080`, already set in `docker-compose.yml`).
+   - Set your desired port (e.g. `3080:3080`).
    - Deploy; the image will build from the Dockerfile in this repo (or from a pre-built image if you push to a registry).
 3. **Option B — Single container**
    - Build the image: `docker build -t bass-canyon-planner .`
-   - In CasaOS “Install a customized app”, use image `bass-canyon-planner`, map host **3080** → container **8080**, and add a volume:
+   - In CasaOS “Install a customized app”, use image `bass-canyon-planner`, map port **3080**, and add a volume:
      - Container path: `/app/data`
      - So SQLite data persists across restarts.
 

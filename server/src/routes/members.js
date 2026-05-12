@@ -4,7 +4,28 @@ import { getDb } from '../db.js';
 export const membersRouter = Router();
 const db = () => getDb();
 
-function normalizeAllergies(val) {
+export function normalizeFavoriteArtistsJson(val) {
+  if (val == null || val === '') return '[]';
+  if (Array.isArray(val)) {
+    return JSON.stringify(val.map((s) => String(s).trim()).filter(Boolean).slice(0, 50));
+  }
+  if (typeof val === 'string') {
+    try {
+      const p = JSON.parse(val);
+      if (Array.isArray(p)) {
+        return JSON.stringify(p.map((s) => String(s).trim()).filter(Boolean).slice(0, 50));
+      }
+    } catch (_) {
+      /* comma-separated */
+    }
+    return JSON.stringify(
+      val.split(/[,;\n]/).map((s) => s.trim()).filter(Boolean).slice(0, 50)
+    );
+  }
+  return '[]';
+}
+
+export function normalizeAllergies(val) {
   if (val == null || val === '') return '[]';
   if (Array.isArray(val)) {
     return JSON.stringify(val.map((s) => String(s).trim()).filter(Boolean));
@@ -36,11 +57,31 @@ membersRouter.get('/', (req, res) => {
 
 membersRouter.post('/', (req, res) => {
   try {
-    const { name, status = 'going', note, contact_number, emergency_contact, campsite_id, wristband, vehicle_id, shelter_packing_id, bed_packing_id, bedding_packing_id, pre_party, allergies } = req.body;
+    const {
+      name,
+      status = 'going',
+      note,
+      contact_number,
+      emergency_contact,
+      campsite_id,
+      wristband,
+      vehicle_id,
+      shelter_packing_id,
+      bed_packing_id,
+      bedding_packing_id,
+      pre_party,
+      allergies,
+      nickname,
+      bio,
+      favorite_artists,
+    } = req.body;
     const prePartyVal = pre_party === true || pre_party === 1 || pre_party === 'Y' || pre_party === 'y' ? 1 : (pre_party === false || pre_party === 0 || pre_party === 'N' || pre_party === 'n' ? 0 : null);
     const allergiesJson = normalizeAllergies(allergies);
+    const favJson = normalizeFavoriteArtistsJson(favorite_artists);
+    const nick = nickname != null ? String(nickname).trim().slice(0, 80) || null : null;
+    const bioVal = bio != null ? String(bio).trim().slice(0, 600) || null : null;
     const stmt = db().prepare(
-      'INSERT INTO members (name, status, note, contact_number, emergency_contact, campsite_id, wristband, vehicle_id, shelter_packing_id, bed_packing_id, bedding_packing_id, pre_party, allergies) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
+      'INSERT INTO members (name, status, note, contact_number, emergency_contact, campsite_id, wristband, vehicle_id, shelter_packing_id, bed_packing_id, bedding_packing_id, pre_party, allergies, nickname, bio, favorite_artists_json) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)'
     );
     const result = stmt.run(
       name || 'Anonymous',
@@ -55,7 +96,10 @@ membersRouter.post('/', (req, res) => {
       bed_packing_id || null,
       bedding_packing_id || null,
       prePartyVal,
-      allergiesJson
+      allergiesJson,
+      nick,
+      bioVal,
+      favJson
     );
     const row = db().prepare('SELECT * FROM members WHERE id = ?').get(result.lastInsertRowid);
     res.status(201).json(row);
@@ -67,7 +111,24 @@ membersRouter.post('/', (req, res) => {
 membersRouter.patch('/:id', (req, res) => {
   try {
     const { id } = req.params;
-    const { name, status, note, contact_number, emergency_contact, campsite_id, wristband, vehicle_id, shelter_packing_id, bed_packing_id, bedding_packing_id, pre_party, allergies } = req.body;
+    const {
+      name,
+      status,
+      note,
+      contact_number,
+      emergency_contact,
+      campsite_id,
+      wristband,
+      vehicle_id,
+      shelter_packing_id,
+      bed_packing_id,
+      bedding_packing_id,
+      pre_party,
+      allergies,
+      nickname,
+      bio,
+      favorite_artists,
+    } = req.body;
     const updates = [];
     const values = [];
     if (name !== undefined) { updates.push('name = ?'); values.push(name); }
@@ -82,6 +143,12 @@ membersRouter.patch('/:id', (req, res) => {
     if (bed_packing_id !== undefined) { updates.push('bed_packing_id = ?'); values.push(bed_packing_id); }
     if (bedding_packing_id !== undefined) { updates.push('bedding_packing_id = ?'); values.push(bedding_packing_id); }
     if (allergies !== undefined) { updates.push('allergies = ?'); values.push(normalizeAllergies(allergies)); }
+    if (nickname !== undefined) { updates.push('nickname = ?'); values.push(nickname != null ? String(nickname).trim().slice(0, 80) || null : null); }
+    if (bio !== undefined) { updates.push('bio = ?'); values.push(bio != null ? String(bio).trim().slice(0, 600) || null : null); }
+    if (favorite_artists !== undefined) {
+      updates.push('favorite_artists_json = ?');
+      values.push(normalizeFavoriteArtistsJson(favorite_artists));
+    }
     if (pre_party !== undefined) {
       const v = pre_party === true || pre_party === 1 || pre_party === 'Y' || pre_party === 'y' ? 1 : (pre_party === false || pre_party === 0 || pre_party === 'N' || pre_party === 'n' ? 0 : null);
       updates.push('pre_party = ?'); values.push(v);

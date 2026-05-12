@@ -12,7 +12,9 @@ import { Bingo } from './components/Bingo';
 import { MealPlanner } from './components/MealPlanner';
 import { Notes } from './components/Notes';
 import { PasswordGate } from './components/PasswordGate';
-import { Win98StartMenu } from './components/Win98StartMenu';
+import { IdentityPicker } from './components/IdentityPicker';
+import { ProfileOnboarding } from './components/ProfileOnboarding';
+import { ProfileEditor } from './components/ProfileEditor';
 import { navLabelForView } from './nav-tabs';
 import { IssueSolver } from './components/IssueSolver';
 import { PhoneWallpaperMaker } from './components/PhoneWallpaperMaker';
@@ -39,8 +41,8 @@ function Win98TaskbarClock() {
 export default function App() {
   const [authChecked, setAuthChecked] = useState(false);
   const [authenticated, setAuthenticated] = useState(false);
+  const [me, setMe] = useState(undefined);
   const [view, setView] = useState('group');
-  const [startMenuOpen, setStartMenuOpen] = useState(false);
   const [festival, setFestival] = useState(null);
   const [statusHint, setStatusHint] = useState('');
 
@@ -49,6 +51,32 @@ export default function App() {
       .then((r) => { setAuthChecked(true); setAuthenticated(r.ok); })
       .catch(() => { setAuthChecked(true); setAuthenticated(false); });
   }, []);
+
+  const refreshMe = () => {
+    fetch(`${API}/me`, { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then(setMe)
+      .catch(() => setMe(null));
+  };
+
+  useEffect(() => {
+    if (!authenticated) {
+      setMe(undefined);
+      return;
+    }
+    let cancelled = false;
+    fetch(`${API}/me`, { credentials: 'include' })
+      .then((r) => (r.ok ? r.json() : Promise.reject()))
+      .then((data) => {
+        if (!cancelled) setMe(data);
+      })
+      .catch(() => {
+        if (!cancelled) setMe(null);
+      });
+    return () => {
+      cancelled = true;
+    };
+  }, [authenticated]);
 
   useEffect(() => {
     if (!authenticated) return;
@@ -90,12 +118,69 @@ export default function App() {
     );
   }
 
+  if (me === undefined) {
+    return (
+      <div className="win98-desktop win98-desktop--gate">
+        <div className="password-gate password-gate-loading">
+          <div className="password-gate-card">
+            <p className="password-gate-subtitle">Loading your profile…</p>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (me === null) {
+    return (
+      <div className="win98-desktop win98-desktop--gate">
+        <div className="password-gate profile-gate">
+          <div className="password-gate-card">
+            <p className="password-gate-subtitle">Could not load your session profile.</p>
+            <button type="button" className="btn btn-primary password-gate-btn" onClick={refreshMe}>
+              Try again
+            </button>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
+  if (me.member_id == null) {
+    return (
+      <div className="win98-desktop win98-desktop--gate">
+        <IdentityPicker api={API} onIdentified={refreshMe} />
+      </div>
+    );
+  }
+
+  if (me.needsProfile) {
+    return (
+      <div className="win98-desktop win98-desktop--gate">
+        <ProfileOnboarding api={API} member={me.member} onComplete={refreshMe} />
+      </div>
+    );
+  }
+
   return (
     <div className="win98-desktop">
       <div className="win98-app-window">
-        <Header currentViewId={view} />
+        <Header
+          currentViewId={view}
+          onSelectView={setView}
+          member={me.member}
+          onOpenProfile={() => setView('profile')}
+        />
         <main className="win98-main">
-          {view === 'schedule' ? (
+          {view === 'profile' ? (
+            <ProfileEditor
+              api={API}
+              member={me.member}
+              onBack={() => setView('group')}
+              onSaved={() => {
+                refreshMe();
+              }}
+            />
+          ) : view === 'schedule' ? (
             <section className="section">
               <Schedule api={API} />
             </section>
@@ -151,13 +236,7 @@ export default function App() {
           <span className="win98-statusbar-pane win98-statusbar-pane--right">{navLabelForView(view)}</span>
         </div>
       </div>
-      <footer className="win98-taskbar">
-        <Win98StartMenu
-          view={view}
-          open={startMenuOpen}
-          onOpenChange={setStartMenuOpen}
-          onSelectView={setView}
-        />
+      <footer className="win98-taskbar win98-taskbar--minimal" aria-label="Status tray">
         <div className="win98-taskbar-spacer" aria-hidden />
         <Win98TaskbarClock />
       </footer>

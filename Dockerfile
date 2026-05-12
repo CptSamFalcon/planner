@@ -18,8 +18,8 @@ COPY server/ ./
 RUN mkdir -p /app/data
 COPY --from=client /app/client/dist ./client/dist
 ENV NODE_ENV=production
-ENV PORT=8080
+ENV PORT=3080
 ENV DATA_DIR=/app/data
 ENV PUBLIC_DIR=/app/client/dist
-EXPOSE 8080
+EXPOSE 3080
 CMD ["node", "src/index.js"]

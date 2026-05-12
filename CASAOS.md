@@ -102,7 +102,7 @@ If your CasaOS has a **Compose** or **Docker Compose** section:
 3. Use the existing `docker-compose.yml` (CasaOS may detect it automatically), or paste in the same content.
 4. Deploy/Start the stack.
 
-Host port **3080** → container **8080** (where Node listens) and volume **bass-canyon-planner-data** are already set in `docker-compose.yml`.
+Port **3080** and volume **bass-canyon-planner-data** are already set in `docker-compose.yml`.
 
 ---
 
@@ -128,7 +128,7 @@ Replace `YOUR_DOCKERHUB_USER` with your Docker Hub username.
 2. Click **Add App** / **Custom App** / **Install a customized app** (wording may vary).
 3. Use:
    - **Image:** `YOUR_DOCKERHUB_USER/bass-canyon-planner:latest`
-   - **Port:** host `3080` → container `8080` (e.g. `3080:8080`)
+   - **Port:** `3080` (map container port 3080 to host, e.g. `3080:3080`)
    - **Volume:** Add a volume so data persists:
      - **Container path:** `/app/data`
      - **Source:** e.g. a named volume or a host path like `bass-canyon-planner-data` (CasaOS often creates a volume for you if you name it).
@@ -142,7 +142,7 @@ In a browser: **http://\<casaos-server-ip\>:3080**
 
 ## Port and firewall
 
-- The app listens on **8080** inside the container; you map **3080** (or another host port) to **8080**.
+- The app listens on **3080** inside the container.
 - If you can’t reach it from another device, check:
   - CasaOS/firewall allows TCP **3080**.
   - Your router doesn’t block that port if you’re connecting from outside your network.
@@ -162,7 +162,7 @@ In a browser: **http://\<casaos-server-ip\>:3080**
 
 | Item        | Value        |
 |------------|--------------|
-| App URL    | `http://<server-ip>:3080` (host; map to container 8080) |
-| Container port | 8080     |
+| App URL    | `http://<server-ip>:3080` |
+| Container port | 3080     |
 | Data path in container | `/app/data` |
 | Compose project name | `bass-canyon-planner` (from `docker-compose.yml`) |

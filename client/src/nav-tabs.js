@@ -17,5 +17,6 @@ export const NAV_TABS = [
 ];
 
 export function navLabelForView(viewId) {
+  if (viewId === 'profile') return 'My profile';
   return NAV_TABS.find((t) => t.id === viewId)?.label ?? 'Home';
 }
