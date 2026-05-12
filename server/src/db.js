@@ -2,6 +2,7 @@ import Database from 'better-sqlite3';
 import fs from 'fs';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { migrateFestOsSchema } from './festos-schema.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 let db = null;
@@ -11,6 +12,7 @@ export function initDb(dataDir) {
   fs.mkdirSync(dataDir, { recursive: true });
   const dbPath = path.join(dataDir, 'planner.db');
   db = new Database(dbPath);
+  db.pragma('foreign_keys = ON');
 
   db.exec(`
     CREATE TABLE IF NOT EXISTS members (
@@ -464,7 +466,41 @@ export function initDb(dataDir) {
     }
   }
 
+  migrateMemberProfilesV1(db);
+  migrateFestOsSchema(db);
+
   return db;
+}
+
+/** Profile fields + onboarding flag; one-time backfill marks existing rows complete. */
+function migrateMemberProfilesV1(db) {
+  const profileCols = [
+    'nickname TEXT',
+    "avatar_url TEXT",
+    "favorite_artists_json TEXT NOT NULL DEFAULT '[]'",
+    'bio TEXT',
+    'onboarding_completed_at TEXT',
+  ];
+  for (const def of profileCols) {
+    try {
+      db.exec(`ALTER TABLE members ADD COLUMN ${def}`);
+    } catch (_) {
+      /* already exists */
+    }
+  }
+  const flag = db.prepare('SELECT v FROM app_kv WHERE k = ?').get('member_profile_v1');
+  if (!flag) {
+    try {
+      db.prepare(`UPDATE members SET onboarding_completed_at = datetime('now') WHERE onboarding_completed_at IS NULL`).run();
+    } catch (_) {
+      /* ignore */
+    }
+    try {
+      db.prepare('INSERT OR REPLACE INTO app_kv (k, v) VALUES (?, ?)').run('member_profile_v1', '1');
+    } catch (_) {
+      /* app_kv missing on ancient DB */
+    }
+  }
 }
 
 export function getDb() {

@@ -16,6 +16,8 @@ import { createPhotosRouter } from './routes/photos.js';
 import { allergensRouter } from './routes/allergens.js';
 import { lineupRouter } from './routes/lineup.js';
 import { shoppingRouter } from './routes/shopping.js';
+import { createMeRouter } from './routes/me.js';
+import { festosRouter } from './routes/festos.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
@@ -26,6 +28,7 @@ const dataDir = process.env.DATA_DIR || path.join(__dirname, '..', '..', 'data')
 initDb(dataDir);
 const uploadsDir = path.join(dataDir, 'uploads');
 const photosDir = path.join(uploadsDir, 'photos');
+const memberAvatarsDir = path.join(uploadsDir, 'member-avatars');
 
 app.use(cors({ origin: true, credentials: true }));
 app.use(express.json());
@@ -33,10 +36,13 @@ app.use(cookieParser());
 
 // Auth: login must be registered before the blanket /api guard (otherwise POST /api/auth can be blocked).
 app.use('/api/auth', authRouter);
+// Fest OS: email accounts + festivals + invites (separate from shared planner password).
+app.use('/api/festos', festosRouter);
 app.use('/api', requireAuth);
 
 // API routes
 app.use('/api/members', membersRouter);
+app.use('/api/me', createMeRouter({ memberAvatarsDir }));
 app.use('/api/campsites', campsitesRouter);
 app.use('/api/vehicles', vehiclesRouter);
 app.use('/api/packing', packingRouter);
